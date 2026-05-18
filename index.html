@@ -182,13 +182,7 @@
   .duration-bar-wrap { display: flex; align-items: center; gap: 8px; }
   .duration-bar { height: 3px; background: var(--canal); border-radius: 2px; min-width: 20px; max-width: 80px; opacity: 0.6; }
   .duration-text { font-size: 0.65rem; color: var(--muted); }
-  .hoelang { display: inline-block; font-size: 0.6rem; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 10px; font-weight: 500; margin-top: 3px; }
-  .hoelang.remaining { background: #d4edda; color: #1a5c30; }
-  .hoelang.soon { background: #fff3cd; color: #7a5200; }
-  .hoelang.future { background: #e8e8e8; color: #555; }
-  body.dark .hoelang.remaining { background: #1a3a28; color: #6ad68a; }
-  body.dark .hoelang.soon { background: #3a2a08; color: #f0c060; }
-  body.dark .hoelang.future { background: #2a2a2a; color: #aaa; }
+
 
   .empty-state { text-align: center; padding: 64px 32px; color: var(--muted); }
   .empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.3; }
@@ -541,31 +535,6 @@ function duration(a,d) {
   return h===0?`${m}m`:m===0?`${h}u`:`${h}u ${m}m`;
 }
 
-function timeUntil(arr, dep) {
-  const now = new Date();
-  if (dep < now) return null; // already departed
-  if (arr <= now && dep >= now) {
-    // Currently docked - show time remaining with seconds
-    const ms = dep - now;
-    const h = Math.floor(ms / 3600000);
-    const m = Math.floor((ms % 3600000) / 60000);
-    const s = Math.floor((ms % 60000) / 1000);
-    if (h === 0 && m === 0) return { type: 'remaining', text: lang === 'nl' ? `nog ${s}s` : `${s}s left` };
-    if (h === 0) return { type: 'remaining', text: lang === 'nl' ? `nog ${m}m ${s}s` : `${m}m ${s}s left` };
-    return { type: 'remaining', text: lang === 'nl' ? `nog ${h}u ${m}m ${s}s` : `${h}h ${m}m ${s}s left` };
-  }
-  // Not yet arrived
-  const ms = arr - now;
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
-  const s = Math.floor((ms % 60000) / 1000);
-  const d = Math.floor(h / 24);
-  if (d >= 1) return { type: 'future', text: lang === 'nl' ? `over ${d}d` : `in ${d}d` };
-  if (h === 0 && m === 0) return { type: 'soon', text: lang === 'nl' ? `over ${s}s` : `in ${s}s` };
-  if (h === 0) return { type: 'soon', text: lang === 'nl' ? `over ${m}m ${s}s` : `in ${m}m ${s}s` };
-  return { type: 'future', text: lang === 'nl' ? `over ${h}u ${m}m` : `in ${h}h ${m}m` };
-}
-
 function getStatus(arr,dep) {
   const now=new Date();
   if(dep<now) return 'departed';
@@ -873,7 +842,7 @@ function renderTable() {
         <div class="duration-bar" style="width:${barW}px"></div>
         <span class="duration-text">${duration(r.arrDt,r.depDt)}</span>
       </div>
-      ${(() => { const u = timeUntil(r.arrDt, r.depDt); return u ? `<span class="hoelang ${u.type}" data-arr="${r.arrDt.getTime()}" data-dep="${r.depDt.getTime()}">${u.text}</span>` : '<span class="hoelang future" data-arr="" data-dep=""></span>'; })()}
+
       </td>
       <td>${pill(r.status)}</td>`;
     tbody.appendChild(tr);
@@ -1008,28 +977,7 @@ renderTable();
 updateBanner();
 applyDark();
 
-// Live countdown — update alleen de hoelang-labels elke seconde, niet de hele tabel
-setInterval(() => {
-  document.querySelectorAll('.hoelang[data-arr]').forEach(el => {
-    const arrTs = parseInt(el.dataset.arr);
-    const depTs = parseInt(el.dataset.dep);
-    if (!arrTs || !depTs) return;
-    const arr = new Date(arrTs);
-    const dep = new Date(depTs);
-    const u = timeUntil(arr, dep);
-    if (u) {
-      el.textContent = u.text;
-      el.className = `hoelang ${u.type}`;
-    } else {
-      el.textContent = '';
-    }
-  });
-  // Elke minuut ook statussen en stats bijwerken
-  if (new Date().getSeconds() === 0) {
-    currentData = currentData.map(r => ({ ...r, status: getStatus(r.arrDt, r.depDt) }));
-    renderTable();
-  }
-}, 1000);
+
 </script>
 <div class="share-toast" id="share-toast"></div>
 </body>
