@@ -873,7 +873,7 @@ function renderTable() {
         <div class="duration-bar" style="width:${barW}px"></div>
         <span class="duration-text">${duration(r.arrDt,r.depDt)}</span>
       </div>
-      ${(() => { const u = timeUntil(r.arrDt, r.depDt); return u ? `<span class="hoelang ${u.type}">${u.text}</span>` : ''; })()}
+      ${(() => { const u = timeUntil(r.arrDt, r.depDt); return u ? `<span class="hoelang ${u.type}" data-arr="${r.arrDt.getTime()}" data-dep="${r.depDt.getTime()}">${u.text}</span>` : '<span class="hoelang future" data-arr="" data-dep=""></span>'; })()}
       </td>
       <td>${pill(r.status)}</td>`;
     tbody.appendChild(tr);
@@ -1008,11 +1008,27 @@ renderTable();
 updateBanner();
 applyDark();
 
-// Live countdown — herteken de tabel elke minuut zodat "hoelang nog" live meeloopt
+// Live countdown — update alleen de hoelang-labels elke seconde, niet de hele tabel
 setInterval(() => {
-  // Herbereken statussen (schip kan ondertussen aangemeerd of vertrokken zijn)
-  currentData = currentData.map(r => ({ ...r, status: getStatus(r.arrDt, r.depDt) }));
-  renderTable();
+  document.querySelectorAll('.hoelang[data-arr]').forEach(el => {
+    const arrTs = parseInt(el.dataset.arr);
+    const depTs = parseInt(el.dataset.dep);
+    if (!arrTs || !depTs) return;
+    const arr = new Date(arrTs);
+    const dep = new Date(depTs);
+    const u = timeUntil(arr, dep);
+    if (u) {
+      el.textContent = u.text;
+      el.className = `hoelang ${u.type}`;
+    } else {
+      el.textContent = '';
+    }
+  });
+  // Elke minuut ook statussen en stats bijwerken
+  if (new Date().getSeconds() === 0) {
+    currentData = currentData.map(r => ({ ...r, status: getStatus(r.arrDt, r.depDt) }));
+    renderTable();
+  }
 }, 1000);
 </script>
 <div class="share-toast" id="share-toast"></div>
