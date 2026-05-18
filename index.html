@@ -269,12 +269,12 @@
     <div class="stat-divider"></div>
     <div class="stat-item"><span class="stat-num" id="stat-berths">7</span><span class="stat-label" id="lbl-berths">Unieke<br>ligplaatsen</span></div>
     <div class="stat-divider"></div>
-    <div class="weather-widget" id="weather-widget" style="display:none">
+    <div class="weather-widget" id="weather-widget">
       <div class="weather-icon" id="weather-icon">⛅</div>
       <div class="weather-info">
         <div class="weather-temp"><span id="weather-temp">—</span>°C</div>
         <div class="weather-desc" id="weather-desc">Amsterdam</div>
-        <div class="weather-extra" id="weather-extra"></div>
+        <div class="weather-extra" id="weather-extra">Weer laden…</div>
       </div>
     </div>
   </div>
@@ -1021,7 +1021,7 @@ async function fetchWeather() {
     document.getElementById('weather-extra').textContent = lang === 'nl'
       ? `💨 ${Math.round(c.windspeed_10m)} km/u · 💧 ${c.relativehumidity_2m}%`
       : `💨 ${Math.round(c.windspeed_10m)} km/h · 💧 ${c.relativehumidity_2m}%`;
-    document.getElementById('weather-widget').style.display = 'flex';
+    // weather widget always visible
 
   } catch(e) {
     console.log('Weer ophalen mislukt:', e.message);
