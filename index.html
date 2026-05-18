@@ -545,20 +545,24 @@ function timeUntil(arr, dep) {
   const now = new Date();
   if (dep < now) return null; // already departed
   if (arr <= now && dep >= now) {
-    // Currently docked - show time remaining
+    // Currently docked - show time remaining with seconds
     const ms = dep - now;
     const h = Math.floor(ms / 3600000);
     const m = Math.floor((ms % 3600000) / 60000);
-    if (h === 0) return { type: 'remaining', text: lang === 'nl' ? `nog ${m}m` : `${m}m left` };
-    return { type: 'remaining', text: lang === 'nl' ? `nog ${h}u ${m}m` : `${h}h ${m}m left` };
+    const s = Math.floor((ms % 60000) / 1000);
+    if (h === 0 && m === 0) return { type: 'remaining', text: lang === 'nl' ? `nog ${s}s` : `${s}s left` };
+    if (h === 0) return { type: 'remaining', text: lang === 'nl' ? `nog ${m}m ${s}s` : `${m}m ${s}s left` };
+    return { type: 'remaining', text: lang === 'nl' ? `nog ${h}u ${m}m ${s}s` : `${h}h ${m}m ${s}s left` };
   }
   // Not yet arrived
   const ms = arr - now;
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
   const d = Math.floor(h / 24);
   if (d >= 1) return { type: 'future', text: lang === 'nl' ? `over ${d}d` : `in ${d}d` };
-  if (h === 0) return { type: 'soon', text: lang === 'nl' ? `over ${m}m` : `in ${m}m` };
+  if (h === 0 && m === 0) return { type: 'soon', text: lang === 'nl' ? `over ${s}s` : `in ${s}s` };
+  if (h === 0) return { type: 'soon', text: lang === 'nl' ? `over ${m}m ${s}s` : `in ${m}m ${s}s` };
   return { type: 'future', text: lang === 'nl' ? `over ${h}u ${m}m` : `in ${h}h ${m}m` };
 }
 
@@ -1003,6 +1007,13 @@ applyTranslations();
 renderTable();
 updateBanner();
 applyDark();
+
+// Live countdown — herteken de tabel elke minuut zodat "hoelang nog" live meeloopt
+setInterval(() => {
+  // Herbereken statussen (schip kan ondertussen aangemeerd of vertrokken zijn)
+  currentData = currentData.map(r => ({ ...r, status: getStatus(r.arrDt, r.depDt) }));
+  renderTable();
+}, 1000);
 </script>
 <div class="share-toast" id="share-toast"></div>
 </body>
