@@ -102,6 +102,12 @@
   .wave-strip svg { display: block; width: 100%; }
 
   .stats-bar { background: var(--canal); color: white; padding: 14px 32px; }
+  .weather-widget { display: flex; align-items: center; gap: 10px; margin-left: auto; font-size: 0.78rem; opacity: 0.95; }
+  .weather-icon { font-size: 1.6rem; line-height: 1; }
+  .weather-info { display: flex; flex-direction: column; gap: 1px; }
+  .weather-temp { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--amber-light); line-height: 1; }
+  .weather-desc { font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; }
+  .weather-extra { font-size: 0.58rem; opacity: 0.7; margin-top: 1px; }
   .stats-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 32px; flex-wrap: wrap; align-items: center; }
   .stat-item { display: flex; align-items: baseline; gap: 8px; }
   .stat-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--amber-light); }
@@ -262,6 +268,15 @@
     <div class="stat-item"><span class="stat-num" id="stat-today">—</span><span class="stat-label" id="lbl-today">Vandaag<br>aankomst/vertrek</span></div>
     <div class="stat-divider"></div>
     <div class="stat-item"><span class="stat-num" id="stat-berths">7</span><span class="stat-label" id="lbl-berths">Unieke<br>ligplaatsen</span></div>
+    <div class="stat-divider"></div>
+    <div class="weather-widget" id="weather-widget" style="display:none">
+      <div class="weather-icon" id="weather-icon">⛅</div>
+      <div class="weather-info">
+        <div class="weather-temp"><span id="weather-temp">—</span>°C</div>
+        <div class="weather-desc" id="weather-desc">Amsterdam</div>
+        <div class="weather-extra" id="weather-extra"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -580,6 +595,7 @@ function setLang(l) {
   applyTranslations();
   renderTable();
   if (mapVisible) updateMap();
+  fetchWeather();
 }
 
 function applyTranslations() {
@@ -969,6 +985,49 @@ async function sharePortal() {
   }
 }
 
+// ── WEATHER ──────────────────────────────────────────────────────────────────
+const WMO_CODES = {
+  0: ['☀️','Helder'],1:['🌤','Vrijwel helder'],2:['⛅','Bewolkt'],3:['☁️','Zwaar bewolkt'],
+  45:['🌫','Mist'],48:['🌫','IJsmist'],51:['🌦','Lichte motregen'],53:['🌦','Motregen'],
+  55:['🌧','Zware motregen'],61:['🌧','Lichte regen'],63:['🌧','Regen'],65:['🌧','Zware regen'],
+  71:['🌨','Lichte sneeuw'],73:['🌨','Sneeuw'],75:['❄️','Zware sneeuw'],
+  80:['🌦','Buien'],81:['🌧','Zware buien'],82:['⛈','Hevige buien'],
+  95:['⛈','Onweer'],96:['⛈','Onweer met hagel'],99:['⛈','Zwaar onweer']
+};
+
+const WMO_EN = {
+  0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
+  45:'Fog',48:'Icy fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',
+  61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',
+  80:'Showers',81:'Heavy showers',82:'Violent showers',95:'Thunderstorm',
+  96:'Thunderstorm w/ hail',99:'Severe thunderstorm'
+};
+
+async function fetchWeather() {
+  try {
+    // Amsterdam coordinates
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.890&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&timezone=Europe%2FAmsterdam';
+    const res = await fetch(url);
+    const data = await res.json();
+    const c = data.current;
+
+    const code = c.weathercode;
+    const [icon, descNl] = WMO_CODES[code] || ['🌡','Onbekend'];
+    const descEn = WMO_EN[code] || 'Unknown';
+
+    document.getElementById('weather-temp').textContent = Math.round(c.temperature_2m);
+    document.getElementById('weather-icon').textContent = icon;
+    document.getElementById('weather-desc').textContent = lang === 'nl' ? descNl : descEn;
+    document.getElementById('weather-extra').textContent = lang === 'nl'
+      ? `💨 ${Math.round(c.windspeed_10m)} km/u · 💧 ${c.relativehumidity_2m}%`
+      : `💨 ${Math.round(c.windspeed_10m)} km/h · 💧 ${c.relativehumidity_2m}%`;
+    document.getElementById('weather-widget').style.display = 'flex';
+
+  } catch(e) {
+    console.log('Weer ophalen mislukt:', e.message);
+  }
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 currentData = process(FALLBACK);
 populateBerths(currentData);
@@ -976,6 +1035,8 @@ applyTranslations();
 renderTable();
 updateBanner();
 applyDark();
+fetchWeather();
+setInterval(fetchWeather, 10 * 60 * 1000); // refresh weer elke 10 minuten
 
 
 </script>
