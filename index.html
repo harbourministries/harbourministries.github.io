@@ -15,6 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   :root {
     --ink: #0d1117; --paper: #f4f0e8; --warm: #e8dfc8;
@@ -163,6 +164,20 @@
   .ctrl-btn.reset { background: transparent; color: var(--muted); border: 1px solid var(--border); }
   .ctrl-btn.reset:hover { background: var(--warm); color: var(--ink); }
 
+  /* DRUKSTE DAGEN CHART */
+  .chart-section { max-width: 1200px; margin: 24px auto 0; padding: 0 32px; }
+  .chart-card { background: var(--warm); border: 1px solid var(--border); padding: 16px 20px; }
+  .chart-card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .chart-card-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-style: italic; color: var(--ink); }
+  .chart-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+  .chart-stat { display: flex; flex-direction: column; align-items: flex-end; }
+  .chart-stat-num { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--amber-light); }
+  .chart-stat-label { font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .chart-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .chart-legend-item { display: flex; align-items: center; gap: 5px; }
+  .chart-legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+  body.dark .chart-card { background: var(--warm); }
+
   .table-wrap { max-width: 1200px; margin: 24px auto 0; padding: 0 32px 48px; }
   .table-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
   .table-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; }
@@ -236,8 +251,16 @@
   .tl-now-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--departure); z-index: 2; pointer-events: none; }
   .tl-now-label { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; color: var(--departure); white-space: nowrap; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
   .tl-grid-line { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); pointer-events: none; opacity: 0.5; }
-  body.dark .tl-ship-name { background: var(--paper); }
+  body.dark .tl-ship-name { background: var(--paper); color: var(--ink); }
+  body.dark .tl-row { background: var(--paper); }
   body.dark .tl-row:hover { background: var(--warm); }
+  body.dark .tl-header-row { background: #060e1c; }
+  body.dark .tl-ship-col { background: #060e1c; color: rgba(200,168,200,0.6); }
+  body.dark .tl-day-label { color: var(--amber-light); }
+  body.dark .tl-day-sub { color: rgba(255,255,255,0.35); }
+  body.dark .tl-day-col { border-right-color: rgba(255,255,255,0.08); }
+  body.dark .timeline-wrap { border-color: var(--border); }
+  body.dark .tl-grid-line { background: rgba(255,255,255,0.08); }
   @media (max-width: 768px) {
     .tl-ship-col { width: 90px; }
     .tl-ship-name { width: 90px; font-size: 0.62rem; }
@@ -490,6 +513,39 @@
       </div>
     </div>
     <button class="ctrl-btn reset" onclick="resetFilters()" id="btn-reset">Reset</button>
+  </div>
+</div>
+
+<!-- DRUKSTE DAGEN CHART -->
+<div class="chart-section" id="chart-section">
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div class="chart-card-title" id="chart-title">Schepen per dag — klik op een balk om te filteren</div>
+      <div class="chart-stats">
+        <div class="chart-stat">
+          <span class="chart-stat-num" id="chart-busiest-day">—</span>
+          <span class="chart-stat-label" id="chart-lbl-busiest">Drukste dag</span>
+        </div>
+        <div class="chart-stat">
+          <span class="chart-stat-num" id="chart-max">—</span>
+          <span class="chart-stat-label" id="chart-lbl-max">Max. schepen</span>
+        </div>
+        <div class="chart-stat">
+          <span class="chart-stat-num" id="chart-avg">—</span>
+          <span class="chart-stat-label" id="chart-lbl-avg">Gem. per dag</span>
+        </div>
+      </div>
+    </div>
+    <div style="position:relative;width:100%;height:160px;">
+      <canvas id="cruiseChart" role="img" aria-label="Staafdiagram aantal schepen per dag Amsterdam">Aantal schepen per dag in Amsterdam.</canvas>
+    </div>
+    <div class="chart-legend">
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#2a7a4a"></div><span id="chart-leg-today">Vandaag</span></div>
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#2a5c7a"></div><span id="chart-leg-quiet">Rustig (&lt;10)</span></div>
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#c8841a"></div><span id="chart-leg-busy">Druk (10–14)</span></div>
+      <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#c84040"></div><span id="chart-leg-vbusy">Zeer druk (15+)</span></div>
+      <div class="chart-legend-item" id="chart-leg-selected-wrap" style="display:none"><div class="chart-legend-dot" style="background:#8b4ab8"></div><span id="chart-leg-selected">Geselecteerd</span></div>
+    </div>
   </div>
 </div>
 
@@ -894,6 +950,8 @@ function setLang(l) {
   applyTranslations();
   renderTable();
   renderBerthCards();
+  if (cruiseChart) { cruiseChart.destroy(); cruiseChart = null; }
+  buildChart();
   if (mapVisible) updateMap();
   fetchWeather();
 }
@@ -1257,6 +1315,7 @@ function onDateChange() {
   const val = document.getElementById('filter-date').value;
   document.getElementById('today-btn').classList.toggle('active', val === today);
   renderTable();
+  buildChart();
 }
 
 function showStatus(msg, type) {
@@ -1286,6 +1345,7 @@ async function fetchLiveData() {
     currentData = process(json.ships);
     populateBerths(currentData);
     renderTable();
+    buildChart();
     if (mapVisible) updateMap();
 
     const now = new Date();
@@ -1645,12 +1705,124 @@ function renderTimeline() {
   });
 }
 
+// ── DRUKSTE DAGEN CHART ──────────────────────────────────────────────────────
+let cruiseChart = null;
+
+function buildChart() {
+  if (!currentData || currentData.length === 0) return;
+
+  const minDate = new Date(Math.min(...currentData.map(r => r.arrDt)));
+  const maxDate = new Date(Math.max(...currentData.map(r => r.depDt)));
+  const startDay = new Date(minDate); startDay.setHours(0,0,0,0);
+  const endDay   = new Date(maxDate); endDay.setHours(0,0,0,0);
+
+  const days = [];
+  const d = new Date(startDay);
+  while (d <= endDay) { days.push(new Date(d)); d.setDate(d.getDate()+1); }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const selectedDateStr = document.getElementById('filter-date').value;
+
+  const counts = days.map(day => {
+    const ds = new Date(day); ds.setHours(0,0,0,0);
+    const de = new Date(day); de.setHours(23,59,59,999);
+    return currentData.filter(r => r.arrDt <= de && r.depDt >= ds).length;
+  });
+
+  const labels = days.map(d => d.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{day:'numeric',month:'short'}));
+  const isDark = document.body.classList.contains('dark');
+
+  const barColors = days.map((d,i) => {
+    const ds = new Date(d); ds.setHours(0,0,0,0);
+    if (selectedDateStr) {
+      const sel = new Date(selectedDateStr); sel.setHours(0,0,0,0);
+      if (ds.getTime() === sel.getTime()) return '#8b4ab8';
+    }
+    if (ds.getTime() === today.getTime()) return '#2a7a4a';
+    if (counts[i] >= 15) return '#c84040';
+    if (counts[i] >= 10) return '#c8841a';
+    return '#2a5c7a';
+  });
+
+  const maxVal = Math.max(...counts);
+  const maxIdx = counts.indexOf(maxVal);
+  const avg = Math.round(counts.reduce((a,b)=>a+b,0)/counts.length);
+
+  const s = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  s('chart-busiest-day', labels[maxIdx]);
+  s('chart-max', maxVal);
+  s('chart-avg', avg);
+  s('chart-title', lang==='nl' ? 'Schepen per dag — klik op een balk om te filteren' : 'Vessels per day — click a bar to filter');
+  s('chart-lbl-busiest', lang==='nl' ? 'Drukste dag' : 'Busiest day');
+  s('chart-lbl-max', lang==='nl' ? 'Max. schepen' : 'Max. vessels');
+  s('chart-lbl-avg', lang==='nl' ? 'Gem. per dag' : 'Avg. per day');
+  s('chart-leg-today', lang==='nl' ? 'Vandaag' : 'Today');
+  s('chart-leg-quiet', lang==='nl' ? 'Rustig (<10)' : 'Quiet (<10)');
+  s('chart-leg-busy', lang==='nl' ? 'Druk (10–14)' : 'Busy (10–14)');
+  s('chart-leg-vbusy', lang==='nl' ? 'Zeer druk (15+)' : 'Very busy (15+)');
+
+  const selWrap = document.getElementById('chart-leg-selected-wrap');
+  if (selWrap) selWrap.style.display = selectedDateStr ? 'flex' : 'none';
+
+  const textColor = isDark ? '#8a8878' : '#7a7060';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+
+  if (cruiseChart) {
+    cruiseChart.data.labels = labels;
+    cruiseChart.data.datasets[0].data = counts;
+    cruiseChart.data.datasets[0].backgroundColor = barColors;
+    cruiseChart.update();
+    return;
+  }
+
+  cruiseChart = new Chart(document.getElementById('cruiseChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: lang==='nl'?'Schepen':'Vessels', data: counts, backgroundColor: barColors, borderWidth: 0, borderRadius: 2 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      onClick: (evt, elements) => {
+        if (!elements.length) return;
+        const idx = elements[0].index;
+        const clickedDay = days[idx];
+        const yyyy = clickedDay.getFullYear();
+        const mm = String(clickedDay.getMonth()+1).padStart(2,'0');
+        const dd = String(clickedDay.getDate()).padStart(2,'0');
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+        const filterEl = document.getElementById('filter-date');
+        if (filterEl.value === dateStr) {
+          filterEl.value = '';
+          document.getElementById('today-btn').classList.remove('active');
+        } else {
+          filterEl.value = dateStr;
+          const todayStr = new Date().toISOString().split('T')[0];
+          document.getElementById('today-btn').classList.toggle('active', dateStr === todayStr);
+        }
+        filterTable();
+        buildChart();
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw} ${lang==='nl'?'schepen':'vessels'}` } }
+      },
+      scales: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 10, maxRotation: 45, font:{size:10}, color: textColor }, grid: { display: false } },
+        y: { beginAtZero: true, ticks: { stepSize: 5, font:{size:10}, color: textColor }, grid: { color: gridColor } }
+      }
+    }
+  });
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 currentData = process(FALLBACK);
 populateBerths(currentData);
 applyTranslations();
 renderTable();
 renderBerthCards();
+buildChart();
 updateBanner();
 applyDark();
 fetchWeather();
