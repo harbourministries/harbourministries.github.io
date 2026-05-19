@@ -201,13 +201,89 @@
   footer { background: var(--ink); color: #6a6a6a; padding: 24px 32px; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
   footer a { color: var(--amber); text-decoration: none; }
 
+  /* ── TABLET ── */
+  @media (max-width: 900px) {
+    .header-title { font-size: 2.4rem; }
+    .stats-inner { gap: 20px; }
+    .weather-widget { margin-left: 0; }
+  }
+
+  /* ── MOBILE ── */
   @media (max-width: 768px) {
-    .header-inner { grid-template-columns: 1fr; }
-    .header-right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
-    .controls { flex-direction: column; }
-    .ctrl-input, .ctrl-select { min-width: unset; width: 100%; }
-    td:nth-child(5) { display: none; }
-    #map-container { height: 280px; }
+    /* Header */
+    .header-inner { grid-template-columns: 1fr; padding: 24px 16px 20px; gap: 16px; }
+    .header-title { font-size: 2rem; }
+    .header-sub { font-size: 0.65rem; }
+    .header-right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: 8px; }
+    .live-badge { font-size: 0.6rem; padding: 6px 10px; }
+    .refresh-btn { font-size: 0.65rem; padding: 8px 12px; }
+    .lang-btn { padding: 4px 8px; font-size: 0.62rem; }
+    .dark-btn { padding: 4px 8px; font-size: 0.62rem; }
+    .share-btn { font-size: 0.62rem; padding: 4px 10px; }
+
+    /* Stats bar */
+    .stats-bar { padding: 12px 16px; }
+    .stats-inner { gap: 14px; }
+    .stat-num { font-size: 1.3rem; }
+    .stat-label { font-size: 0.58rem; }
+    .stat-divider { height: 18px; }
+    .weather-widget { margin-left: 0; width: 100%; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px; margin-top: 4px; }
+    .weather-temp { font-size: 1.2rem; }
+
+    /* Map */
+    #map-container { height: 250px; }
+    .map-section { padding: 0 16px; }
+    .map-section-header { flex-wrap: wrap; gap: 8px; }
+
+    /* Controls */
+    .controls-wrap { padding: 0 16px; margin-top: 16px; }
+    .controls { flex-direction: column; padding: 14px 16px; gap: 10px; }
+    .ctrl-input, .ctrl-select { min-width: unset; width: 100%; font-size: 0.85rem; padding: 10px 12px; }
+    .ctrl-label { font-size: 0.6rem; }
+    .ctrl-btn { width: 100%; text-align: center; padding: 10px; }
+
+    /* Table */
+    .table-wrap { padding: 0 16px 32px; margin-top: 16px; }
+    .table-header { flex-direction: column; gap: 4px; align-items: flex-start; }
+    .table-title { font-size: 0.95rem; }
+    .result-count { font-size: 0.6rem; }
+
+    /* Legend */
+    .legend { gap: 10px; font-size: 0.58rem; }
+
+    /* Hide less important columns on mobile */
+    td:nth-child(4), th:nth-child(4) { display: none; } /* Vertrek */
+    td:nth-child(5), th:nth-child(5) { display: none; } /* Verblijfsduur */
+
+    /* Make table cells more touch-friendly */
+    td { padding: 12px 10px; }
+    th { padding: 10px 10px; font-size: 0.55rem; }
+
+    /* Ship name */
+    .ship-name { font-size: 0.82rem; }
+    .operator-badge { font-size: 0.5rem; padding: 1px 5px; }
+
+    /* Berth tag */
+    .berth-tag { max-width: 130px; font-size: 0.55rem; }
+
+    /* Time */
+    .time-hour { font-size: 0.78rem; }
+    .time-date { font-size: 0.58rem; }
+
+    /* Status pill */
+    .status-pill { font-size: 0.55rem; padding: 3px 7px; }
+
+    /* Proxy banner */
+    .proxy-banner { padding: 10px 16px; flex-direction: column; }
+    .proxy-input { width: 100%; }
+  }
+
+  /* ── SMALL MOBILE ── */
+  @media (max-width: 400px) {
+    .header-title { font-size: 1.7rem; }
+    td:nth-child(3), th:nth-child(3) { font-size: 0.7rem; } /* Aankomst smaller */
+    .stats-inner { gap: 10px; }
+    .stat-divider { display: none; }
   }
 </style>
 </head>
