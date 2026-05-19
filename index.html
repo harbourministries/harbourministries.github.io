@@ -502,18 +502,19 @@
     <div class="result-count" id="result-count">25 resultaten</div>
   </div>
 
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-    <div class="legend" style="margin-bottom:0;">
-      <span id="lbl-status">Status:</span>
-      <div class="legend-item"><span class="legend-dot" style="background:#2a7a4a"></span><span id="leg-docked">Nu aangemeerd</span></div>
-      <div class="legend-item"><span class="legend-dot" style="background:#c8841a"></span><span id="leg-arriving">Verwacht vandaag</span></div>
-      <div class="legend-item"><span class="legend-dot" style="background:#1a5c9a"></span><span id="leg-expected">Komende dagen</span></div>
-      <div class="legend-item"><span class="legend-dot" style="background:#c84040"></span><span id="leg-departed">Vertrokken</span></div>
-    </div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
     <div class="view-switcher" style="margin-bottom:0;">
-      <button class="view-btn active" id="btn-view-table" onclick="setView('table')" id="btn-view-table-lbl">⊞ Tabel</button>
+      <button class="view-btn active" id="btn-view-table" onclick="setView('table')">⊞ Tabel</button>
       <button class="view-btn" id="btn-view-timeline" onclick="setView('timeline')">▶ Tijdlijn</button>
     </div>
+  </div>
+
+  <div class="legend">
+    <span id="lbl-status">Status:</span>
+    <div class="legend-item"><span class="legend-dot" style="background:#2a7a4a"></span><span id="leg-docked">Nu aangemeerd</span></div>
+    <div class="legend-item"><span class="legend-dot" style="background:#c8841a"></span><span id="leg-arriving">Verwacht vandaag</span></div>
+    <div class="legend-item"><span class="legend-dot" style="background:#1a5c9a"></span><span id="leg-expected">Komende dagen</span></div>
+    <div class="legend-item"><span class="legend-dot" style="background:#c84040"></span><span id="leg-departed">Vertrokken</span></div>
   </div>
 
 
