@@ -231,6 +231,33 @@
     .berth-info-grid { grid-template-columns: 1fr; }
   }
 
+  /* BOTTOM SHEET */
+  .bottom-sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .bottom-sheet-overlay.active { opacity: 1; pointer-events: all; }
+  .bottom-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: var(--paper); z-index: 9999; border-radius: 16px 16px 0 0; padding: 0 0 32px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); max-height: 80vh; display: flex; flex-direction: column; }
+  .bottom-sheet.active { transform: translateY(0); }
+  .bottom-sheet-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; flex-shrink: 0; }
+  .bottom-sheet-header { padding: 12px 20px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .bottom-sheet-berth { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--canal); font-weight: 600; margin-bottom: 4px; }
+  .bottom-sheet-count { font-size: 0.72rem; color: var(--muted); }
+  .bottom-sheet-body { overflow-y: auto; flex: 1; padding: 0 20px; -webkit-overflow-scrolling: touch; }
+  .bottom-sheet-ship { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .bottom-sheet-ship:last-child { border-bottom: none; }
+  .bottom-sheet-shipname { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .bottom-sheet-times { display: flex; flex-direction: column; gap: 3px; font-size: 0.75rem; margin-bottom: 6px; }
+  .bottom-sheet-arr { color: var(--arrival); }
+  .bottom-sheet-dep { color: var(--departure); }
+  .bottom-sheet-footer { padding: 12px 20px 0; flex-shrink: 0; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+  .bottom-sheet-nav { flex: 1; background: var(--canal); color: white; text-align: center; padding: 10px; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; border-radius: 4px; display: block; font-family: 'DM Mono', monospace; }
+  .bottom-sheet-close { background: var(--warm); color: var(--ink); border: 1px solid var(--border); padding: 10px 16px; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 4px; cursor: pointer; font-family: 'DM Mono', monospace; }
+  body.dark .bottom-sheet { background: #1e2430; }
+  body.dark .bottom-sheet-close { background: #2a3040; color: var(--ink); }
+
+  /* Only show bottom sheet on mobile, use popup on desktop */
+  @media (min-width: 769px) {
+    .bottom-sheet, .bottom-sheet-overlay { display: none !important; }
+  }
+
   footer { background: var(--ink); color: #6a6a6a; padding: 24px 32px; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
   footer a { color: var(--amber); text-decoration: none; }
 
@@ -963,6 +990,14 @@ function updateMap() {
 
     const marker = L.marker(coords, { icon }).addTo(leafletMap);
     marker.bindPopup(popupHtml, { maxWidth: 280 });
+    marker.on('click', () => {
+      if (window.innerWidth <= 768) {
+        setTimeout(() => {
+          leafletMap.closePopup();
+          openBottomSheet(berth, ships);
+        }, 50);
+      }
+    });
     mapMarkers.push(marker);
   });
 
@@ -1121,10 +1156,19 @@ function openMapAt(lat, lng, berth) {
   setTimeout(() => {
     if (leafletMap) {
       leafletMap.setView([lat, lng], 16);
-      mapMarkers.forEach(m => {
-        const pos = m.getLatLng();
-        if (Math.abs(pos.lat - lat) < 0.001 && Math.abs(pos.lng - lng) < 0.001) m.openPopup();
-      });
+      if (window.innerWidth <= 768) {
+        // Find ships at this berth and open bottom sheet
+        const ships = currentData.filter(r => {
+          const c = getBerthCoords(r.berth);
+          return c && Math.abs(c[0] - lat) < 0.001 && Math.abs(c[1] - lng) < 0.001;
+        });
+        if (ships.length > 0) openBottomSheet(berth, ships);
+      } else {
+        mapMarkers.forEach(m => {
+          const pos = m.getLatLng();
+          if (Math.abs(pos.lat - lat) < 0.001 && Math.abs(pos.lng - lng) < 0.001) m.openPopup();
+        });
+      }
     }
   }, 300);
 }
@@ -1377,6 +1421,60 @@ function renderBerthCards() {
   if (title) title.textContent = lang==='nl' ? '⚓ Ligplaatsen — Praktische informatie' : '⚓ Berths — Practical information';
 }
 
+// ── BOTTOM SHEET ─────────────────────────────────────────────────────────────
+function openBottomSheet(berth, ships) {
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) return false; // Use popup on desktop
+
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(berth + ' Amsterdam')}`;
+  const info = getBerthInfo(berth);
+
+  document.getElementById('bs-berth').textContent = '⚓ ' + berth;
+  document.getElementById('bs-count').textContent = ships.length + (lang === 'nl' ? ' schepen op deze ligplaats' : ' vessels at this berth');
+  document.getElementById('bs-nav').href = mapsUrl;
+  document.getElementById('bs-nav').textContent = '🧭 ' + t('navBtn');
+  document.getElementById('bs-close-btn').textContent = lang === 'nl' ? 'Sluiten' : 'Close';
+
+  const body = document.getElementById('bs-body');
+  body.innerHTML = ships.map(r => `
+    <div class="bottom-sheet-ship">
+      <div class="bottom-sheet-shipname">${r.ship}</div>
+      <div class="bottom-sheet-times">
+        <span class="bottom-sheet-arr">⬆ ${t('popupArr').replace('⬆ ','')}: ${fmt(r.arrDt,'date')} ${fmt(r.arrDt,'time')}</span>
+        <span class="bottom-sheet-dep">⬇ ${t('popupDep').replace('⬇ ','')}: ${fmt(r.depDt,'date')} ${fmt(r.depDt,'time')}</span>
+      </div>
+      <span class="popup-status ${r.status}">${t(r.status)}</span>
+    </div>`).join('') +
+    (info ? `<div style="padding:14px 0;border-top:1px solid var(--border);font-size:0.75rem;display:flex;flex-direction:column;gap:6px;">
+      <div>🚶 <strong>${lang==='nl'?'Looptijd CS':'Walk from CS'}:</strong> ${info.walk}</div>
+      <div>🚋 <strong>OV:</strong> ${info.ov}</div>
+      <div>🅿️ <strong>${lang==='nl'?'Parkeren':'Parking'}:</strong> ${info.parking}</div>
+    </div>` : '');
+
+  document.getElementById('bs-overlay').classList.add('active');
+  document.getElementById('bottom-sheet').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  return true;
+}
+
+function closeBottomSheet() {
+  document.getElementById('bs-overlay').classList.remove('active');
+  document.getElementById('bottom-sheet').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Swipe down to close
+let bsTouchStartY = 0;
+document.addEventListener('DOMContentLoaded', () => {
+  const bs = document.getElementById('bottom-sheet');
+  if (bs) {
+    bs.addEventListener('touchstart', e => { bsTouchStartY = e.touches[0].clientY; }, { passive: true });
+    bs.addEventListener('touchend', e => {
+      if (e.changedTouches[0].clientY - bsTouchStartY > 80) closeBottomSheet();
+    }, { passive: true });
+  }
+});
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 currentData = process(FALLBACK);
 populateBerths(currentData);
@@ -1391,5 +1489,20 @@ setInterval(fetchWeather, 10 * 60 * 1000); // refresh weer elke 10 minuten
 
 </script>
 <div class="share-toast" id="share-toast"></div>
+
+<!-- BOTTOM SHEET (mobile only) -->
+<div class="bottom-sheet-overlay" id="bs-overlay" onclick="closeBottomSheet()"></div>
+<div class="bottom-sheet" id="bottom-sheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-header">
+    <div class="bottom-sheet-berth" id="bs-berth"></div>
+    <div class="bottom-sheet-count" id="bs-count"></div>
+  </div>
+  <div class="bottom-sheet-body" id="bs-body"></div>
+  <div class="bottom-sheet-footer">
+    <a class="bottom-sheet-nav" id="bs-nav" href="#" target="_blank">🧭 Navigeren</a>
+    <button class="bottom-sheet-close" onclick="closeBottomSheet()" id="bs-close-btn">Sluiten</button>
+  </div>
+</div>
 </body>
 </html>
