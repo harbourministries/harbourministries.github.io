@@ -149,7 +149,8 @@
   #cruise-map { height: 100%; width: 100%; }
 
   /* Leaflet popup style override */
-  .leaflet-popup-content-wrapper { font-family: 'DM Mono', monospace; font-size: 0.75rem; border-radius: 2px; }
+  .leaflet-popup-content-wrapper { font-family: 'DM Mono', monospace; font-size: 0.75rem; border-radius: 4px; }
+  .leaflet-popup-content { max-height: 340px; overflow-y: auto; -webkit-overflow-scrolling: touch; margin: 10px 14px; }
   .popup-ship { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
   .popup-berth { color: var(--canal); font-size: 0.68rem; margin-bottom: 6px; }
   .popup-times { display: flex; flex-direction: column; gap: 2px; font-size: 0.7rem; }
@@ -1095,7 +1096,7 @@ function updateMap() {
         <div>🅿️ <strong>${lang==='nl'?'Parkeren':'Parking'}:</strong> ${info.parking}</div>
       </div>` : '';
     const popupHtml = `
-      <div style="min-width:220px;">
+      <div style="min-width:280px;">
         <div class="popup-berth">⚓ ${berth}</div>
         ${shipRows}
         ${infoHtml}
@@ -1111,7 +1112,7 @@ function updateMap() {
       </div>`;
 
     const marker = L.marker(coords, { icon }).addTo(leafletMap);
-    marker.bindPopup(popupHtml, { maxWidth: 280 });
+    marker.bindPopup(popupHtml, { maxWidth: 320, maxHeight: 360 });
     marker.on('click', () => {
       if (window.innerWidth <= 768) {
         setTimeout(() => {
