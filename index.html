@@ -780,7 +780,17 @@ function process(rows) {
 
 // ── LANGUAGE ──────────────────────────────────────────────────────────────────
 // ── DARK MODE ─────────────────────────────────────────────────────────────────
-let darkMode = localStorage.getItem('cruiseDark') === 'true';
+// Volg systeeminstelling als er geen voorkeur opgeslagen is
+const savedDark = localStorage.getItem('cruiseDark');
+let darkMode = savedDark !== null ? savedDark === 'true' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+// Luister naar systeemwijzigingen (bijv. automatisch donker 's avonds)
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  if (localStorage.getItem('cruiseDark') === null) {
+    darkMode = e.matches;
+    applyDark();
+  }
+});
 
 function applyDark() {
   document.body.classList.toggle('dark', darkMode);
