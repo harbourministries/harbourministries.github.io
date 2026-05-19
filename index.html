@@ -151,12 +151,12 @@
   .popup-status.departed { background: #f8d7da; color: #721c24; }
 
   .controls-wrap { max-width: 1200px; margin: 24px auto 0; padding: 0 32px; }
-  .controls { background: var(--warm); border: 1px solid var(--border); padding: 20px 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+  .controls { background: var(--warm); border: 1px solid var(--border); padding: 20px 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
   .ctrl-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-  .ctrl-group { display: flex; flex-direction: column; }
-  .ctrl-input, .ctrl-select { font-family: 'DM Mono', monospace; font-size: 0.78rem; background: white; border: 1px solid var(--border); padding: 8px 12px; color: var(--ink); outline: none; min-width: 180px; }
+  .ctrl-group { display: flex; flex-direction: column; flex: 1; min-width: 160px; }
+  .ctrl-input, .ctrl-select { font-family: 'DM Mono', monospace; font-size: 0.78rem; background: white; border: 1px solid var(--border); padding: 8px 12px; color: var(--ink); outline: none; width: 100%; }
   .ctrl-input:focus, .ctrl-select:focus { border-color: var(--canal); }
-  .ctrl-btn { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--canal); color: white; border: none; padding: 10px 20px; cursor: pointer; align-self: flex-end; margin-bottom: 1px; }
+  .ctrl-btn { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--canal); color: white; border: none; padding: 10px 20px; cursor: pointer; align-self: flex-end; margin-bottom: 1px; flex-shrink: 0; }
   .ctrl-btn:hover { background: var(--canal-light); }
   .ctrl-btn.reset { background: transparent; color: var(--muted); border: 1px solid var(--border); }
   .ctrl-btn.reset:hover { background: var(--warm); color: var(--ink); }
@@ -422,9 +422,11 @@
     </div>
     <div class="ctrl-group">
       <div class="ctrl-label" id="lbl-date-filter">Datum</div>
-      <input class="ctrl-input" type="date" id="filter-date" onchange="onDateChange()">
+      <div style="display:flex; gap:8px; align-items:stretch;">
+        <input class="ctrl-input" type="date" id="filter-date" onchange="onDateChange()" style="min-width:0; flex:1;">
+        <button class="today-btn" id="today-btn" onclick="filterToday()">📅 <span id="today-btn-txt">Vandaag</span></button>
+      </div>
     </div>
-    <button class="today-btn" id="today-btn" onclick="filterToday()">📅 <span id="today-btn-txt">Vandaag</span></button>
     <button class="ctrl-btn reset" onclick="resetFilters()" id="btn-reset">Reset</button>
   </div>
 </div>
