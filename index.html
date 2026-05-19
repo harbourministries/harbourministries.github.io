@@ -52,7 +52,7 @@
   body.dark .dark-btn { color: var(--amber-light); border-color: var(--amber); }
 
   /* TODAY BUTTON & DATE PICKER */
-  .today-btn { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--arrival); color: white; border: none; padding: 10px 16px; cursor: pointer; border-radius: 2px; transition: background 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .today-btn { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--arrival); color: white; border: none; padding: 10px 16px; cursor: pointer; border-radius: 2px; transition: background 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; align-self: flex-end; margin-bottom: 1px; }
   .today-btn:hover { background: #3a9a5a; }
   .today-btn.active { background: #1a5c30; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
   .ctrl-input[type="date"] { min-width: 160px; cursor: pointer; }
@@ -210,6 +210,24 @@
   .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); align-items: center; }
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* BERTH INFO SECTION */
+  .berth-info-section { background: var(--warm); border-top: 2px solid var(--border); margin-top: 0; }
+  .berth-info-inner { max-width: 1200px; margin: 0 auto; padding: 32px 32px; }
+  .berth-info-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .berth-info-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; }
+  .berth-info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .berth-card { background: white; border: 1px solid var(--border); padding: 16px; border-radius: 2px; }
+  body.dark .berth-card { background: #1e2430; border-color: var(--border); }
+  .berth-card-name { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: white; background: var(--canal); padding: 4px 10px; border-radius: 2px; display: inline-block; margin-bottom: 10px; }
+  .berth-card-row { display: flex; gap: 8px; font-size: 0.72rem; margin-bottom: 5px; align-items: flex-start; }
+  .berth-card-icon { flex-shrink: 0; width: 16px; }
+  .berth-card-label { color: var(--muted); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1px; }
+  .berth-card-value { color: var(--ink); }
+  @media (max-width: 768px) {
+    .berth-info-inner { padding: 24px 16px; }
+    .berth-info-grid { grid-template-columns: 1fr; }
+  }
 
   footer { background: var(--ink); color: #6a6a6a; padding: 24px 32px; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
   footer a { color: var(--amber); text-decoration: none; }
@@ -447,6 +465,16 @@
   </div>
 </div>
 
+<!-- BERTH INFO SECTION -->
+<div class="berth-info-section" id="berth-info-section">
+  <div class="berth-info-inner">
+    <div class="berth-info-header">
+      <div class="berth-info-title" id="berth-info-title">⚓ Ligplaatsen — Praktische informatie</div>
+    </div>
+    <div class="berth-info-grid" id="berth-info-grid"></div>
+  </div>
+</div>
+
 <footer>
   <p id="footer-txt">Brondata: <a href="https://river.cruiseportamsterdam.com" target="_blank">river.cruiseportamsterdam.com</a> &nbsp;·&nbsp; Kaart: OpenStreetMap &nbsp;·&nbsp; Contact CPA: +31 (0)20 509 1009</p>
 </footer>
@@ -559,6 +587,90 @@ const T = {
 let lang = localStorage.getItem('cruiseLang') || 'nl';
 
 // ── BERTH COORDINATES ─────────────────────────────────────────────────────────
+// ── BERTH INFO (looptijd, OV, parkeren) ──────────────────────────────────────
+const BERTH_INFO = {
+  'Ruijterkade Oost 3': {
+    walk: '8 min', walkM: 650,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~5 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'Ruijterkade West 3': {
+    walk: '6 min', walkM: 500,
+    ov: 'Tram 26 → halte Centraal Station, richting IJ',
+    parking: 'P Oosterdok (~4 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/oosterdok'
+  },
+  'Ruijterkade West 6': {
+    walk: '7 min', walkM: 550,
+    ov: 'Tram 26 → halte Centraal Station, richting IJ',
+    parking: 'P Oosterdok (~5 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/oosterdok'
+  },
+  'PTA, LP 1 via Muziekgebouw': {
+    walk: '12 min', walkM: 950,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~7 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'PTA, LP 2 via Muziekgebouw': {
+    walk: '13 min', walkM: 1000,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~8 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'PTA, LP 3 via Vriesseveem': {
+    walk: '14 min', walkM: 1100,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~9 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'PTA, LP 4 via Vriesseveem': {
+    walk: '15 min', walkM: 1150,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~10 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'Prins Hendrikkade 1': {
+    walk: '5 min', walkM: 400,
+    ov: 'Direct vanaf Centraal Station (5 min lopen)',
+    parking: 'P Oosterdok (~4 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/oosterdok'
+  },
+  'Westerdoksdijk': {
+    walk: '18 min', walkM: 1400,
+    ov: 'Bus 48 → halte Westerdok, of 18 min lopen',
+    parking: 'P Westerdok (gratis, op de dijk)',
+    parkingUrl: 'https://maps.app.goo.gl/westerdok'
+  },
+  'Tolhuis LP 2': {
+    walk: '22 min', walkM: 1750,
+    ov: 'GVB Pont (gratis ferry) vanaf Centraal Station Noord → 5 min lopen',
+    parking: 'Gratis parkeren op terrein Tolhuis',
+    parkingUrl: 'https://maps.app.goo.gl/tolhuis'
+  },
+  'Minervahaven Passagierssteiger Steiger Zuid': {
+    walk: '45 min', walkM: 3500,
+    ov: 'Bus 22 of 48 → halte Minervahaven',
+    parking: 'Gratis parkeren Minervahaven terrein',
+    parkingUrl: 'https://maps.app.goo.gl/minervahaven'
+  },
+  'Bodecentrum Buiten (Zaantheater), Zaandam': {
+    walk: '— (Zaandam)', walkM: 9999,
+    ov: 'Trein Amsterdam CS → Zaandam (8 min) + 10 min lopen',
+    parking: 'P Zaantheater (betaald, naast locatie)',
+    parkingUrl: 'https://maps.app.goo.gl/zaandam'
+  },
+};
+
+function getBerthInfo(berth) {
+  if (BERTH_INFO[berth]) return BERTH_INFO[berth];
+  for (const key of Object.keys(BERTH_INFO)) {
+    if (berth.includes(key) || key.includes(berth.split(',')[0])) return BERTH_INFO[key];
+  }
+  return null;
+}
+
 const BERTH_COORDS = {
   'Ruijterkade Oost 3':                          [52.3791, 4.9065],
   'Ruijterkade West 3':                          [52.3793, 4.9020],
@@ -688,6 +800,7 @@ function setLang(l) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===l.toUpperCase()));
   applyTranslations();
   renderTable();
+  renderBerthCards();
   if (mapVisible) updateMap();
   fetchWeather();
 }
@@ -809,11 +922,19 @@ function updateMap() {
       </div>`).join('');
 
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${coords[0]},${coords[1]}`;
+    const info = getBerthInfo(berth);
+    const infoHtml = info ? `
+      <div style="margin-top:8px; padding-top:8px; border-top:1px solid #e0d8c8; font-size:0.65rem; display:flex; flex-direction:column; gap:3px;">
+        <div>🚶 <strong>${lang==='nl'?'Looptijd CS':'Walk from CS'}:</strong> ${info.walk} (${info.walkM < 9999 ? info.walkM+'m' : '—'})</div>
+        <div>🚋 <strong>OV:</strong> ${info.ov}</div>
+        <div>🅿️ <strong>${lang==='nl'?'Parkeren':'Parking'}:</strong> ${info.parking}</div>
+      </div>` : '';
     const popupHtml = `
-      <div style="min-width:200px;">
+      <div style="min-width:220px;">
         <div class="popup-berth">⚓ ${berth}</div>
         ${shipRows}
-        <div style="margin-top:10px;">
+        ${infoHtml}
+        <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap;">
           <a href="${mapsUrl}" target="_blank" style="
             display:inline-block; background:#2a5c7a; color:white;
             font-size:0.62rem; padding:4px 10px; border-radius:2px;
@@ -1198,11 +1319,54 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(swUrl).catch(() => {});
 }
 
+// ── BERTH INFO CARDS ─────────────────────────────────────────────────────────
+function renderBerthCards() {
+  const grid = document.getElementById('berth-info-grid');
+  grid.innerHTML = '';
+  Object.entries(BERTH_INFO).forEach(([berth, info]) => {
+    const card = document.createElement('div');
+    card.className = 'berth-card';
+    const coords = getBerthCoords(berth);
+    const mapsUrl = coords ? `https://www.google.com/maps/search/?api=1&query=${coords[0]},${coords[1]}` : '#';
+    card.innerHTML = `
+      <div class="berth-card-name">${berth}</div>
+      <div class="berth-card-row">
+        <span class="berth-card-icon">🚶</span>
+        <div>
+          <div class="berth-card-label">${lang==='nl'?'Looptijd vanaf CS':'Walk from CS'}</div>
+          <div class="berth-card-value">${info.walk}${info.walkM < 9999 ? ' · '+info.walkM+'m' : ''}</div>
+        </div>
+      </div>
+      <div class="berth-card-row">
+        <span class="berth-card-icon">🚋</span>
+        <div>
+          <div class="berth-card-label">OV</div>
+          <div class="berth-card-value">${info.ov}</div>
+        </div>
+      </div>
+      <div class="berth-card-row">
+        <span class="berth-card-icon">🅿️</span>
+        <div>
+          <div class="berth-card-label">${lang==='nl'?'Parkeren':'Parking'}</div>
+          <div class="berth-card-value">${info.parking}</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <a href="${mapsUrl}" target="_blank" style="font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; background:var(--canal); color:white; padding:4px 10px; border-radius:2px; text-decoration:none;">🧭 ${lang==='nl'?'Navigeren':'Navigate'}</a>
+      </div>`;
+    grid.appendChild(card);
+  });
+  // Update title
+  const title = document.getElementById('berth-info-title');
+  if (title) title.textContent = lang==='nl' ? '⚓ Ligplaatsen — Praktische informatie' : '⚓ Berths — Practical information';
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 currentData = process(FALLBACK);
 populateBerths(currentData);
 applyTranslations();
 renderTable();
+renderBerthCards();
 updateBanner();
 applyDark();
 fetchWeather();
