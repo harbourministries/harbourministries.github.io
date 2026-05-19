@@ -10,8 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="HM Cruise">
 <link rel="manifest" id="pwa-manifest">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzBkMTExNyIvPgogIDx0ZXh0IHg9IjMyIiB5PSI0NCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjZThhMDMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhNPC90ZXh0Pgo8L3N2Zz4=">
-<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzBkMTExNyIvPgogIDx0ZXh0IHg9IjMyIiB5PSI0NCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjZThhMDMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhNPC90ZXh0Pgo8L3N2Zz4=">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzBkMTExNyIvPgogIDx0ZXh0IHg9IjMyIiB5PSI0NiIgZm9udC1zaXplPSIzNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+aojwvdGV4dD4KPC9zdmc+">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzBkMTExNyIvPgogIDx0ZXh0IHg9IjMyIiB5PSI0NiIgZm9udC1zaXplPSIzNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+aojwvdGV4dD4KPC9zdmc+">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -86,6 +86,7 @@
 
   .live-badge { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber-light); border: 1px solid var(--amber); padding: 8px 14px; border-radius: 2px; }
   .live-dot { width: 7px; height: 7px; background: var(--amber-light); border-radius: 50%; animation: pulse 2s infinite; }
+  .live-dot.syncing { background: #4a9a6a; animation: spin 1s linear infinite; border-radius: 0; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
 
   .proxy-banner { background: #fff3cd; border-bottom: 2px solid var(--amber); padding: 12px 32px; font-size: 0.75rem; color: #7a5200; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
@@ -427,7 +428,11 @@
         <button class="dark-btn" id="dark-toggle-btn" onclick="toggleDark()" title="Donkere modus">🌙</button>
         <button class="share-btn" onclick="sharePortal()" title="Delen">🔗 <span id="share-btn-txt">Delen</span></button>
       </div>
-      <div class="live-badge"><span class="live-dot"></span><span id="badge-txt">Live data refresh</span></div>
+      <div class="live-badge" id="live-badge">
+        <span class="live-dot" id="live-dot"></span>
+        <span id="badge-txt">Live data refresh</span>
+        <span id="auto-refresh-countdown" style="opacity:0.6;font-size:0.6rem;margin-left:2px;"></span>
+      </div>
       <div style="display:flex; align-items:center; gap:14px;">
         <div id="last-refresh" style="display:none; text-align:right; font-size:0.63rem; letter-spacing:0.08em; text-transform:uppercase; color:#8a8070; line-height:1.6;">
           <span id="last-refresh-label">Laatste update</span><br>
@@ -631,7 +636,7 @@
 const T = {
   nl: {
     sub: 'Cruise Port Amsterdam — Aankomst & Vertrek Overzicht',
-    badge: 'Live data refresh',
+    badge: 'Auto-refresh',
     lastUpdateLabel: 'Laatste update',
     btnRefresh: 'Data verversen',
     btnSave: 'Opslaan',
@@ -681,7 +686,7 @@ const T = {
   },
   en: {
     sub: 'Cruise Port Amsterdam — Arrivals & Departures Overview',
-    badge: 'Live data refresh',
+    badge: 'Auto-refresh',
     lastUpdateLabel: 'Last update',
     btnRefresh: 'Refresh data',
     btnSave: 'Save',
@@ -1333,13 +1338,18 @@ function showStatus(msg, type) {
 }
 
 // ── LIVE FETCH ────────────────────────────────────────────────────────────────
-async function fetchLiveData() {
-  if (!proxyUrl) { showStatus(t('errNoUrl'), 'error'); return; }
+async function fetchLiveData(silent = false) {
+  if (!proxyUrl) {
+    if (!silent) showStatus(t('errNoUrl'), 'error');
+    return;
+  }
 
   const btn = document.getElementById('refresh-btn');
   const bar = document.getElementById('loading-bar');
-  btn.disabled=true; btn.classList.add('spinning'); bar.classList.add('active');
-  showStatus(t('loadingMsg'), 'info');
+  if (!silent) {
+    btn.disabled=true; btn.classList.add('spinning'); bar.classList.add('active');
+    showStatus(t('loadingMsg'), 'info');
+  }
 
   try {
     const response = await fetch(`${proxyUrl}/api/ships`);
@@ -1365,12 +1375,15 @@ async function fetchLiveData() {
 
     const msg = json.from_cache ? t('cacheMsg', json.ships.length, json.cache_age_minutes) : t('freshMsg', json.ships.length);
     showStatus(msg, 'success');
+    autoRefreshSecondsLeft = AUTO_REFRESH_INTERVAL;
 
   } catch(err) {
     console.error(err);
     showStatus(t('errFetch', err.message), 'error');
   } finally {
-    btn.disabled=false; btn.classList.remove('spinning'); bar.classList.remove('active');
+    if (!silent) {
+      btn.disabled=false; btn.classList.remove('spinning'); bar.classList.remove('active');
+    }
   }
 }
 
@@ -1846,6 +1859,47 @@ function buildChart() {
   });
 }
 
+// ── AUTO REFRESH ─────────────────────────────────────────────────────────────
+const AUTO_REFRESH_INTERVAL = 15 * 60; // 15 minuten in seconden
+let autoRefreshSecondsLeft = AUTO_REFRESH_INTERVAL;
+let autoRefreshTimer = null;
+let countdownTimer = null;
+
+function startAutoRefresh() {
+  // Clear any existing timers
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+  if (countdownTimer) clearInterval(countdownTimer);
+
+  autoRefreshSecondsLeft = AUTO_REFRESH_INTERVAL;
+  updateCountdown();
+
+  // Countdown every second
+  countdownTimer = setInterval(() => {
+    autoRefreshSecondsLeft--;
+    if (autoRefreshSecondsLeft <= 0) autoRefreshSecondsLeft = AUTO_REFRESH_INTERVAL;
+    updateCountdown();
+  }, 1000);
+
+  // Actual refresh every 15 minutes
+  autoRefreshTimer = setInterval(async () => {
+    if (!proxyUrl) return;
+    console.log('Auto-refresh: data ophalen...');
+    const dot = document.getElementById('live-dot');
+    if (dot) dot.classList.add('syncing');
+    await fetchLiveData(true); // silent=true
+    if (dot) dot.classList.remove('syncing');
+    autoRefreshSecondsLeft = AUTO_REFRESH_INTERVAL;
+  }, AUTO_REFRESH_INTERVAL * 1000);
+}
+
+function updateCountdown() {
+  const el = document.getElementById('auto-refresh-countdown');
+  if (!el) return;
+  const m = Math.floor(autoRefreshSecondsLeft / 60);
+  const s = autoRefreshSecondsLeft % 60;
+  el.textContent = `· ${m}:${String(s).padStart(2,'0')}`;
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 currentData = process(FALLBACK);
 populateBerths(currentData);
@@ -1857,6 +1911,7 @@ updateBanner();
 applyDark();
 fetchWeather();
 setInterval(fetchWeather, 10 * 60 * 1000); // refresh weer elke 10 minuten
+startAutoRefresh(); // auto-refresh data elke 15 minuten
 
 
 </script>
