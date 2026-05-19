@@ -1081,26 +1081,35 @@ const WMO_EN = {
 
 async function fetchWeather() {
   try {
-    // Amsterdam coordinates
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.890&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&timezone=Europe%2FAmsterdam';
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.890&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&timezone=Europe%2FAmsterdam&models=best_match';
     const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
+
+    // Log full response for debugging
+    console.log('Weer data:', JSON.stringify(data));
+
+    if (!data.current) throw new Error('Geen current data in response');
     const c = data.current;
 
-    const code = c.weather_code;
+    const code = c.weather_code ?? c.weathercode ?? 0;
     const [icon, descNl] = WMO_CODES[code] || ['🌡','Onbekend'];
     const descEn = WMO_EN[code] || 'Unknown';
 
-    document.getElementById('weather-temp').textContent = Math.round(c.temperature_2m);
+    const temp = c.temperature_2m ?? '—';
+    const wind = c.wind_speed_10m ?? c.windspeed_10m ?? '—';
+    const hum  = c.relative_humidity_2m ?? c.relativehumidity_2m ?? '—';
+
+    document.getElementById('weather-temp').textContent = typeof temp === 'number' ? Math.round(temp) : temp;
     document.getElementById('weather-icon').textContent = icon;
     document.getElementById('weather-desc').textContent = lang === 'nl' ? descNl : descEn;
     document.getElementById('weather-extra').textContent = lang === 'nl'
-      ? `💨 ${Math.round(c.wind_speed_10m)} km/u · 💧 ${c.relative_humidity_2m}%`
-      : `💨 ${Math.round(c.wind_speed_10m)} km/h · 💧 ${c.relative_humidity_2m}%`;
-    // weather widget always visible
+      ? `💨 ${typeof wind === 'number' ? Math.round(wind) : wind} km/u · 💧 ${hum}%`
+      : `💨 ${typeof wind === 'number' ? Math.round(wind) : wind} km/h · 💧 ${hum}%`;
 
   } catch(e) {
-    console.log('Weer ophalen mislukt:', e.message);
+    console.error('Weer ophalen mislukt:', e.message);
+    document.getElementById('weather-extra').textContent = 'Weer niet beschikbaar';
   }
 }
 
