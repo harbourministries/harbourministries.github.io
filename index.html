@@ -124,6 +124,13 @@
   .weather-temp { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--amber-light); line-height: 1; }
   .weather-desc { font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; }
   .weather-extra { font-size: 0.58rem; opacity: 0.7; margin-top: 1px; }
+  .weather-forecast { display: flex; gap: 8px; margin-left: 16px; border-left: 1px solid rgba(255,255,255,0.15); padding-left: 16px; }
+  .forecast-day { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .forecast-date { font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6; }
+  .forecast-icon { font-size: 1rem; line-height: 1; }
+  .forecast-temp { font-size: 0.7rem; font-weight: 600; color: var(--amber-light); }
+  .forecast-temp-min { font-size: 0.58rem; opacity: 0.5; }
+  @media (max-width: 768px) { .weather-forecast { display: none; } }
   .stats-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 32px; flex-wrap: wrap; align-items: center; }
   .stat-item { display: flex; align-items: baseline; gap: 8px; }
   .stat-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--amber-light); }
@@ -468,6 +475,7 @@
         <div class="weather-desc" id="weather-desc">Amsterdam</div>
         <div class="weather-extra" id="weather-extra">Weer laden…</div>
       </div>
+      <div class="weather-forecast" id="weather-forecast"></div>
     </div>
   </div>
 </div>
@@ -1231,7 +1239,12 @@ function renderTable() {
     const tr = document.createElement('tr');
     tr.style.animationDelay = `${i*0.03}s`;
     tr.innerHTML = `
-      <td><div class="ship-cell"><div class="ship-name">${r.ship}</div>${operatorBadge(r.ship)}</div></td>
+      <td><div class="ship-cell">
+        <a href="https://www.marinetraffic.com/en/ais/index/search/all/keyword:${encodeURIComponent(r.ship)}" target="_blank" style="text-decoration:none;color:inherit;" title="${lang==='nl'?'Live positie op MarineTraffic':'Live position on MarineTraffic'}">
+          <div class="ship-name" style="display:flex;align-items:center;gap:5px;">${r.ship}<span style="font-size:0.55rem;color:var(--canal);opacity:0.7;font-family:'DM Mono',monospace">↗</span></div>
+        </a>
+        ${operatorBadge(r.ship)}
+      </div></td>
       <td><span class="berth-tag" title="${t('navBtn')}: ${r.berth}" ${berthClick}>${r.berth}</span></td>
       <td class="time-cell"><div class="time-block">
         <span class="time-date">${fmt(r.arrDt,'date')}</span>
@@ -1419,13 +1432,13 @@ const WMO_EN = {
 
 async function fetchWeather() {
   try {
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.890&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&timezone=Europe%2FAmsterdam&models=best_match';
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.890' +
+      '&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m' +
+      '&daily=weather_code,temperature_2m_max,temperature_2m_min' +
+      '&timezone=Europe%2FAmsterdam&forecast_days=4&models=best_match';
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-
-    // Log full response for debugging
-    console.log('Weer data:', JSON.stringify(data));
 
     if (!data.current) throw new Error('Geen current data in response');
     const c = data.current;
@@ -1444,6 +1457,28 @@ async function fetchWeather() {
     document.getElementById('weather-extra').textContent = lang === 'nl'
       ? `💨 ${typeof wind === 'number' ? Math.round(wind) : wind} km/u · 💧 ${hum}%`
       : `💨 ${typeof wind === 'number' ? Math.round(wind) : wind} km/h · 💧 ${hum}%`;
+
+    // 3-day forecast (skip today = index 0)
+    if (data.daily && data.daily.time) {
+      const fc = document.getElementById('weather-forecast');
+      fc.innerHTML = '';
+      for (let i = 1; i <= 3; i++) {
+        if (!data.daily.time[i]) continue;
+        const dt = new Date(data.daily.time[i]);
+        const dayName = dt.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{weekday:'short'});
+        const wcode = data.daily.weather_code[i] ?? 0;
+        const [fcIcon] = WMO_CODES[wcode] || ['🌡'];
+        const tmax = Math.round(data.daily.temperature_2m_max[i]);
+        const tmin = Math.round(data.daily.temperature_2m_min[i]);
+        fc.innerHTML += `
+          <div class="forecast-day">
+            <span class="forecast-date">${dayName}</span>
+            <span class="forecast-icon">${fcIcon}</span>
+            <span class="forecast-temp">${tmax}°</span>
+            <span class="forecast-temp-min">${tmin}°</span>
+          </div>`;
+      }
+    }
 
   } catch(e) {
     console.error('Weer ophalen mislukt:', e.message);
