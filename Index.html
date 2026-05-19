@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amsterdam River Cruise Portal</title>
+<meta name="description" content="Live aankomst en vertrek van riviercruiseschepen in Amsterdam">
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HM Cruise">
+<link rel="manifest" id="pwa-manifest">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzBkMTExNyIvPgogIDx0ZXh0IHg9IjMyIiB5PSI0NCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjZThhMDMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhNPC90ZXh0Pgo8L3N2Zz4=">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzBkMTExNyIvPgogIDx0ZXh0IHg9IjMyIiB5PSI0NCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjZThhMDMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhNPC90ZXh0Pgo8L3N2Zz4=">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --ink: #0d1117; --paper: #f4f0e8; --warm: #e8dfc8;
+    --canal: #2a5c7a; --canal-light: #3a7fa8;
+    --amber: #c8841a; --amber-light: #e8a030;
+    --departure: #c84040; --arrival: #2a7a4a;
+    --border: #c8bea8; --muted: #7a7060;
+  }
+  body.dark {
+    --ink: #e8e0d0; --paper: #141820; --warm: #1e2430;
+    --canal: #3a7fa8; --canal-light: #4a9fc8;
+    --amber: #e8a030; --amber-light: #f0b840;
+    --departure: #e06060; --arrival: #4a9a6a;
+    --border: #2a3040; --muted: #8a8878;
+  }
+  body.dark header { background: #0a0e14; }
+  body.dark .header-title { color: #e8e0d0; }
+  body.dark .header-sub { color: #6a6a7a; }
+  body.dark thead tr { background: #0a0e14; color: #e8e0d0; }
+  body.dark th { color: #e8e0d0; }
+  body.dark .ctrl-input, body.dark .ctrl-select { background: #1e2430; color: var(--ink); border-color: var(--border); }
+  body.dark .proxy-input { background: #1e2430; color: var(--ink); }
+  body.dark tbody tr:hover { background: #1e2430; }
+  body.dark footer { background: #0a0e14; }
+  body.dark .stats-bar { background: #1a3a50; }
+  body.dark .status-pill.docked { background: #1a3a28; color: #6ad68a; border-color: #2a5a38; }
+  body.dark .status-pill.arriving { background: #3a2a08; color: #f0c060; border-color: #5a4010; }
+  body.dark .status-pill.departed { background: #3a1818; color: #e08080; border-color: #5a2828; }
+  body.dark .status-pill.expected { background: #182038; color: #80a8e0; border-color: #283858; }
+  body.dark .leaflet-popup-content-wrapper { background: #1e2430; color: var(--ink); }
+  body.dark .leaflet-popup-tip { background: #1e2430; }
+  body.dark #map-container { border-color: var(--border); }
+
+  /* DARK MODE TOGGLE */
+  .dark-btn { font-family: 'DM Mono', monospace; font-size: 0.68rem; background: transparent; color: #8a8070; border: 1px solid #3a3a4a; padding: 5px 10px; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+  .dark-btn:hover { border-color: var(--amber); color: var(--amber); }
+  body.dark .dark-btn { color: var(--amber-light); border-color: var(--amber); }
+
+  /* TODAY BUTTON & DATE PICKER */
+  .today-btn { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--arrival); color: white; border: none; padding: 10px 16px; cursor: pointer; border-radius: 2px; transition: background 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; align-self: flex-end; margin-bottom: 1px; }
+  .today-btn:hover { background: #3a9a5a; }
+  .today-btn.active { background: #1a5c30; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+  .ctrl-input[type="date"] { min-width: 160px; cursor: pointer; }
+  body.dark .ctrl-input[type="date"] { color-scheme: dark; }
+
+  /* SHARE BUTTON */
+  .share-btn { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; background: var(--canal); color: white; border: none; padding: 5px 12px; cursor: pointer; border-radius: 2px; transition: background 0.2s; display: flex; align-items: center; gap: 6px; }
+  .share-btn:hover { background: var(--canal-light); }
+
+  /* SHARE TOAST */
+  .share-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 10px 20px; border-radius: 4px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 9999; white-space: nowrap; }
+  .share-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Mono', monospace; background: var(--paper); color: var(--ink); min-height: 100vh; overflow-x: hidden; }
+
+  header { background: var(--ink); color: var(--paper); }
+  .header-inner { max-width: 1200px; margin: 0 auto; padding: 40px 32px 32px; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; }
+  .header-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  .header-title em { font-style: italic; color: var(--amber-light); }
+  .header-sub { font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: #8a8070; margin-top: 8px; }
+  .header-right { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+
+  /* LANGUAGE TOGGLE */
+  .lang-toggle { display: flex; gap: 4px; }
+  .lang-btn { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; background: transparent; color: #8a8070; border: 1px solid #3a3a4a; padding: 5px 10px; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+  .lang-btn.active { background: var(--amber); color: var(--ink); border-color: var(--amber); }
+  .lang-btn:hover:not(.active) { border-color: var(--amber); color: var(--amber); }
+
+  .live-badge { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber-light); border: 1px solid var(--amber); padding: 8px 14px; border-radius: 2px; }
+  .live-dot { width: 7px; height: 7px; background: var(--amber-light); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+
+  .proxy-banner { background: #fff3cd; border-bottom: 2px solid var(--amber); padding: 12px 32px; font-size: 0.75rem; color: #7a5200; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .proxy-banner.connected { background: #d4edda; border-color: var(--arrival); color: #155724; }
+  .proxy-input-wrap { display: flex; gap: 8px; align-items: center; }
+  .proxy-input { font-family: 'DM Mono', monospace; font-size: 0.72rem; border: 1px solid var(--amber); padding: 6px 12px; background: white; color: var(--ink); outline: none; width: 340px; border-radius: 2px; }
+  .proxy-input.connected { border-color: var(--arrival); }
+  .proxy-save-btn { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; background: var(--amber); color: var(--ink); border: none; padding: 7px 14px; cursor: pointer; border-radius: 2px; }
+  .proxy-save-btn:hover { background: var(--amber-light); }
+
+  .refresh-btn { display: flex; align-items: center; gap: 8px; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--amber); color: var(--ink); border: none; padding: 10px 18px; cursor: pointer; transition: background 0.2s; border-radius: 2px; }
+  .refresh-btn:hover:not(:disabled) { background: var(--amber-light); }
+  .refresh-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .refresh-icon { font-size: 0.9rem; }
+  .refresh-btn.spinning .refresh-icon { animation: spin 1s linear infinite; }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  .loading-bar { height: 3px; background: var(--ink); overflow: hidden; position: relative; display: none; }
+  .loading-bar.active { display: block; }
+  .loading-bar::after { content:''; position:absolute; top:0; left:-40%; width:40%; height:100%; background:linear-gradient(90deg,transparent,var(--amber-light),transparent); animation:loading 1.4s ease-in-out infinite; }
+  @keyframes loading { from{left:-40%} to{left:100%} }
+
+  .status-msg { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+  .status-inner { padding: 10px 16px; font-size: 0.72rem; border-radius: 2px; margin-top: 12px; display: none; }
+  .status-inner.info { background: #cce5ff; color: #004085; border: 1px solid #99caff; display: block; }
+  .status-inner.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+  .status-inner.success { background: #d4edda; color: #155724; border: 1px solid #a8d5b5; display: block; }
+
+  .wave-strip { background: var(--ink); line-height: 0; }
+  .wave-strip svg { display: block; width: 100%; }
+
+  .stats-bar { background: var(--canal); color: white; padding: 14px 32px; }
+  .weather-widget { display: flex; align-items: center; gap: 10px; margin-left: auto; font-size: 0.78rem; opacity: 0.95; }
+  .weather-icon { font-size: 1.6rem; line-height: 1; }
+  .weather-info { display: flex; flex-direction: column; gap: 1px; }
+  .weather-temp { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--amber-light); line-height: 1; }
+  .weather-desc { font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; }
+  .weather-extra { font-size: 0.58rem; opacity: 0.7; margin-top: 1px; }
+  .stats-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 32px; flex-wrap: wrap; align-items: center; }
+  .stat-item { display: flex; align-items: baseline; gap: 8px; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--amber-light); }
+  .stat-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; }
+  .stat-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.25); flex-shrink: 0; }
+
+  /* MAP */
+  .map-section { max-width: 1200px; margin: 32px auto 0; padding: 0 32px; }
+  .map-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .map-section-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; }
+  .map-toggle-btn { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--canal); color: white; border: none; padding: 7px 14px; cursor: pointer; border-radius: 2px; }
+  .map-toggle-btn:hover { background: var(--canal-light); }
+  #map-container { height: 380px; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; display: none; }
+  #map-container.visible { display: block; }
+  #cruise-map { height: 100%; width: 100%; }
+
+  /* Leaflet popup style override */
+  .leaflet-popup-content-wrapper { font-family: 'DM Mono', monospace; font-size: 0.75rem; border-radius: 2px; }
+  .popup-ship { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .popup-berth { color: var(--canal); font-size: 0.68rem; margin-bottom: 6px; }
+  .popup-times { display: flex; flex-direction: column; gap: 2px; font-size: 0.7rem; }
+  .popup-arr { color: var(--arrival); }
+  .popup-dep { color: var(--departure); }
+  .popup-status { display: inline-block; margin-top: 6px; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; }
+  .popup-status.docked { background: #d4edda; color: #1a5c30; }
+  .popup-status.arriving { background: #fff3cd; color: #7a5200; }
+  .popup-status.expected { background: #cce5ff; color: #004085; }
+  .popup-status.departed { background: #f8d7da; color: #721c24; }
+
+  .controls-wrap { max-width: 1200px; margin: 24px auto 0; padding: 0 32px; }
+  .controls { background: var(--warm); border: 1px solid var(--border); padding: 20px 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+  .ctrl-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .ctrl-group { display: flex; flex-direction: column; flex: 1; min-width: 200px; }
+  .ctrl-input, .ctrl-select { font-family: 'DM Mono', monospace; font-size: 0.78rem; background: white; border: 1px solid var(--border); padding: 8px 12px; color: var(--ink); outline: none; width: 100%; }
+  .ctrl-input:focus, .ctrl-select:focus { border-color: var(--canal); }
+  .ctrl-btn { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--canal); color: white; border: none; padding: 10px 20px; cursor: pointer; align-self: flex-end; margin-bottom: 1px; flex-shrink: 0; }
+  .ctrl-btn:hover { background: var(--canal-light); }
+  .ctrl-btn.reset { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .ctrl-btn.reset:hover { background: var(--warm); color: var(--ink); }
+
+  .table-wrap { max-width: 1200px; margin: 24px auto 0; padding: 0 32px 48px; }
+  .table-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .table-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; }
+  .result-count { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .last-updated { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  thead tr { background: var(--ink); color: var(--paper); }
+  th { padding: 12px 16px; text-align: left; font-size: 0.63rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 400; cursor: pointer; user-select: none; white-space: nowrap; }
+  th:hover { background: #1e2733; }
+  th .sort-icon { margin-left: 4px; opacity: 0.4; }
+  th.sorted .sort-icon { opacity: 1; color: var(--amber-light); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; animation: fadeIn 0.3s ease both; }
+  tbody tr:hover { background: var(--warm); }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+  td { padding: 13px 16px; vertical-align: middle; }
+
+  .ship-name { font-family: 'Playfair Display', serif; font-size: 0.92rem; font-weight: 700; }
+  .ship-cell { display: flex; flex-direction: column; gap: 4px; }
+  .operator-badge { display: inline-block; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; font-family: 'DM Mono', monospace; font-weight: 500; color: white; width: fit-content; }
+  .berth-tag { display: inline-block; background: var(--canal); color: white; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: background 0.2s; }
+  .berth-tag:hover { background: var(--canal-light); }
+  .time-cell { white-space: nowrap; }
+  .time-block { display: flex; flex-direction: column; gap: 2px; }
+  .time-date { font-size: 0.65rem; color: var(--muted); }
+  .time-hour { font-size: 0.85rem; font-weight: 500; }
+  .time-hour.arr { color: var(--arrival); }
+  .time-hour.dep { color: var(--departure); }
+
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; font-weight: 500; }
+  .status-pill.docked { background: #d4edda; color: #1a5c30; border: 1px solid #a8d5b5; }
+  .status-pill.arriving { background: #fff3cd; color: #7a5200; border: 1px solid #ffc966; }
+  .status-pill.departed { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .status-pill.expected { background: #cce5ff; color: #004085; border: 1px solid #99caff; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .status-pill.docked .status-dot { animation: pulse 2s infinite; }
+
+  .duration-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .duration-bar { height: 3px; background: var(--canal); border-radius: 2px; min-width: 20px; max-width: 80px; opacity: 0.6; }
+  .duration-text { font-size: 0.65rem; color: var(--muted); }
+
+
+  .empty-state { text-align: center; padding: 64px 32px; color: var(--muted); }
+  .empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.3; }
+  .empty-state p { font-family: 'Playfair Display', serif; font-style: italic; }
+
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* BERTH INFO SECTION */
+  .berth-info-section { background: var(--warm); border-top: 2px solid var(--border); margin-top: 0; }
+  .berth-info-inner { max-width: 1200px; margin: 0 auto; padding: 32px 32px; }
+  .berth-info-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .berth-info-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; }
+  .berth-info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .berth-card { background: white; border: 1px solid var(--border); padding: 16px; border-radius: 2px; }
+  body.dark .berth-card { background: #1e2430; border-color: var(--border); }
+  .berth-card-name { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: white; background: var(--canal); padding: 4px 10px; border-radius: 2px; display: inline-block; margin-bottom: 10px; }
+  .berth-card-row { display: flex; gap: 8px; font-size: 0.72rem; margin-bottom: 5px; align-items: flex-start; }
+  .berth-card-icon { flex-shrink: 0; width: 16px; }
+  .berth-card-label { color: var(--muted); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1px; }
+  .berth-card-value { color: var(--ink); }
+  @media (max-width: 768px) {
+    .berth-info-inner { padding: 24px 16px; }
+    .berth-info-grid { grid-template-columns: 1fr; }
+  }
+
+  footer { background: var(--ink); color: #6a6a6a; padding: 24px 32px; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
+  footer a { color: var(--amber); text-decoration: none; }
+
+  /* ── TABLET ── */
+  @media (max-width: 900px) {
+    .header-title { font-size: 2.4rem; }
+    .stats-inner { gap: 20px; }
+    .weather-widget { margin-left: 0; }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    /* Header */
+    .header-inner { grid-template-columns: 1fr; padding: 24px 16px 20px; gap: 16px; }
+    .header-title { font-size: 2rem; }
+    .header-sub { font-size: 0.65rem; }
+    .header-right { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: 8px; }
+    .live-badge { font-size: 0.6rem; padding: 6px 10px; }
+    .refresh-btn { font-size: 0.65rem; padding: 8px 12px; }
+    .lang-btn { padding: 4px 8px; font-size: 0.62rem; }
+    .dark-btn { padding: 4px 8px; font-size: 0.62rem; }
+    .share-btn { font-size: 0.62rem; padding: 4px 10px; }
+
+    /* Stats bar */
+    .stats-bar { padding: 12px 16px; }
+    .stats-inner { gap: 14px; }
+    .stat-num { font-size: 1.3rem; }
+    .stat-label { font-size: 0.58rem; }
+    .stat-divider { height: 18px; }
+    .weather-widget { margin-left: 0; width: 100%; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px; margin-top: 4px; }
+    .weather-temp { font-size: 1.2rem; }
+
+    /* Map */
+    #map-container { height: 250px; }
+    .map-section { padding: 0 16px; }
+    .map-section-header { flex-wrap: wrap; gap: 8px; }
+
+    /* Controls */
+    .controls-wrap { padding: 0 16px; margin-top: 16px; }
+    .controls { flex-direction: column; padding: 14px 16px; gap: 10px; }
+    .ctrl-input, .ctrl-select { min-width: unset; width: 100%; font-size: 0.85rem; padding: 10px 12px; }
+    .ctrl-group { flex: unset; width: 100%; min-width: unset; }
+    .ctrl-label { font-size: 0.6rem; }
+    .ctrl-btn { width: 100%; text-align: center; padding: 10px; }
+
+    /* Table */
+    .table-wrap { padding: 0 16px 32px; margin-top: 16px; }
+    .table-header { flex-direction: column; gap: 4px; align-items: flex-start; }
+    .table-title { font-size: 0.95rem; }
+    .result-count { font-size: 0.6rem; }
+
+    /* Legend */
+    .legend { gap: 10px; font-size: 0.58rem; }
+
+    /* Hide less important columns on mobile */
+    td:nth-child(4), th:nth-child(4) { display: none; } /* Vertrek */
+    td:nth-child(5), th:nth-child(5) { display: none; } /* Verblijfsduur */
+
+    /* Make table cells more touch-friendly */
+    td { padding: 12px 10px; }
+    th { padding: 10px 10px; font-size: 0.55rem; }
+
+    /* Ship name */
+    .ship-name { font-size: 0.82rem; }
+    .operator-badge { font-size: 0.5rem; padding: 1px 5px; }
+
+    /* Berth tag */
+    .berth-tag { max-width: 130px; font-size: 0.55rem; }
+
+    /* Time */
+    .time-hour { font-size: 0.78rem; }
+    .time-date { font-size: 0.58rem; }
+
+    /* Status pill */
+    .status-pill { font-size: 0.55rem; padding: 3px 7px; }
+
+    /* Proxy banner */
+    .proxy-banner { padding: 10px 16px; flex-direction: column; }
+    .proxy-input { width: 100%; }
+  }
+
+  /* ── SMALL MOBILE ── */
+  @media (max-width: 400px) {
+    .header-title { font-size: 1.7rem; }
+    td:nth-child(3), th:nth-child(3) { font-size: 0.7rem; } /* Aankomst smaller */
+    .stats-inner { gap: 10px; }
+    .stat-divider { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="header-title">Amsterdam<br><em>River Cruise</em> Portal</div>
+      <div class="header-sub" id="hdr-sub">Cruise Port Amsterdam — Aankomst &amp; Vertrek Overzicht</div>
+    </div>
+    <div class="header-right">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <div class="lang-toggle">
+          <button class="lang-btn active" onclick="setLang('nl')">NL</button>
+          <button class="lang-btn" onclick="setLang('en')">EN</button>
+        </div>
+        <button class="dark-btn" id="dark-toggle-btn" onclick="toggleDark()" title="Donkere modus">🌙</button>
+        <button class="share-btn" onclick="sharePortal()" title="Delen">🔗 <span id="share-btn-txt">Delen</span></button>
+      </div>
+      <div class="live-badge"><span class="live-dot"></span><span id="badge-txt">Live data refresh</span></div>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div id="last-refresh" style="display:none; text-align:right; font-size:0.63rem; letter-spacing:0.08em; text-transform:uppercase; color:#8a8070; line-height:1.6;">
+          <span id="last-refresh-label">Laatste update</span><br>
+          <span id="last-refresh-time" style="color:#e8a030; font-size:0.76rem; font-weight:500;"></span>
+        </div>
+        <button class="refresh-btn" id="refresh-btn" onclick="fetchLiveData()">
+          <span class="refresh-icon">⟳</span> <span id="btn-refresh-txt">Data verversen</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="proxy-banner" id="proxy-banner" style="display:none">
+  <div class="proxy-banner-text" id="proxy-banner-text"></div>
+  <div class="proxy-input-wrap">
+    <input class="proxy-input" id="proxy-url-input" type="text" placeholder="https://jouw-scraper.up.railway.app" />
+    <button class="proxy-save-btn" id="btn-save-txt" onclick="saveProxyUrl()">Opslaan</button>
+  </div>
+</div>
+
+<div class="loading-bar" id="loading-bar"></div>
+<div class="status-msg"><div class="status-inner" id="status-msg"></div></div>
+
+<div class="wave-strip">
+  <svg viewBox="0 0 1440 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="28">
+    <path d="M0,14 C240,28 480,0 720,14 C960,28 1200,0 1440,14 L1440,28 L0,28 Z" fill="#f4f0e8"/>
+  </svg>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item"><span class="stat-num" id="stat-total">25</span><span class="stat-label" id="lbl-total">Schepen<br>in overzicht</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-num" id="stat-docked">—</span><span class="stat-label" id="lbl-docked">Nu<br>aangemeerd</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-num" id="stat-today">—</span><span class="stat-label" id="lbl-today">Vandaag<br>aankomst/vertrek</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-num" id="stat-berths">7</span><span class="stat-label" id="lbl-berths">Unieke<br>ligplaatsen</span></div>
+    <div class="stat-divider"></div>
+    <div class="weather-widget" id="weather-widget">
+      <div class="weather-icon" id="weather-icon">⛅</div>
+      <div class="weather-info">
+        <div class="weather-temp"><span id="weather-temp">—</span>°C</div>
+        <div class="weather-desc" id="weather-desc">Amsterdam</div>
+        <div class="weather-extra" id="weather-extra">Weer laden…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAP SECTION -->
+<div class="map-section">
+  <div class="map-section-header">
+    <div class="map-section-title" id="map-title">🗺 Ligplaatsen op kaart</div>
+    <button class="map-toggle-btn" id="map-toggle-btn" onclick="toggleMap()">Kaart tonen</button>
+  </div>
+  <div id="map-container">
+    <div id="cruise-map"></div>
+  </div>
+</div>
+
+<div class="controls-wrap">
+  <div class="controls">
+    <div class="ctrl-group">
+      <div class="ctrl-label" id="lbl-search">Zoek schip</div>
+      <input class="ctrl-input" type="text" id="search-ship" placeholder="b.v. Viking, Amadeus…" oninput="filterTable()">
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-label" id="lbl-berth-filter">Ligplaats</div>
+      <select class="ctrl-select" id="filter-berth" onchange="filterTable()">
+        <option value="" id="opt-all-berths">Alle ligplaatsen</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-label" id="lbl-status-filter">Status</div>
+      <select class="ctrl-select" id="filter-status" onchange="filterTable()">
+        <option value="" id="opt-all-status">Alle statussen</option>
+        <option value="docked" id="opt-docked">Nu aangemeerd</option>
+        <option value="arriving" id="opt-arriving">Verwacht vandaag</option>
+        <option value="expected" id="opt-expected">Komende dagen</option>
+        <option value="departed" id="opt-departed">Vertrokken</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-label" id="lbl-date-filter">Datum</div>
+      <div style="display:flex; gap:8px; align-items:stretch;">
+        <input class="ctrl-input" type="date" id="filter-date" onchange="onDateChange()" style="min-width:0; flex:1;">
+        <button class="today-btn" id="today-btn" onclick="filterToday()">📅 <span id="today-btn-txt">Vandaag</span></button>
+      </div>
+    </div>
+    <button class="ctrl-btn reset" onclick="resetFilters()" id="btn-reset">Reset</button>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <div class="table-header">
+    <div>
+      <div class="table-title" id="tbl-title">Riviercruiseschepen in &amp; rondom Amsterdam</div>
+      <div class="last-updated" id="last-updated">Statische data van 18 mei 2026 — klik "Data verversen" voor actuele gegevens</div>
+    </div>
+    <div class="result-count" id="result-count">25 resultaten</div>
+  </div>
+
+  <div class="legend">
+    <span id="lbl-status">Status:</span>
+    <div class="legend-item"><span class="legend-dot" style="background:#2a7a4a"></span><span id="leg-docked">Nu aangemeerd</span></div>
+    <div class="legend-item"><span class="legend-dot" style="background:#c8841a"></span><span id="leg-arriving">Verwacht vandaag</span></div>
+    <div class="legend-item"><span class="legend-dot" style="background:#1a5c9a"></span><span id="leg-expected">Komende dagen</span></div>
+    <div class="legend-item"><span class="legend-dot" style="background:#c84040"></span><span id="leg-departed">Vertrokken</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)" id="th-ship">Scheepsnaam <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(1)" id="th-berth">Ligplaats <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(2)" id="th-arr">Aankomst <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(3)" id="th-dep">Vertrek <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable(4)" id="th-dur">Verblijfsduur <span class="sort-icon">⇅</span></th>
+        <th id="th-status">Status</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+  <div id="empty-state" class="empty-state" style="display:none;">
+    <div class="empty-state-icon">⚓</div>
+    <p id="empty-txt">Geen schepen gevonden voor deze zoekopdracht.</p>
+  </div>
+</div>
+
+<!-- BERTH INFO SECTION -->
+<div class="berth-info-section" id="berth-info-section">
+  <div class="berth-info-inner">
+    <div class="berth-info-header">
+      <div class="berth-info-title" id="berth-info-title">⚓ Ligplaatsen — Praktische informatie</div>
+    </div>
+    <div class="berth-info-grid" id="berth-info-grid"></div>
+  </div>
+</div>
+
+<footer>
+  <p id="footer-txt">Brondata: <a href="https://river.cruiseportamsterdam.com" target="_blank">river.cruiseportamsterdam.com</a> &nbsp;·&nbsp; Kaart: OpenStreetMap &nbsp;·&nbsp; Contact CPA: +31 (0)20 509 1009</p>
+</footer>
+
+<script>
+// ── TRANSLATIONS ──────────────────────────────────────────────────────────────
+const T = {
+  nl: {
+    sub: 'Cruise Port Amsterdam — Aankomst & Vertrek Overzicht',
+    badge: 'Live data refresh',
+    lastUpdateLabel: 'Laatste update',
+    btnRefresh: 'Data verversen',
+    btnSave: 'Opslaan',
+    proxyPrompt: '⚙️ <strong>Vul je Railway URL in</strong> om live data op te halen',
+    proxyConnected: (url) => `✓ <strong>Verbonden:</strong> ${url}`,
+    statTotal: 'Schepen<br>in overzicht',
+    statDocked: 'Nu<br>aangemeerd',
+    statToday: 'Vandaag<br>aankomst/vertrek',
+    statBerths: 'Unieke<br>ligplaatsen',
+    mapTitle: '🗺 Ligplaatsen op kaart',
+    mapShow: 'Kaart tonen',
+    mapHide: 'Kaart verbergen',
+    searchLabel: 'Zoek schip',
+    searchPlaceholder: 'b.v. Viking, Amadeus…',
+    berthLabel: 'Ligplaats',
+    statusLabel: 'Status',
+    allBerths: 'Alle ligplaatsen',
+    allStatus: 'Alle statussen',
+    docked: 'Nu aangemeerd',
+    arriving: 'Verwacht vandaag',
+    expected: 'Komende dagen',
+    departed: 'Vertrokken',
+    reset: 'Reset',
+    tblTitle: 'Riviercruiseschepen in & rondom Amsterdam',
+    thShip: 'Scheepsnaam',
+    thBerth: 'Ligplaats',
+    thArr: 'Aankomst',
+    thDep: 'Vertrek',
+    thDur: 'Verblijfsduur',
+    thStatus: 'Status',
+    legendStatus: 'Status:',
+    emptyTxt: 'Geen schepen gevonden voor deze zoekopdracht.',
+    results: (n) => `${n} resultaat${n!==1?'en':''}`,
+    loadingMsg: '⟳ Data ophalen van river.cruiseportamsterdam.com…',
+    staticNote: 'Statische data van 18 mei 2026 — klik "Data verversen" voor actuele gegevens',
+    liveNote: (d,t,n) => `Live data bijgewerkt: ${d} om ${t} — ${n} schepen`,
+    cacheMsg: (n, age) => `✓ ${n} schepen — uit cache (${age} min. oud, max. elke 15 min. verse data)`,
+    freshMsg: (n) => `✓ ${n} schepen — verse data opgehaald van Cruise Port Amsterdam`,
+    errNoUrl: '⚠ Vul eerst je Railway URL in de balk hierboven in.',
+    errFetch: (e) => `⚠ Ophalen mislukt: ${e}`,
+    errServer: (s) => `Server fout: ${s}`,
+    errNoShips: 'Geen schepen ontvangen van de server.',
+    footer: 'Brondata: <a href="https://river.cruiseportamsterdam.com" target="_blank">river.cruiseportamsterdam.com</a> &nbsp;·&nbsp; Kaart: OpenStreetMap &nbsp;·&nbsp; Contact CPA: +31 (0)20 509 1009',
+    popupArr: '⬆ Aankomst',
+    popupDep: '⬇ Vertrek',
+    navBtn: 'Navigeer',
+  },
+  en: {
+    sub: 'Cruise Port Amsterdam — Arrivals & Departures Overview',
+    badge: 'Live data refresh',
+    lastUpdateLabel: 'Last update',
+    btnRefresh: 'Refresh data',
+    btnSave: 'Save',
+    proxyPrompt: '⚙️ <strong>Enter your Railway URL</strong> to load live data',
+    proxyConnected: (url) => `✓ <strong>Connected:</strong> ${url}`,
+    statTotal: 'Vessels<br>in overview',
+    statDocked: 'Currently<br>docked',
+    statToday: "Today's<br>arrivals/departures",
+    statBerths: 'Unique<br>berths',
+    mapTitle: '🗺 Berth locations on map',
+    mapShow: 'Show map',
+    mapHide: 'Hide map',
+    searchLabel: 'Search vessel',
+    searchPlaceholder: 'e.g. Viking, Amadeus…',
+    berthLabel: 'Berth',
+    statusLabel: 'Status',
+    allBerths: 'All berths',
+    allStatus: 'All statuses',
+    docked: 'Currently docked',
+    arriving: 'Expected today',
+    expected: 'Upcoming days',
+    departed: 'Departed',
+    reset: 'Reset',
+    tblTitle: 'River cruise vessels in & around Amsterdam',
+    thShip: 'Vessel name',
+    thBerth: 'Berth',
+    thArr: 'Arrival',
+    thDep: 'Departure',
+    thDur: 'Stay duration',
+    thStatus: 'Status',
+    legendStatus: 'Status:',
+    emptyTxt: 'No vessels found for this search.',
+    results: (n) => `${n} result${n!==1?'s':''}`,
+    loadingMsg: '⟳ Fetching data from river.cruiseportamsterdam.com…',
+    staticNote: 'Static data from 18 May 2026 — click "Refresh data" for current information',
+    liveNote: (d,t,n) => `Live data updated: ${d} at ${t} — ${n} vessels`,
+    cacheMsg: (n, age) => `✓ ${n} vessels — from cache (${age} min. old, refreshed max. every 15 min.)`,
+    freshMsg: (n) => `✓ ${n} vessels — fresh data fetched from Cruise Port Amsterdam`,
+    errNoUrl: '⚠ Please enter your Railway URL in the bar above first.',
+    errFetch: (e) => `⚠ Refresh failed: ${e}`,
+    errServer: (s) => `Server error: ${s}`,
+    errNoShips: 'No vessels received from the server.',
+    footer: 'Data source: <a href="https://river.cruiseportamsterdam.com" target="_blank">river.cruiseportamsterdam.com</a> &nbsp;·&nbsp; Map: OpenStreetMap &nbsp;·&nbsp; Contact CPA: +31 (0)20 509 1009',
+    popupArr: '⬆ Arrival',
+    popupDep: '⬇ Departure',
+    navBtn: 'Navigate',
+  }
+};
+
+let lang = localStorage.getItem('cruiseLang') || 'nl';
+
+// ── BERTH COORDINATES ─────────────────────────────────────────────────────────
+// ── BERTH INFO (looptijd, OV, parkeren) ──────────────────────────────────────
+const BERTH_INFO = {
+  'Ruijterkade Oost 3': {
+    walk: '8 min', walkM: 650,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~5 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'Ruijterkade West 3': {
+    walk: '6 min', walkM: 500,
+    ov: 'Tram 26 → halte Centraal Station, richting IJ',
+    parking: 'P Oosterdok (~4 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/oosterdok'
+  },
+  'Ruijterkade West 6': {
+    walk: '7 min', walkM: 550,
+    ov: 'Tram 26 → halte Centraal Station, richting IJ',
+    parking: 'P Oosterdok (~5 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/oosterdok'
+  },
+  'PTA, LP 1 via Muziekgebouw': {
+    walk: '12 min', walkM: 950,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~7 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'PTA, LP 2 via Muziekgebouw': {
+    walk: '13 min', walkM: 1000,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~8 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'PTA, LP 3 via Vriesseveem': {
+    walk: '14 min', walkM: 1100,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~9 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'PTA, LP 4 via Vriesseveem': {
+    walk: '15 min', walkM: 1150,
+    ov: 'Tram 26 → halte Muziekgebouw/Bimhuis',
+    parking: 'P Piet Hein (~10 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/piet-hein'
+  },
+  'Prins Hendrikkade 1': {
+    walk: '5 min', walkM: 400,
+    ov: 'Direct vanaf Centraal Station (5 min lopen)',
+    parking: 'P Oosterdok (~4 min lopen)',
+    parkingUrl: 'https://maps.app.goo.gl/oosterdok'
+  },
+  'Westerdoksdijk': {
+    walk: '18 min', walkM: 1400,
+    ov: 'Bus 48 → halte Westerdok, of 18 min lopen',
+    parking: 'P Westerdok (gratis, op de dijk)',
+    parkingUrl: 'https://maps.app.goo.gl/westerdok'
+  },
+  'Tolhuis LP 2': {
+    walk: '22 min', walkM: 1750,
+    ov: 'GVB Pont (gratis ferry) vanaf Centraal Station Noord → 5 min lopen',
+    parking: 'Gratis parkeren op terrein Tolhuis',
+    parkingUrl: 'https://maps.app.goo.gl/tolhuis'
+  },
+  'Minervahaven Passagierssteiger Steiger Zuid': {
+    walk: '45 min', walkM: 3500,
+    ov: 'Bus 22 of 48 → halte Minervahaven',
+    parking: 'Gratis parkeren Minervahaven terrein',
+    parkingUrl: 'https://maps.app.goo.gl/minervahaven'
+  },
+  'Bodecentrum Buiten (Zaantheater), Zaandam': {
+    walk: '— (Zaandam)', walkM: 9999,
+    ov: 'Trein Amsterdam CS → Zaandam (8 min) + 10 min lopen',
+    parking: 'P Zaantheater (betaald, naast locatie)',
+    parkingUrl: 'https://maps.app.goo.gl/zaandam'
+  },
+};
+
+function getBerthInfo(berth) {
+  if (BERTH_INFO[berth]) return BERTH_INFO[berth];
+  for (const key of Object.keys(BERTH_INFO)) {
+    if (berth.includes(key) || key.includes(berth.split(',')[0])) return BERTH_INFO[key];
+  }
+  return null;
+}
+
+const BERTH_COORDS = {
+  'Ruijterkade Oost 3':                          [52.3791, 4.9065],
+  'Ruijterkade West 3':                          [52.3793, 4.9020],
+  'Ruijterkade West 6':                          [52.3795, 4.8995],
+  'PTA, LP 1 via Muziekgebouw':                  [52.3776, 4.9122],
+  'PTA, LP 2 via Muziekgebouw':                  [52.3773, 4.9130],
+  'PTA, LP 3 via Vriesseveem':                   [52.3769, 4.9140],
+  'PTA, LP 4 via Vriesseveem':                   [52.3766, 4.9148],
+  'Prins Hendrikkade 1':                         [52.3789, 4.9058],
+  'Westerdoksdijk':                              [52.3843, 4.8940],
+  'Tolhuis LP 2':                                [52.3842, 4.9205],
+  'Minervahaven Passagierssteiger Steiger Zuid':  [52.3948, 4.8672],
+  'Bodecentrum Buiten (Zaantheater), Zaandam':   [52.4384, 4.8230],
+};
+
+function getBerthCoords(berth) {
+  // Exact match first
+  if (BERTH_COORDS[berth]) return BERTH_COORDS[berth];
+  // Partial match
+  for (const key of Object.keys(BERTH_COORDS)) {
+    if (berth.includes(key) || key.includes(berth.split(',')[0])) return BERTH_COORDS[key];
+  }
+  return null;
+}
+
+// ── FALLBACK DATA ─────────────────────────────────────────────────────────────
+const FALLBACK = [
+  { ship:"RHEIN MELODIE",    berth:"Ruijterkade Oost 3",                         arr:"18-05-2026 09:00", dep:"18-05-2026 19:30" },
+  { ship:"A-ROSA SENA",      berth:"PTA, LP 3 via Vriesseveem",                  arr:"18-05-2026 08:00", dep:"18-05-2026 23:00" },
+  { ship:"ALENA",            berth:"PTA, LP 2 via Muziekgebouw",                 arr:"18-05-2026 09:00", dep:"19-05-2026 04:00" },
+  { ship:"AURELIA",          berth:"PTA, LP 2 via Muziekgebouw",                 arr:"18-05-2026 09:00", dep:"19-05-2026 04:00" },
+  { ship:"HORIZON",          berth:"Prins Hendrikkade 1",                        arr:"18-05-2026 14:00", dep:"19-05-2026 06:00" },
+  { ship:"AMADEUS AUREA",    berth:"PTA, LP 1 via Muziekgebouw",                 arr:"18-05-2026 12:00", dep:"19-05-2026 08:30" },
+  { ship:"ELEGANT",          berth:"Ruijterkade West 3",                         arr:"19-05-2026 04:00", dep:"19-05-2026 10:00" },
+  { ship:"TUI ARIA",         berth:"PTA, LP 1 via Muziekgebouw",                 arr:"17-05-2026 08:00", dep:"19-05-2026 13:00" },
+  { ship:"MAGNIFIQUE I",     berth:"Minervahaven Passagierssteiger Steiger Zuid", arr:"18-05-2026 10:00", dep:"19-05-2026 16:00" },
+  { ship:"VIKING SIGYN",     berth:"PTA, LP 3 via Vriesseveem",                  arr:"19-05-2026 02:00", dep:"19-05-2026 23:00" },
+  { ship:"VIKING VE",        berth:"PTA, LP 3 via Vriesseveem",                  arr:"19-05-2026 02:00", dep:"19-05-2026 23:55" },
+  { ship:"AMASERENA",        berth:"PTA, LP 4 via Vriesseveem",                  arr:"18-05-2026 13:00", dep:"20-05-2026 13:00" },
+  { ship:"AVALON ENVISION",  berth:"PTA, LP 4 via Vriesseveem",                  arr:"18-05-2026 08:00", dep:"20-05-2026 13:30" },
+  { ship:"SCENIC RUBY",      berth:"Bodecentrum Buiten (Zaantheater), Zaandam",  arr:"19-05-2026 08:30", dep:"20-05-2026 22:00" },
+  { ship:"VIKING EINAR",     berth:"PTA, LP 2 via Muziekgebouw",                 arr:"20-05-2026 02:00", dep:"20-05-2026 23:00" },
+  { ship:"VIKING LIF",       berth:"PTA, LP 3 via Vriesseveem",                  arr:"20-05-2026 02:00", dep:"20-05-2026 23:55" },
+  { ship:"EXCELLENCE QUEEN", berth:"Ruijterkade West 3",                         arr:"20-05-2026 03:00", dep:"20-05-2026 23:59" },
+  { ship:"AMADEUS STAR",     berth:"Westerdoksdijk",                             arr:"19-05-2026 13:00", dep:"21-05-2026 08:30" },
+  { ship:"JOHANN STRAUSS",   berth:"Prins Hendrikkade 1",                        arr:"20-05-2026 07:00", dep:"21-05-2026 09:00" },
+  { ship:"INSPIRE",          berth:"Ruijterkade West 6",                         arr:"19-05-2026 12:00", dep:"21-05-2026 09:30" },
+  { ship:"VITA NOVA",        berth:"Tolhuis LP 2",                               arr:"18-05-2026 09:00", dep:"21-05-2026 11:00" },
+  { ship:"SCENIC JEWEL",     berth:"Westerdoksdijk",                             arr:"19-05-2026 08:30", dep:"21-05-2026 12:30" },
+  { ship:"AMACERTO",         berth:"Ruijterkade West 6",                         arr:"19-05-2026 15:00", dep:"21-05-2026 13:00" },
+  { ship:"AMAPRIMA",         berth:"Ruijterkade Oost 3",                         arr:"20-05-2026 01:00", dep:"21-05-2026 13:00" },
+  { ship:"EXCELLENCE CROWN", berth:"Bodecentrum Buiten (Zaantheater), Zaandam",  arr:"21-05-2026 06:30", dep:"21-05-2026 15:00" },
+];
+
+let currentData = [];
+let sortCol = 2, sortDir = 1;
+let proxyUrl = 'https://harbourministries-production.up.railway.app';
+let leafletMap = null;
+let mapMarkers = [];
+let mapVisible = false;
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function t(key, ...args) {
+  const val = T[lang][key];
+  return typeof val === 'function' ? val(...args) : val;
+}
+
+function parseDateTime(str) {
+  if (!str) return null;
+  const [dp, tp] = str.trim().split(' ');
+  const [d,m,y] = dp.split('-');
+  const [h,min] = (tp||'00:00').split(':');
+  return new Date(+y,+m-1,+d,+h,+min);
+}
+
+function fmt(dt, type) {
+  if (type==='date') return dt.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{day:'numeric',month:'short'});
+  return dt.toLocaleTimeString(lang==='nl'?'nl-NL':'en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+
+function duration(a,d) {
+  const h=Math.floor((d-a)/3600000), m=Math.floor(((d-a)%3600000)/60000);
+  return h===0?`${m}m`:m===0?`${h}u`:`${h}u ${m}m`;
+}
+
+function getStatus(arr,dep) {
+  const now=new Date();
+  if(dep<now) return 'departed';
+  if(arr<=now&&dep>=now) return 'docked';
+  if((arr-now)/3600000<=12) return 'arriving';
+  return 'expected';
+}
+
+function pill(s) {
+  return `<span class="status-pill ${s}"><span class="status-dot"></span>${t(s)}</span>`;
+}
+
+function process(rows) {
+  return rows.map(r=>{
+    const a=parseDateTime(r.arr), d=parseDateTime(r.dep);
+    return {...r, arrDt:a, depDt:d, status:getStatus(a,d)};
+  }).filter(r=>r.arrDt&&r.depDt);
+}
+
+// ── LANGUAGE ──────────────────────────────────────────────────────────────────
+// ── DARK MODE ─────────────────────────────────────────────────────────────────
+// Volg systeeminstelling als er geen voorkeur opgeslagen is
+const savedDark = localStorage.getItem('cruiseDark');
+let darkMode = savedDark !== null ? savedDark === 'true' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+// Luister naar systeemwijzigingen (bijv. automatisch donker 's avonds)
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  if (localStorage.getItem('cruiseDark') === null) {
+    darkMode = e.matches;
+    applyDark();
+  }
+});
+
+function applyDark() {
+  document.body.classList.toggle('dark', darkMode);
+  document.getElementById('dark-toggle-btn').textContent = darkMode ? '☀️' : '🌙';
+  document.getElementById('dark-toggle-btn').title = darkMode ? 'Lichte modus' : 'Donkere modus';
+  // Leaflet tiles look better in dark mode with a filter
+  const mapEl = document.getElementById('cruise-map');
+  if (mapEl) mapEl.style.filter = darkMode ? 'invert(1) hue-rotate(180deg) brightness(0.85)' : '';
+}
+
+function toggleDark() {
+  darkMode = !darkMode;
+  localStorage.setItem('cruiseDark', darkMode);
+  applyDark();
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('cruiseLang', l);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===l.toUpperCase()));
+  applyTranslations();
+  renderTable();
+  renderBerthCards();
+  if (mapVisible) updateMap();
+  fetchWeather();
+}
+
+function applyTranslations() {
+  document.getElementById('hdr-sub').textContent        = t('sub');
+  document.getElementById('badge-txt').textContent      = t('badge');
+  document.getElementById('last-refresh-label').textContent = t('lastUpdateLabel');
+  document.getElementById('btn-refresh-txt').textContent = t('btnRefresh');
+  document.getElementById('lbl-total').innerHTML        = t('statTotal');
+  document.getElementById('lbl-docked').innerHTML       = t('statDocked');
+  document.getElementById('lbl-today').innerHTML        = t('statToday');
+  document.getElementById('lbl-berths').innerHTML       = t('statBerths');
+  const s = (id, val, prop='textContent') => { const el=document.getElementById(id); if(el) el[prop]=val; };
+  s('map-title', t('mapTitle'));
+  s('map-toggle-btn', mapVisible ? t('mapHide') : t('mapShow'));
+  s('lbl-search', t('searchLabel'));
+  const si = document.getElementById('search-ship'); if(si) si.placeholder = t('searchPlaceholder');
+  s('lbl-berth-filter', t('berthLabel'));
+  s('lbl-status-filter', t('statusLabel'));
+  s('opt-all-berths', t('allBerths'));
+  s('opt-all-status', t('allStatus'));
+  s('opt-docked', t('docked'));
+  s('opt-arriving', t('arriving'));
+  s('opt-expected', t('expected'));
+  s('opt-departed', t('departed'));
+  s('btn-reset', t('reset'));
+  s('tbl-title', t('tblTitle'));
+  const ths = document.getElementById('th-ship'); if(ths&&ths.childNodes[0]) ths.childNodes[0].textContent=t('thShip')+' ';
+  const thb = document.getElementById('th-berth'); if(thb&&thb.childNodes[0]) thb.childNodes[0].textContent=t('thBerth')+' ';
+  const tha = document.getElementById('th-arr'); if(tha&&tha.childNodes[0]) tha.childNodes[0].textContent=t('thArr')+' ';
+  const thd = document.getElementById('th-dep'); if(thd&&thd.childNodes[0]) thd.childNodes[0].textContent=t('thDep')+' ';
+  const thu = document.getElementById('th-dur'); if(thu&&thu.childNodes[0]) thu.childNodes[0].textContent=t('thDur')+' ';
+  s('th-status', t('thStatus'));
+  s('lbl-status', t('legendStatus'));
+  s('leg-docked', t('docked'));
+  s('leg-arriving', t('arriving'));
+  s('leg-expected', t('expected'));
+  s('leg-departed', t('departed'));
+  s('empty-txt', t('emptyTxt'));
+  s('footer-txt', t('footer'), 'innerHTML');
+  s('share-btn-txt', lang==='nl'?'Delen':'Share');
+  s('today-btn-txt', lang==='nl'?'Vandaag':'Today');
+  s('lbl-date-filter', lang==='nl'?'Datum':'Date');
+}
+
+// ── MAP ───────────────────────────────────────────────────────────────────────
+function toggleMap() {
+  mapVisible = !mapVisible;
+  const container = document.getElementById('map-container');
+  container.classList.toggle('visible', mapVisible);
+  document.getElementById('map-toggle-btn').textContent = mapVisible ? t('mapHide') : t('mapShow');
+
+  if (mapVisible) {
+    if (!leafletMap) initMap();
+    else { leafletMap.invalidateSize(); updateMap(); }
+  }
+}
+
+function initMap() {
+  leafletMap = L.map('cruise-map').setView([52.385, 4.905], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(leafletMap);
+  updateMap();
+}
+
+function getMarkerColor(status) {
+  return { docked:'#2a7a4a', arriving:'#c8841a', expected:'#1a5c9a', departed:'#c84040' }[status] || '#666';
+}
+
+function updateMap() {
+  if (!leafletMap) return;
+  mapMarkers.forEach(m => m.remove());
+  mapMarkers = [];
+
+  // Group ships by berth
+  const byBerth = {};
+  currentData.forEach(r => {
+    if (!byBerth[r.berth]) byBerth[r.berth] = [];
+    byBerth[r.berth].push(r);
+  });
+
+  const bounds = [];
+
+  Object.entries(byBerth).forEach(([berth, ships]) => {
+    const coords = getBerthCoords(berth);
+    if (!coords) return;
+    bounds.push(coords);
+
+    // Pick dominant status color
+    const statusPriority = ['docked','arriving','expected','departed'];
+    const topStatus = statusPriority.find(s => ships.some(r => r.status === s)) || 'expected';
+    const color = getMarkerColor(topStatus);
+
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="
+        background:${color}; color:white; border-radius:50%;
+        width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+        font-size:0.7rem; font-weight:700; font-family:'DM Mono',monospace;
+        border:2px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.3);
+        cursor:pointer;">
+        ${ships.length}
+      </div>`,
+      iconSize: [32,32],
+      iconAnchor: [16,16],
+      popupAnchor: [0,-18]
+    });
+
+    const shipRows = ships.map(r => `
+      <div style="border-top:1px solid #e0d8c8; margin-top:8px; padding-top:8px;">
+        <div class="popup-ship">${r.ship}</div>
+        <div class="popup-times">
+          <span class="popup-arr">${t('popupArr')}: ${fmt(r.arrDt,'date')} ${fmt(r.arrDt,'time')}</span>
+          <span class="popup-dep">${t('popupDep')}: ${fmt(r.depDt,'date')} ${fmt(r.depDt,'time')}</span>
+        </div>
+        <span class="popup-status ${r.status}">${t(r.status)}</span>
+      </div>`).join('');
+
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(berth + ' Amsterdam')}`;
+    const info = getBerthInfo(berth);
+    const infoHtml = info ? `
+      <div style="margin-top:8px; padding-top:8px; border-top:1px solid #e0d8c8; font-size:0.65rem; display:flex; flex-direction:column; gap:3px;">
+        <div>🚶 <strong>${lang==='nl'?'Looptijd CS':'Walk from CS'}:</strong> ${info.walk} (${info.walkM < 9999 ? info.walkM+'m' : '—'})</div>
+        <div>🚋 <strong>OV:</strong> ${info.ov}</div>
+        <div>🅿️ <strong>${lang==='nl'?'Parkeren':'Parking'}:</strong> ${info.parking}</div>
+      </div>` : '';
+    const popupHtml = `
+      <div style="min-width:220px;">
+        <div class="popup-berth">⚓ ${berth}</div>
+        ${shipRows}
+        ${infoHtml}
+        <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap;">
+          <a href="${mapsUrl}" target="_blank" style="
+            display:inline-block; background:#2a5c7a; color:white;
+            font-size:0.62rem; padding:4px 10px; border-radius:2px;
+            text-decoration:none; font-family:'DM Mono',monospace;
+            letter-spacing:0.08em; text-transform:uppercase;">
+            🧭 ${t('navBtn')}
+          </a>
+        </div>
+      </div>`;
+
+    const marker = L.marker(coords, { icon }).addTo(leafletMap);
+    marker.bindPopup(popupHtml, { maxWidth: 280 });
+    mapMarkers.push(marker);
+  });
+
+  if (bounds.length > 0) {
+    leafletMap.fitBounds(bounds, { padding: [40, 40] });
+    setTimeout(() => leafletMap.invalidateSize(), 100);
+  }
+}
+
+// ── PROXY ─────────────────────────────────────────────────────────────────────
+function saveProxyUrl() {
+  const val = document.getElementById('proxy-url-input').value.trim().replace(/\/$/,'');
+  if (!val) return;
+  proxyUrl = val;
+  localStorage.setItem('cruiseScraperUrl', val);
+  updateBanner();
+  showStatus('✓ Railway URL opgeslagen.', 'success');
+}
+
+function updateBanner() {
+  const banner = document.getElementById('proxy-banner');
+  const input  = document.getElementById('proxy-url-input');
+  const text   = document.getElementById('proxy-banner-text');
+  if (proxyUrl) {
+    banner.className = 'proxy-banner connected';
+    text.innerHTML = t('proxyConnected', proxyUrl);
+    input.value = proxyUrl;
+    input.className = 'proxy-input connected';
+  } else {
+    text.innerHTML = t('proxyPrompt');
+  }
+}
+
+// ── OPERATOR DETECTION ───────────────────────────────────────────────────────
+const OPERATORS = [
+  { match: 'VIKING',        name: 'Viking',        color: '#8B0000' },
+  { match: 'AMACERTO',      name: 'AmaWaterways',  color: '#9B1B30' },
+  { match: 'AMASERENA',     name: 'AmaWaterways',  color: '#9B1B30' },
+  { match: 'AMAPRIMA',      name: 'AmaWaterways',  color: '#9B1B30' },
+  { match: 'AMASTAR',       name: 'AmaWaterways',  color: '#9B1B30' },
+  { match: 'AMA',           name: 'AmaWaterways',  color: '#9B1B30' },
+  { match: 'AMADEUS',       name: 'Amadeus',       color: '#003366' },
+  { match: 'SCENIC',        name: 'Scenic',        color: '#2D5016' },
+  { match: 'AVALON',        name: 'Avalon',        color: '#4A235A' },
+  { match: 'A-ROSA',        name: 'A-Rosa',        color: '#C41E3A' },
+  { match: 'TUI',           name: 'TUI',           color: '#00879E' },
+  { match: 'EXCELLENCE',    name: 'Excellence',    color: '#8B6914' },
+  { match: 'MAGNIFIQUE',    name: 'CroisiEurope',  color: '#1A3A5C' },
+  { match: 'RHEIN MELODIE', name: 'Nicko',         color: '#4A4A4A' },
+  { match: 'JOHANN STRAUSS',name: 'Nicko',         color: '#4A4A4A' },
+  { match: 'VITA NOVA',     name: 'Nicko',         color: '#4A4A4A' },
+  { match: 'INSPIRE',       name: 'Riviera Travel', color: '#1B4F72' },
+  { match: 'HORIZON',       name: 'Riviera Travel', color: '#1B4F72' },
+  { match: 'ELEGANT',       name: 'Riviera Travel', color: '#1B4F72' },
+  { match: 'ALENA',         name: 'Plantours',     color: '#5D4037' },
+  { match: 'AURELIA',       name: 'Plantours',     color: '#5D4037' },
+];
+
+function getOperator(shipName) {
+  const upper = shipName.toUpperCase();
+  for (const op of OPERATORS) {
+    if (upper.includes(op.match.toUpperCase())) return op;
+  }
+  return { name: 'Other', color: '#7a7060' };
+}
+
+function operatorBadge(shipName) {
+  const op = getOperator(shipName);
+  return `<span class="operator-badge" style="background:${op.color}">${op.name}</span>`;
+}
+
+// ── RENDER TABLE ──────────────────────────────────────────────────────────────
+function populateBerths(data) {
+  const sel = document.getElementById('filter-berth');
+  const cur = sel.value;
+  sel.innerHTML = `<option value="" id="opt-all-berths">${t('allBerths')}</option>`;
+  [...new Set(data.map(d=>d.berth))].sort().forEach(b=>{
+    const o=document.createElement('option'); o.value=b; o.textContent=b;
+    if(b===cur) o.selected=true; sel.appendChild(o);
+  });
+}
+
+function renderTable() {
+  const search = document.getElementById('search-ship').value.toLowerCase();
+  const berth  = document.getElementById('filter-berth').value;
+  const st     = document.getElementById('filter-status').value;
+
+  const dateFilter = document.getElementById('filter-date').value; // YYYY-MM-DD
+
+  let f = currentData.filter(r=>{
+    if(search && !r.ship.toLowerCase().includes(search)) return false;
+    if(berth  && r.berth!==berth) return false;
+    if(st     && r.status!==st)   return false;
+    if(dateFilter) {
+      // Ship must be present on the selected date (arr <= date <= dep)
+      const sel = new Date(dateFilter);
+      sel.setHours(23,59,59);
+      const selStart = new Date(dateFilter);
+      selStart.setHours(0,0,0);
+      if (r.depDt < selStart || r.arrDt > sel) return false;
+    }
+    return true;
+  });
+
+  f.sort((a,b)=>{
+    if(sortCol===0) return sortDir*a.ship.localeCompare(b.ship);
+    if(sortCol===1) return sortDir*a.berth.localeCompare(b.berth);
+    if(sortCol===2) return sortDir*(a.arrDt-b.arrDt);
+    if(sortCol===3) return sortDir*(a.depDt-b.depDt);
+    if(sortCol===4) return sortDir*((a.depDt-a.arrDt)-(b.depDt-b.arrDt));
+    return 0;
+  });
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  f.forEach((r,i)=>{
+    const barW = Math.min(80,Math.max(16,(r.depDt-r.arrDt)/3600000*2.5));
+    const coords = getBerthCoords(r.berth);
+    const berthClick = coords
+      ? `onclick="openMapAt(${coords[0]},${coords[1]},'${r.berth.replace(/'/g,"\\'")}'); return false;"`
+      : '';
+    const tr = document.createElement('tr');
+    tr.style.animationDelay = `${i*0.03}s`;
+    tr.innerHTML = `
+      <td><div class="ship-cell"><div class="ship-name">${r.ship}</div>${operatorBadge(r.ship)}</div></td>
+      <td><span class="berth-tag" title="${t('navBtn')}: ${r.berth}" ${berthClick}>${r.berth}</span></td>
+      <td class="time-cell"><div class="time-block">
+        <span class="time-date">${fmt(r.arrDt,'date')}</span>
+        <span class="time-hour arr">⬆ ${fmt(r.arrDt,'time')}</span>
+      </div></td>
+      <td class="time-cell"><div class="time-block">
+        <span class="time-date">${fmt(r.depDt,'date')}</span>
+        <span class="time-hour dep">⬇ ${fmt(r.depDt,'time')}</span>
+      </div></td>
+      <td><div class="duration-bar-wrap">
+        <div class="duration-bar" style="width:${barW}px"></div>
+        <span class="duration-text">${duration(r.arrDt,r.depDt)}</span>
+      </div>
+
+      </td>
+      <td>${pill(r.status)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('result-count').textContent = t('results', f.length);
+  document.getElementById('empty-state').style.display = f.length===0?'block':'none';
+  document.getElementById('stat-total').textContent  = currentData.length;
+  document.getElementById('stat-docked').textContent = currentData.filter(d=>d.status==='docked').length;
+  document.getElementById('stat-berths').textContent = new Set(currentData.map(d=>d.berth)).size;
+  const tod = new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');
+  document.getElementById('stat-today').textContent  = currentData.filter(d=>d.arr.startsWith(tod)||d.dep.startsWith(tod)).length;
+}
+
+function openMapAt(lat, lng, berth) {
+  if (!mapVisible) toggleMap();
+  setTimeout(() => {
+    if (leafletMap) {
+      leafletMap.setView([lat, lng], 16);
+      mapMarkers.forEach(m => {
+        const pos = m.getLatLng();
+        if (Math.abs(pos.lat - lat) < 0.001 && Math.abs(pos.lng - lng) < 0.001) m.openPopup();
+      });
+    }
+  }, 300);
+}
+
+function filterTable() { renderTable(); if(mapVisible) updateMap(); }
+
+function sortTable(col) {
+  if(sortCol===col) sortDir*=-1; else { sortCol=col; sortDir=1; }
+  document.querySelectorAll('th').forEach((th,i)=>{
+    th.classList.toggle('sorted',i===col);
+    const ic=th.querySelector('.sort-icon');
+    if(ic) ic.textContent=i===col?(sortDir===1?' ↑':' ↓'):' ⇅';
+  });
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('search-ship').value='';
+  document.getElementById('filter-berth').value='';
+  document.getElementById('filter-status').value='';
+  document.getElementById('filter-date').value='';
+  document.getElementById('today-btn').classList.remove('active');
+  renderTable();
+}
+
+function filterToday() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('filter-date').value = today;
+  document.getElementById('today-btn').classList.add('active');
+  renderTable();
+}
+
+function onDateChange() {
+  const today = new Date().toISOString().split('T')[0];
+  const val = document.getElementById('filter-date').value;
+  document.getElementById('today-btn').classList.toggle('active', val === today);
+  renderTable();
+}
+
+function showStatus(msg, type) {
+  const el=document.getElementById('status-msg');
+  el.textContent=msg; el.className=`status-inner ${type}`;
+  if(type==='success') setTimeout(()=>{ el.className='status-inner'; },6000);
+}
+
+// ── LIVE FETCH ────────────────────────────────────────────────────────────────
+async function fetchLiveData() {
+  if (!proxyUrl) { showStatus(t('errNoUrl'), 'error'); return; }
+
+  const btn = document.getElementById('refresh-btn');
+  const bar = document.getElementById('loading-bar');
+  btn.disabled=true; btn.classList.add('spinning'); bar.classList.add('active');
+  showStatus(t('loadingMsg'), 'info');
+
+  try {
+    const response = await fetch(`${proxyUrl}/api/ships`);
+    if (!response.ok) throw new Error(t('errServer', response.status));
+
+    const json = await response.json();
+    if (!json.ok || !Array.isArray(json.ships) || json.ships.length === 0) {
+      throw new Error(json.error || t('errNoShips'));
+    }
+
+    currentData = process(json.ships);
+    populateBerths(currentData);
+    renderTable();
+    if (mapVisible) updateMap();
+
+    const now = new Date();
+    const ti = now.toLocaleTimeString(lang==='nl'?'nl-NL':'en-GB',{hour:'2-digit',minute:'2-digit'});
+    const da = now.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('last-updated').textContent = t('liveNote', da, ti, json.ships.length);
+    document.getElementById('last-refresh-time').textContent = ti;
+    document.getElementById('last-refresh').style.display = 'block';
+
+    const msg = json.from_cache ? t('cacheMsg', json.ships.length, json.cache_age_minutes) : t('freshMsg', json.ships.length);
+    showStatus(msg, 'success');
+
+  } catch(err) {
+    console.error(err);
+    showStatus(t('errFetch', err.message), 'error');
+  } finally {
+    btn.disabled=false; btn.classList.remove('spinning'); bar.classList.remove('active');
+  }
+}
+
+// ── SHARE ────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const toast = document.getElementById('share-toast');
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 2500);
+}
+
+async function sharePortal() {
+  const url = window.location.href;
+  const title = 'Amsterdam River Cruise Portal';
+  const text = lang === 'nl'
+    ? 'Bekijk live aankomst- en vertrektijden van riviercruiseschepen in Amsterdam'
+    : 'View live arrival and departure times of river cruise ships in Amsterdam';
+
+  // Use native share if available (mobile)
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+      return;
+    } catch(e) { /* user cancelled */ return; }
+  }
+
+  // Fallback: copy to clipboard
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast(lang === 'nl' ? '✓ Link gekopieerd!' : '✓ Link copied!');
+  } catch(e) {
+    // Last resort: prompt
+    prompt(lang === 'nl' ? 'Kopieer deze link:' : 'Copy this link:', url);
+  }
+}
+
+// ── WEATHER ──────────────────────────────────────────────────────────────────
+const WMO_CODES = {
+  0: ['☀️','Helder'],1:['🌤','Vrijwel helder'],2:['⛅','Bewolkt'],3:['☁️','Zwaar bewolkt'],
+  45:['🌫','Mist'],48:['🌫','IJsmist'],51:['🌦','Lichte motregen'],53:['🌦','Motregen'],
+  55:['🌧','Zware motregen'],61:['🌧','Lichte regen'],63:['🌧','Regen'],65:['🌧','Zware regen'],
+  71:['🌨','Lichte sneeuw'],73:['🌨','Sneeuw'],75:['❄️','Zware sneeuw'],
+  80:['🌦','Buien'],81:['🌧','Zware buien'],82:['⛈','Hevige buien'],
+  95:['⛈','Onweer'],96:['⛈','Onweer met hagel'],99:['⛈','Zwaar onweer']
+};
+
+const WMO_EN = {
+  0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
+  45:'Fog',48:'Icy fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',
+  61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',
+  80:'Showers',81:'Heavy showers',82:'Violent showers',95:'Thunderstorm',
+  96:'Thunderstorm w/ hail',99:'Severe thunderstorm'
+};
+
+async function fetchWeather() {
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.890&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&timezone=Europe%2FAmsterdam&models=best_match';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    // Log full response for debugging
+    console.log('Weer data:', JSON.stringify(data));
+
+    if (!data.current) throw new Error('Geen current data in response');
+    const c = data.current;
+
+    const code = c.weather_code ?? c.weathercode ?? 0;
+    const [icon, descNl] = WMO_CODES[code] || ['🌡','Onbekend'];
+    const descEn = WMO_EN[code] || 'Unknown';
+
+    const temp = c.temperature_2m ?? '—';
+    const wind = c.wind_speed_10m ?? c.windspeed_10m ?? '—';
+    const hum  = c.relative_humidity_2m ?? c.relativehumidity_2m ?? '—';
+
+    document.getElementById('weather-temp').textContent = typeof temp === 'number' ? Math.round(temp) : temp;
+    document.getElementById('weather-icon').textContent = icon;
+    document.getElementById('weather-desc').textContent = lang === 'nl' ? descNl : descEn;
+    document.getElementById('weather-extra').textContent = lang === 'nl'
+      ? `💨 ${typeof wind === 'number' ? Math.round(wind) : wind} km/u · 💧 ${hum}%`
+      : `💨 ${typeof wind === 'number' ? Math.round(wind) : wind} km/h · 💧 ${hum}%`;
+
+  } catch(e) {
+    console.error('Weer ophalen mislukt:', e.message);
+    document.getElementById('weather-extra').textContent = 'Weer niet beschikbaar';
+  }
+}
+
+// ── PWA ──────────────────────────────────────────────────────────────────────
+const manifest = {
+  name: 'Harbour Ministries Cruise Portal',
+  short_name: 'HM Cruise',
+  description: 'Live riviercruiseschepen Amsterdam',
+  start_url: '/',
+  display: 'standalone',
+  background_color: '#0d1117',
+  theme_color: '#0d1117',
+  icons: [
+    {
+      src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230d1117'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='30' font-weight='700' fill='%23e8a030' text-anchor='middle' letter-spacing='-1'%3EHM%3C/text%3E%3C/svg%3E",
+      sizes: '64x64',
+      type: 'image/svg+xml',
+      purpose: 'any maskable'
+    }
+  ]
+};
+const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+
+// Register service worker for offline support
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE = 'hm-cruise-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/'])));
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        fetch(e.request).catch(() => caches.match(e.request))
+      );
+    });
+  `;
+  const swBlob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+// ── BERTH INFO CARDS ─────────────────────────────────────────────────────────
+function renderBerthCards() {
+  const grid = document.getElementById('berth-info-grid');
+  grid.innerHTML = '';
+  Object.entries(BERTH_INFO).forEach(([berth, info]) => {
+    const card = document.createElement('div');
+    card.className = 'berth-card';
+    const coords = getBerthCoords(berth);
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(berth + ' Amsterdam')}`;
+    card.innerHTML = `
+      <div class="berth-card-name">${berth}</div>
+      <div class="berth-card-row">
+        <span class="berth-card-icon">🚶</span>
+        <div>
+          <div class="berth-card-label">${lang==='nl'?'Looptijd vanaf CS':'Walk from CS'}</div>
+          <div class="berth-card-value">${info.walk}${info.walkM < 9999 ? ' · '+info.walkM+'m' : ''}</div>
+        </div>
+      </div>
+      <div class="berth-card-row">
+        <span class="berth-card-icon">🚋</span>
+        <div>
+          <div class="berth-card-label">OV</div>
+          <div class="berth-card-value">${info.ov}</div>
+        </div>
+      </div>
+      <div class="berth-card-row">
+        <span class="berth-card-icon">🅿️</span>
+        <div>
+          <div class="berth-card-label">${lang==='nl'?'Parkeren':'Parking'}</div>
+          <div class="berth-card-value">${info.parking}</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <a href="${mapsUrl}" target="_blank" style="font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; background:var(--canal); color:white; padding:4px 10px; border-radius:2px; text-decoration:none;">🧭 ${lang==='nl'?'Navigeren':'Navigate'}</a>
+      </div>`;
+    grid.appendChild(card);
+  });
+  // Update title
+  const title = document.getElementById('berth-info-title');
+  if (title) title.textContent = lang==='nl' ? '⚓ Ligplaatsen — Praktische informatie' : '⚓ Berths — Practical information';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+currentData = process(FALLBACK);
+populateBerths(currentData);
+applyTranslations();
+renderTable();
+renderBerthCards();
+updateBanner();
+applyDark();
+fetchWeather();
+setInterval(fetchWeather, 10 * 60 * 1000); // refresh weer elke 10 minuten
+
+
+</script>
+<div class="share-toast" id="share-toast"></div>
+</body>
+</html>
