@@ -210,6 +210,38 @@
   .empty-state p { font-family: 'Playfair Display', serif; font-style: italic; }
 
   .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); align-items: center; }
+
+  /* VIEW SWITCHER */
+  .view-switcher { display: flex; gap: 4px; margin-bottom: 16px; }
+  .view-btn { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 6px 14px; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+  .view-btn.active { background: var(--canal); color: white; border-color: var(--canal); }
+  .view-btn:hover:not(.active) { border-color: var(--canal); color: var(--canal); }
+
+  /* TIMELINE */
+  .timeline-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 2px; position: relative; }
+  .tl-header-row { display: flex; position: sticky; top: 0; background: var(--ink); z-index: 2; }
+  .tl-ship-col { width: 130px; flex-shrink: 0; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); padding: 8px 10px; border-right: 1px solid rgba(255,255,255,0.1); position: sticky; left: 0; background: var(--ink); z-index: 3; }
+  .tl-days-header { display: flex; flex: 1; }
+  .tl-day-col { flex: none; text-align: center; padding: 6px 0; border-right: 1px solid rgba(255,255,255,0.1); }
+  .tl-day-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber-light); display: block; font-weight: 500; }
+  .tl-day-sub { font-size: 0.58rem; color: rgba(255,255,255,0.4); display: block; }
+  .tl-body { }
+  .tl-row { display: flex; border-bottom: 1px solid var(--border); align-items: center; min-height: 38px; }
+  .tl-row:last-child { border-bottom: none; }
+  .tl-row:hover { background: var(--warm); }
+  .tl-ship-name { width: 130px; flex-shrink: 0; font-size: 0.7rem; color: var(--ink); padding: 6px 10px; border-right: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: sticky; left: 0; background: inherit; z-index: 1; font-family: 'Playfair Display', serif; font-weight: 700; }
+  .tl-track { position: relative; height: 38px; flex-shrink: 0; }
+  .tl-bar { position: absolute; height: 22px; top: 8px; border-radius: 2px; display: flex; align-items: center; padding: 0 6px; font-size: 0.58rem; font-weight: 600; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; cursor: pointer; transition: opacity 0.15s; }
+  .tl-bar:hover { opacity: 0.8; }
+  .tl-now-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--departure); z-index: 2; pointer-events: none; }
+  .tl-now-label { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; color: var(--departure); white-space: nowrap; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .tl-grid-line { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); pointer-events: none; opacity: 0.5; }
+  body.dark .tl-ship-name { background: var(--paper); }
+  body.dark .tl-row:hover { background: var(--warm); }
+  @media (max-width: 768px) {
+    .tl-ship-col { width: 90px; }
+    .tl-ship-name { width: 90px; font-size: 0.62rem; }
+  }
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
@@ -467,7 +499,13 @@
       <div class="table-title" id="tbl-title">Riviercruiseschepen in &amp; rondom Amsterdam</div>
       <div class="last-updated" id="last-updated">Statische data van 18 mei 2026 — klik "Data verversen" voor actuele gegevens</div>
     </div>
-    <div class="result-count" id="result-count">25 resultaten</div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div class="view-switcher">
+        <button class="view-btn active" id="btn-view-table" onclick="setView('table')">⊞ Tabel</button>
+        <button class="view-btn" id="btn-view-timeline" onclick="setView('timeline')">▶ Tijdlijn</button>
+      </div>
+      <div class="result-count" id="result-count">25 resultaten</div>
+    </div>
   </div>
 
   <div class="legend">
@@ -494,6 +532,16 @@
   <div id="empty-state" class="empty-state" style="display:none;">
     <div class="empty-state-icon">⚓</div>
     <p id="empty-txt">Geen schepen gevonden voor deze zoekopdracht.</p>
+  </div>
+
+  <div id="timeline-view" style="display:none;">
+    <div class="timeline-wrap" id="timeline-wrap">
+      <div class="tl-header-row">
+        <div class="tl-ship-col">Schip</div>
+        <div class="tl-days-header" id="tl-days-header"></div>
+      </div>
+      <div class="tl-body" id="tl-body"></div>
+    </div>
   </div>
 </div>
 
@@ -1173,7 +1221,7 @@ function openMapAt(lat, lng, berth) {
   }, 300);
 }
 
-function filterTable() { renderTable(); if(mapVisible) updateMap(); }
+function filterTable() { if(currentView==='timeline') renderTimeline(); else renderTable(); if(mapVisible) updateMap(); }
 
 function sortTable(col) {
   if(sortCol===col) sortDir*=-1; else { sortCol=col; sortDir=1; }
@@ -1474,6 +1522,125 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
   }
 });
+
+// ── VIEW SWITCHER ────────────────────────────────────────────────────────────
+let currentView = 'table';
+
+function setView(view) {
+  currentView = view;
+  document.getElementById('btn-view-table').classList.toggle('active', view === 'table');
+  document.getElementById('btn-view-timeline').classList.toggle('active', view === 'timeline');
+  document.querySelector('table').style.display = view === 'table' ? '' : 'none';
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('timeline-view').style.display = view === 'timeline' ? 'block' : 'none';
+  if (view === 'timeline') renderTimeline();
+  else renderTable();
+}
+
+// ── TIMELINE ──────────────────────────────────────────────────────────────────
+function renderTimeline() {
+  const search = document.getElementById('search-ship').value.toLowerCase();
+  const berth  = document.getElementById('filter-berth').value;
+  const st     = document.getElementById('filter-status').value;
+  const dateFilter = document.getElementById('filter-date').value;
+
+  let filtered = currentData.filter(r => {
+    if(search && !r.ship.toLowerCase().includes(search)) return false;
+    if(berth  && r.berth!==berth) return false;
+    if(st     && r.status!==st)   return false;
+    if(dateFilter) {
+      const sel = new Date(dateFilter); sel.setHours(23,59,59);
+      const selStart = new Date(dateFilter); selStart.setHours(0,0,0);
+      if (r.depDt < selStart || r.arrDt > sel) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    document.getElementById('timeline-view').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'block';
+    return;
+  }
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('timeline-view').style.display = 'block';
+
+  // Determine date range from filtered data
+  const minDate = new Date(Math.min(...filtered.map(r => r.arrDt)));
+  const maxDate = new Date(Math.max(...filtered.map(r => r.depDt)));
+
+  // Round to day boundaries
+  const startDay = new Date(minDate); startDay.setHours(0,0,0,0);
+  const endDay   = new Date(maxDate); endDay.setHours(0,0,0,0); endDay.setDate(endDay.getDate()+1);
+
+  const totalMs = endDay - startDay;
+  const totalDays = Math.ceil(totalMs / 86400000);
+  const DAY_W = Math.max(120, Math.min(200, Math.floor(600 / totalDays)));
+  const TOTAL_W = DAY_W * totalDays;
+  const now = new Date();
+
+  // Build days array
+  const days = [];
+  for (let i = 0; i < totalDays; i++) {
+    const d = new Date(startDay); d.setDate(d.getDate() + i);
+    days.push(d);
+  }
+
+  // Render header
+  const daysHeader = document.getElementById('tl-days-header');
+  daysHeader.innerHTML = '';
+  days.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'tl-day-col';
+    el.style.width = DAY_W + 'px';
+    const dayName = d.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{weekday:'short'});
+    const dayLabel = d.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{day:'numeric',month:'short'});
+    el.innerHTML = `<span class="tl-day-label">${dayLabel}</span><span class="tl-day-sub">${dayName}</span>`;
+    daysHeader.appendChild(el);
+  });
+
+  // Render rows
+  const body = document.getElementById('tl-body');
+  body.innerHTML = '';
+
+  const nowPct = Math.max(0, Math.min(1, (now - startDay) / totalMs));
+
+  filtered.forEach((r, idx) => {
+    const arrPct = Math.max(0, Math.min(1, (r.arrDt - startDay) / totalMs));
+    const depPct = Math.max(0, Math.min(1, (r.depDt - startDay) / totalMs));
+    const barLeft  = arrPct * TOTAL_W;
+    const barWidth = Math.max(4, (depPct - arrPct) * TOTAL_W);
+
+    const colors = { docked:'#2a7a4a', arriving:'#c8841a', expected:'#2a5c7a', departed:'#c84040' };
+    const color = colors[r.status] || '#888';
+    const textColor = 'white';
+
+    const row = document.createElement('div');
+    row.className = 'tl-row';
+
+    // Grid lines for each day
+    let gridLines = '';
+    for (let i = 1; i < totalDays; i++) {
+      gridLines += `<div class="tl-grid-line" style="left:${i*DAY_W}px"></div>`;
+    }
+
+    // Now line
+    const nowLine = nowPct > 0 && nowPct < 1
+      ? `<div class="tl-now-line" style="left:${nowPct*TOTAL_W}px"><span class="tl-now-label">${lang==='nl'?'Nu':'Now'}</span></div>`
+      : '';
+
+    row.innerHTML = `
+      <div class="tl-ship-name" title="${r.ship}">${r.ship}</div>
+      <div class="tl-track" style="width:${TOTAL_W}px;">
+        ${gridLines}
+        ${nowLine}
+        <div class="tl-bar" style="left:${barLeft}px;width:${barWidth}px;background:${color};color:${textColor};"
+          title="${r.ship}&#10;${lang==='nl'?'Aankomst':'Arrival'}: ${fmt(r.arrDt,'date')} ${fmt(r.arrDt,'time')}&#10;${lang==='nl'?'Vertrek':'Departure'}: ${fmt(r.depDt,'date')} ${fmt(r.depDt,'time')}">
+          ${barWidth > 80 ? r.ship.split(' ')[0] : ''}
+        </div>
+      </div>`;
+    body.appendChild(row);
+  });
+}
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 currentData = process(FALLBACK);
