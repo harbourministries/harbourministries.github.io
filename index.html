@@ -1239,12 +1239,7 @@ function renderTable() {
     const tr = document.createElement('tr');
     tr.style.animationDelay = `${i*0.03}s`;
     tr.innerHTML = `
-      <td><div class="ship-cell">
-        <a href="https://www.marinetraffic.com/en/ais/index/search/all/keyword:${encodeURIComponent(r.ship)}" target="_blank" style="text-decoration:none;color:inherit;" title="${lang==='nl'?'Live positie op MarineTraffic':'Live position on MarineTraffic'}">
-          <div class="ship-name" style="display:flex;align-items:center;gap:5px;">${r.ship}<span style="font-size:0.55rem;color:var(--canal);opacity:0.7;font-family:'DM Mono',monospace">↗</span></div>
-        </a>
-        ${operatorBadge(r.ship)}
-      </div></td>
+      <td><div class="ship-cell"><div class="ship-name">${r.ship}</div>${operatorBadge(r.ship)}</div></td>
       <td><span class="berth-tag" title="${t('navBtn')}: ${r.berth}" ${berthClick}>${r.berth}</span></td>
       <td class="time-cell"><div class="time-block">
         <span class="time-date">${fmt(r.arrDt,'date')}</span>
