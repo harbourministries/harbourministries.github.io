@@ -1352,8 +1352,35 @@ async function fetchLiveData(silent = false) {
     showStatus(t('loadingMsg'), 'info');
   }
 
+  const fetchWithTimeout = async (url, timeoutMs = 40000) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(id);
+      return res;
+    } catch(e) {
+      clearTimeout(id);
+      throw e;
+    }
+  };
+
+  const fetchWithRetry = async (url, retries = 2) => {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        if (i > 0) {
+          if (!silent) showStatus(`⟳ Opnieuw proberen (poging ${i+1})…`, 'info');
+          await new Promise(r => setTimeout(r, 3000));
+        }
+        return await fetchWithTimeout(url);
+      } catch(e) {
+        if (i === retries) throw e;
+      }
+    }
+  };
+
   try {
-    const response = await fetch(`${proxyUrl}/api/ships`);
+    const response = await fetchWithRetry(`${proxyUrl}/api/ships`);
     if (!response.ok) throw new Error(t('errServer', response.status));
 
     const json = await response.json();
