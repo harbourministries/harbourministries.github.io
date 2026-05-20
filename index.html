@@ -244,7 +244,9 @@
   /* TIMELINE */
   .timeline-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 2px; position: relative; }
   .tl-header-row { display: flex; position: sticky; top: 0; background: var(--ink); z-index: 2; }
-  .tl-ship-col { width: 130px; flex-shrink: 0; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); padding: 8px 10px; border-right: 1px solid rgba(255,255,255,0.1); position: sticky; left: 0; background: var(--ink); z-index: 3; }
+  .tl-ship-col { width: 260px; flex-shrink: 0; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); padding: 8px 10px; border-right: 1px solid rgba(255,255,255,0.1); position: sticky; left: 0; background: var(--ink); z-index: 3; display: flex; gap: 0; }
+  .tl-ship-col-ship { width: 130px; flex-shrink: 0; }
+  .tl-ship-col-berth { width: 130px; flex-shrink: 0; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 8px; }
   .tl-days-header { display: flex; flex: 1; }
   .tl-day-col { flex: none; text-align: center; padding: 6px 0; border-right: 1px solid rgba(255,255,255,0.1); }
   .tl-day-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber-light); display: block; font-weight: 500; }
@@ -253,7 +255,9 @@
   .tl-row { display: flex; border-bottom: 1px solid var(--border); align-items: center; min-height: 38px; }
   .tl-row:last-child { border-bottom: none; }
   .tl-row:hover { background: var(--warm); }
-  .tl-ship-name { width: 130px; flex-shrink: 0; font-size: 0.7rem; color: var(--ink); padding: 6px 10px; border-right: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: sticky; left: 0; background: inherit; z-index: 1; font-family: 'Playfair Display', serif; font-weight: 700; }
+  .tl-ship-name { width: 260px; flex-shrink: 0; font-size: 0.7rem; color: var(--ink); padding: 0; border-right: 1px solid var(--border); position: sticky; left: 0; background: inherit; z-index: 1; display: flex; gap: 0; }
+  .tl-ship-name-ship { width: 130px; flex-shrink: 0; font-family: 'Playfair Display', serif; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 6px 10px; }
+  .tl-ship-name-berth { width: 130px; flex-shrink: 0; font-size: 0.6rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 6px 8px; border-left: 1px solid var(--border); display: flex; align-items: center; }
   .tl-track { position: relative; height: 38px; flex-shrink: 0; }
   .tl-bar { position: absolute; height: 22px; top: 8px; border-radius: 2px; display: flex; align-items: center; padding: 0 6px; font-size: 0.58rem; font-weight: 600; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; cursor: pointer; transition: opacity 0.15s; }
   .tl-bar:hover { opacity: 0.8; }
@@ -261,6 +265,7 @@
   .tl-now-label { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; color: var(--departure); white-space: nowrap; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
   .tl-grid-line { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); pointer-events: none; opacity: 0.5; }
   body.dark .tl-ship-name { background: var(--paper); color: var(--ink); }
+  body.dark .tl-ship-name-berth { color: var(--muted); border-left-color: var(--border); }
   body.dark .tl-row { background: var(--paper); }
   body.dark .tl-row:hover { background: var(--warm); }
   body.dark .tl-header-row { background: #060e1c; }
@@ -271,8 +276,12 @@
   body.dark .timeline-wrap { border-color: var(--border); }
   body.dark .tl-grid-line { background: rgba(255,255,255,0.08); }
   @media (max-width: 768px) {
-    .tl-ship-col { width: 90px; }
-    .tl-ship-name { width: 90px; font-size: 0.62rem; }
+    .tl-ship-col { width: 140px; }
+    .tl-ship-col-ship { width: 80px; }
+    .tl-ship-col-berth { width: 60px; font-size: 0.52rem; }
+    .tl-ship-name { width: 140px; }
+    .tl-ship-name-ship { width: 80px; font-size: 0.62rem; }
+    .tl-ship-name-berth { width: 60px; font-size: 0.55rem; }
   }
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
@@ -611,7 +620,10 @@
   <div id="timeline-view" style="display:none;">
     <div class="timeline-wrap" id="timeline-wrap">
       <div class="tl-header-row">
-        <div class="tl-ship-col">Schip</div>
+        <div class="tl-ship-col">
+          <div class="tl-ship-col-ship" id="tl-hdr-ship">Schip</div>
+          <div class="tl-ship-col-berth" id="tl-hdr-berth">Ligplaats</div>
+        </div>
         <div class="tl-days-header" id="tl-days-header"></div>
       </div>
       <div class="tl-body" id="tl-body"></div>
@@ -1002,6 +1014,8 @@ function applyTranslations() {
   const thu = document.getElementById('th-dur'); if(thu&&thu.childNodes[0]) thu.childNodes[0].textContent=t('thDur')+' ';
   s('th-status', t('thStatus'));
   s('lbl-status', t('legendStatus'));
+  s('tl-hdr-ship', lang==='nl'?'Schip':'Vessel');
+  s('tl-hdr-berth', lang==='nl'?'Ligplaats':'Berth');
   s('leg-docked', t('docked'));
   s('leg-arriving', t('arriving'));
   s('leg-expected', t('expected'));
@@ -1762,7 +1776,10 @@ function renderTimeline() {
       : '';
 
     row.innerHTML = `
-      <div class="tl-ship-name" title="${r.ship}">${r.ship}</div>
+      <div class="tl-ship-name">
+        <div class="tl-ship-name-ship" title="${r.ship}">${r.ship}</div>
+        <div class="tl-ship-name-berth" title="${r.berth}">${r.berth.split(',')[0].split(' via')[0]}</div>
+      </div>
       <div class="tl-track" style="width:${TOTAL_W}px;">
         ${gridLines}
         ${nowLine}
