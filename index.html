@@ -2019,10 +2019,7 @@ startAutoRefresh(); // auto-refresh data elke 15 minuten
 
 // Automatisch live data laden bij opstart
 if (proxyUrl) {
-  showStatus(lang === 'nl' ? '⟳ Schepen laden…' : '⟳ Loading vessels…', 'info');
-  fetchLiveData(true).then(() => {
-    // silent=true, geen knop animatie
-  });
+  setTimeout(() => fetchLiveData(), 500);
 }
 
 
