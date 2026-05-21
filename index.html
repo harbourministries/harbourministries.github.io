@@ -285,7 +285,6 @@
   }
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-
   /* BERTH INFO SECTION */
   .berth-info-section { background: var(--warm); border-top: 2px solid var(--border); margin-top: 0; }
   .berth-info-inner { max-width: 1200px; margin: 0 auto; padding: 32px 32px; }
@@ -838,18 +837,35 @@ function getBerthInfo(berth) {
 }
 
 const BERTH_COORDS = {
-  'Ruijterkade Oost 3':                          [52.3791, 4.9065],
-  'Ruijterkade West 3':                          [52.3793, 4.9020],
-  'Ruijterkade West 6':                          [52.3795, 4.8995],
-  'PTA, LP 1 via Muziekgebouw':                  [52.3776, 4.9122],
-  'PTA, LP 2 via Muziekgebouw':                  [52.3773, 4.9130],
-  'PTA, LP 3 via Vriesseveem':                   [52.3769, 4.9140],
-  'PTA, LP 4 via Vriesseveem':                   [52.3766, 4.9148],
-  'Prins Hendrikkade 1':                         [52.3789, 4.9058],
-  'Westerdoksdijk':                              [52.3843, 4.8940],
-  'Tolhuis LP 2':                                [52.3842, 4.9205],
-  'Minervahaven Passagierssteiger Steiger Zuid':  [52.3948, 4.8672],
-  'Bodecentrum Buiten (Zaantheater), Zaandam':   [52.4384, 4.8230],
+  // ── Centraal gebied ──
+  'Prins Hendrikkade 1':                              [52.3789, 4.9058],
+  'Ruijterkade Oost 2':                              [52.3792, 4.9070],
+  'Ruijterkade Oost 3':                              [52.3791, 4.9065],
+  'Ruijterkade West 2':                              [52.3794, 4.9030],
+  'Ruijterkade West 3':                              [52.3793, 4.9020],
+  'Ruijterkade West 4':                              [52.3794, 4.9010],
+  'Ruijterkade West 5':                              [52.3795, 4.9002],
+  'Ruijterkade West 6':                              [52.3795, 4.8995],
+  // ── PTA (Passenger Terminal Amsterdam) ──
+  'PTA, LP 1 via Muziekgebouw':                      [52.3776, 4.9122],
+  'PTA, LP 2 via Muziekgebouw':                      [52.3773, 4.9130],
+  'PTA, LP 3 via Vriesseveem':                       [52.3769, 4.9140],
+  'PTA, LP 4 via Vriesseveem':                       [52.3766, 4.9148],
+  // ── Westerdok ──
+  'Westerdoksdijk':                                  [52.3843, 4.8940],
+  // ── Noord (via pont) ──
+  'Tolhuis LP 1':                                    [52.3843, 4.9210],
+  'Tolhuis LP 2':                                    [52.3842, 4.9205],
+  'IJRO 1':                                          [52.3855, 4.9180],
+  // ── Minervahaven ──
+  'Minervahaven Passagierssteiger Steiger Noord':     [52.3952, 4.8675],
+  'Minervahaven Passagierssteiger Steiger Zuid':      [52.3948, 4.8672],
+  // ── Coen Haven ──
+  'Coen Haven Westerhoofd paal 1':                   [52.4012, 4.8320],
+  'Coen Haven Westerhoofd paal 6':                   [52.4015, 4.8330],
+  // ── Zaandam ──
+  'Bodecentrum Buiten (Zaantheater), Zaandam':       [52.4384, 4.8230],
+  'Bodecentrum Binnen (Zaantheater), Zaandam':       [52.4382, 4.8228],
 };
 
 function getBerthCoords(berth) {
@@ -1251,6 +1267,7 @@ function renderTable() {
 
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = '';
+
   f.forEach((r,i)=>{
     const barW = Math.min(80,Math.max(16,(r.depDt-r.arrDt)/3600000*2.5));
     const coords = getBerthCoords(r.berth);
@@ -1576,6 +1593,39 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── BERTH INFO CARDS ─────────────────────────────────────────────────────────
+function makeWhatsAppMessage(berth, info, mapsUrl, ships) {
+  const shipsOnBerth = ships || currentData.filter(r => r.berth === berth);
+  const shipLines = shipsOnBerth
+    .filter(r => r.status !== 'departed')
+    .map(r => `  🚢 ${r.ship} (⬆ ${fmt(r.arrDt,'time')} – ⬇ ${fmt(r.depDt,'time')})`)
+    .join('
+');
+
+  const lines = [
+    `⚓ *${berth}*`,
+    '',
+    shipLines ? (lang==='nl' ? `*Schepen:*
+${shipLines}` : `*Vessels:*
+${shipLines}`) : '',
+    '',
+    `🚶 *${lang==='nl'?'Looptijd vanaf CS':'Walk from CS'}:* ${info.walk}${info.walkM < 9999 ? ' ('+info.walkM+'m)' : ''}`,
+    `🚋 *OV:* ${info.ov}`,
+    `🅿️ *${lang==='nl'?'Parkeren':'Parking'}:* ${info.parking}`,
+    '',
+    `🗺 *${lang==='nl'?'Navigeer naar':'Navigate to'} Google Maps:*`,
+    mapsUrl,
+  ].filter(l => l !== undefined);
+
+  return lines.join('
+').trim();
+}
+
+function shareWhatsApp(berth, info, mapsUrl) {
+  const msg = makeWhatsAppMessage(berth, info, mapsUrl);
+  const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
 function renderBerthCards() {
   const grid = document.getElementById('berth-info-grid');
   grid.innerHTML = '';
@@ -1607,8 +1657,9 @@ function renderBerthCards() {
           <div class="berth-card-value">${info.parking}</div>
         </div>
       </div>
-      <div style="margin-top:10px;">
+      <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap;">
         <a href="${mapsUrl}" target="_blank" style="font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; background:var(--canal); color:white; padding:4px 10px; border-radius:2px; text-decoration:none;">🧭 ${lang==='nl'?'Navigeren':'Navigate'}</a>
+        <button onclick="shareWhatsApp('${berth.replace(/'/g,"\'")}', ${JSON.stringify(info)}, '${mapsUrl}')" style="font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; background:#25D366; color:white; border:none; padding:4px 10px; border-radius:2px; cursor:pointer;">📲 WhatsApp</button>
       </div>`;
     grid.appendChild(card);
   });
@@ -1650,6 +1701,15 @@ function openBottomSheet(berth, ships) {
   document.getElementById('bottom-sheet').classList.add('active');
   document.body.style.overflow = 'hidden';
   return true;
+}
+
+function shareBottomSheetWhatsApp() {
+  const berth = document.getElementById('bs-berth').textContent.replace('⚓ ', '');
+  const info = getBerthInfo(berth);
+  const mapsUrl = document.getElementById('bs-nav').href;
+  if (!info) return;
+  const msg = makeWhatsAppMessage(berth, info, mapsUrl);
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 function closeBottomSheet() {
@@ -1961,6 +2021,7 @@ startAutoRefresh(); // auto-refresh data elke 15 minuten
 </script>
 <div class="share-toast" id="share-toast"></div>
 
+
 <!-- BOTTOM SHEET (mobile only) -->
 <div class="bottom-sheet-overlay" id="bs-overlay" onclick="closeBottomSheet()"></div>
 <div class="bottom-sheet" id="bottom-sheet">
@@ -1972,6 +2033,7 @@ startAutoRefresh(); // auto-refresh data elke 15 minuten
   <div class="bottom-sheet-body" id="bs-body"></div>
   <div class="bottom-sheet-footer">
     <a class="bottom-sheet-nav" id="bs-nav" href="#" target="_blank">🧭 Navigeren</a>
+    <button id="bs-whatsapp-btn" onclick="shareBottomSheetWhatsApp()" style="background:#25D366; color:white; border:none; padding:10px 12px; font-family:'DM Mono',monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; border-radius:4px; cursor:pointer; flex-shrink:0;">📲</button>
     <button class="bottom-sheet-close" onclick="closeBottomSheet()" id="bs-close-btn">Sluiten</button>
   </div>
 </div>
