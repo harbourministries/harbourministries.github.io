@@ -2017,10 +2017,7 @@ fetchWeather();
 setInterval(fetchWeather, 10 * 60 * 1000); // refresh weer elke 10 minuten
 startAutoRefresh(); // auto-refresh data elke 15 minuten
 
-// Automatisch live data laden bij opstart
-if (proxyUrl) {
-  setTimeout(() => fetchLiveData(), 500);
-}
+
 
 
 </script>
