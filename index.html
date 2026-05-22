@@ -375,6 +375,14 @@ footer a{color:var(--amber);text-decoration:none}
     </div>
   </div>
 </div>
+<div id="now-ideal-bar" style="display:none;max-width:1200px;margin:16px auto 0;padding:0 32px;">
+  <div style="background:#d4edda;border:1px solid #a8d5b5;border-left:4px solid #2a7a4a;padding:10px 16px;border-radius:2px;">
+    <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#1a5c30;font-weight:600;margin-bottom:4px;">
+      💡 <span id="now-ideal-label">Nu ideaal om te bezoeken</span> <span style="font-weight:400;opacity:0.7;">— advies op basis van verblijfsduur</span>
+    </div>
+    <div id="now-ideal-ships" style="font-size:0.82rem;color:#1a3a28;font-family:'Playfair Display',serif;font-weight:700;"></div>
+  </div>
+</div>
 <div class="map-section">
   <div class="map-section-header">
     <div class="map-section-title" id="map-title">🗺 Ligplaatsen op kaart</div>
@@ -571,7 +579,9 @@ function getBerthInfo(berth){if(BERTH_INFO[berth])return BERTH_INFO[berth];for(c
 function getOperator(shipName){const upper=shipName.toUpperCase();for(const op of OPERATORS){if(upper.includes(op.match.toUpperCase()))return op;}return{name:'Other',color:'#7a7060'};}
 function operatorBadge(shipName){const op=getOperator(shipName);return`<span class="operator-badge" style="background:${op.color}">${op.name}</span>`;}
 
-function setLang(l){lang=l;localStorage.setItem('cruiseLang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));applyTranslations();renderTable();renderBerthCards();if(cruiseChart){cruiseChart.destroy();cruiseChart=null;}buildChart();if(mapVisible)updateMap();fetchWeather();}
+function setLang(l){lang=l;localStorage.setItem('cruiseLang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));applyTranslations();renderTable();renderBerthCards();
+updateNowIdealBar();if(cruiseChart){cruiseChart.destroy();cruiseChart=null;}buildChart();updateNowIdealBar();
+if(mapVisible)updateMap();fetchWeather();}
 
 function applyTranslations(){const s=(id,val,prop='textContent')=>{const el=document.getElementById(id);if(el)el[prop]=val;};s('hdr-sub',t('sub'));s('badge-txt',t('badge'));s('last-refresh-label',t('lastUpdateLabel'));s('btn-refresh-txt',t('btnRefresh'));s('lbl-total',t('statTotal'),'innerHTML');s('lbl-docked',t('statDocked'),'innerHTML');s('lbl-today',t('statToday'),'innerHTML');s('lbl-berths',t('statBerths'),'innerHTML');s('map-title',t('mapTitle'));s('map-toggle-btn',mapVisible?t('mapHide'):t('mapShow'));s('lbl-search',t('searchLabel'));const si=document.getElementById('search-ship');if(si)si.placeholder=t('searchPlaceholder');s('lbl-berth-filter',t('berthLabel'));s('lbl-status-filter',t('statusLabel'));s('opt-all-berths',t('allBerths'));s('opt-all-status',t('allStatus'));s('opt-docked',t('docked'));s('opt-arriving',t('arriving'));s('opt-expected',t('expected'));s('opt-departed',t('departed'));s('btn-reset',t('reset'));s('tbl-title',t('tblTitle'));const ths=document.getElementById('th-ship');if(ths&&ths.childNodes[0])ths.childNodes[0].textContent=t('thShip')+' ';const thb=document.getElementById('th-berth');if(thb&&thb.childNodes[0])thb.childNodes[0].textContent=t('thBerth')+' ';const tha=document.getElementById('th-arr');if(tha&&tha.childNodes[0])tha.childNodes[0].textContent=t('thArr')+' ';const thd=document.getElementById('th-dep');if(thd&&thd.childNodes[0])thd.childNodes[0].textContent=t('thDep')+' ';const thu=document.getElementById('th-dur');if(thu&&thu.childNodes[0])thu.childNodes[0].textContent=t('thDur')+' ';s('th-status',t('thStatus'));s('lbl-status',t('legendStatus'));s('leg-docked',t('docked'));s('leg-arriving',t('arriving'));s('leg-expected',t('expected'));s('leg-departed',t('departed'));s('empty-txt',t('emptyTxt'));s('footer-txt',t('footer'),'innerHTML');s('share-btn-txt',lang==='nl'?'Delen':'Share');s('today-btn-txt',lang==='nl'?'Vandaag':'Today');s('lbl-date-filter',lang==='nl'?'Datum':'Date');s('tl-hdr-ship',lang==='nl'?'Schip':'Vessel');s('tl-hdr-berth',lang==='nl'?'Ligplaats':'Berth');}
 
@@ -580,11 +590,95 @@ function toggleDark(){darkMode=!darkMode;localStorage.setItem('cruiseDark',darkM
 
 function populateBerths(data){const sel=document.getElementById('filter-berth');const cur=sel.value;sel.innerHTML=`<option value="" id="opt-all-berths">${t('allBerths')}</option>`;[...new Set(data.map(d=>d.berth))].sort().forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;if(b===cur)o.selected=true;sel.appendChild(o);});}
 
+function getBestVisitTime(arrDt, depDt) {
+  const now = new Date();
+  const totalMs = depDt - arrDt;
+  const totalHours = totalMs / 3600000;
+
+  if (depDt < now) return null; // already departed
+
+  if (totalHours <= 24) {
+    // Short stay: 25%-75% of total window
+    const windowStart = new Date(arrDt.getTime() + totalMs * 0.25);
+    const windowEnd   = new Date(arrDt.getTime() + totalMs * 0.75);
+    // Only show if window is in the future
+    if (windowEnd < now) return null;
+    const start = windowStart < now ? now : windowStart;
+    return {
+      type: 'window',
+      label: fmt(start,'time') + '–' + fmt(windowEnd,'time'),
+      isNow: now >= windowStart && now <= windowEnd,
+      days: null
+    };
+  } else {
+    // Long stay: skip arrival day and departure day, use 09:00-17:00 on middle days
+    const goodDays = [];
+    const d = new Date(arrDt);
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate() + 1); // skip arrival day
+
+    const depDay = new Date(depDt);
+    depDay.setHours(0,0,0,0);
+
+    while (d < depDay) {
+      const dayStart = new Date(d); dayStart.setHours(9,0,0,0);
+      const dayEnd   = new Date(d); dayEnd.setHours(17,0,0,0);
+      if (dayEnd > now) goodDays.push(new Date(d));
+      d.setDate(d.getDate() + 1);
+    }
+
+    if (goodDays.length === 0) return null;
+
+    const isNow = goodDays.some(day => {
+      const ds = new Date(day); ds.setHours(9,0,0,0);
+      const de = new Date(day); de.setHours(17,0,0,0);
+      return now >= ds && now <= de;
+    });
+
+    const dayLabels = goodDays.slice(0,3).map(day =>
+      day.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{weekday:'short',day:'numeric',month:'short'})
+    ).join(', ') + (goodDays.length > 3 ? ' +' + (goodDays.length-3) : '');
+
+    return {
+      type: 'days',
+      label: dayLabels + ' · 09:00–17:00',
+      isNow,
+      days: goodDays
+    };
+  }
+}
+
 function renderTable(){const search=document.getElementById('search-ship').value.toLowerCase();const berth=document.getElementById('filter-berth').value;const st=document.getElementById('filter-status').value;const dateFilter=document.getElementById('filter-date').value;let f=currentData.filter(r=>{if(search&&!r.ship.toLowerCase().includes(search))return false;if(berth&&r.berth!==berth)return false;if(st&&r.status!==st)return false;if(dateFilter){const sel=new Date(dateFilter);sel.setHours(23,59,59);const selStart=new Date(dateFilter);selStart.setHours(0,0,0);if(r.depDt<selStart||r.arrDt>sel)return false;}return true;});f.sort((a,b)=>{if(sortCol===0)return sortDir*a.ship.localeCompare(b.ship);if(sortCol===1)return sortDir*a.berth.localeCompare(b.berth);if(sortCol===2)return sortDir*(a.arrDt-b.arrDt);if(sortCol===3)return sortDir*(a.depDt-b.depDt);if(sortCol===4)return sortDir*((a.depDt-a.arrDt)-(b.depDt-b.arrDt));return 0;});const tbody=document.getElementById('table-body');tbody.innerHTML='';f.forEach((r,i)=>{const barW=Math.min(80,Math.max(16,(r.depDt-r.arrDt)/3600000*2.5));const coords=getBerthCoords(r.berth);const berthClick=coords?`onclick="openMapAt(${coords[0]},${coords[1]},'${r.berth.replace(/'/g,"\\'")}');return false;"` :'';const tr=document.createElement('tr');tr.style.animationDelay=`${i*0.03}s`;tr.innerHTML=`<td><div class="ship-cell">
         <div class="ship-name">${r.ship}</div>
         ${operatorBadge(r.ship)}
         ${(()=>{const si=getShipInfo(r.ship);return`<div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">${si.flag} ${si.flagLabel} · ${si.length}m · ~${si.crew} crew</div>`;})()}
+        ${(()=>{
+          const bv=getBestVisitTime(r.arrDt,r.depDt);
+          if(!bv)return'';
+          const color=bv.isNow?'#2a7a4a':'#2a5c7a';
+          const bg=bv.isNow?'#d4edda':'#cce5ff';
+          const prefix=bv.isNow?(lang==='nl'?'✓ Nu ideaal':'✓ Now ideal'):(lang==='nl'?'Advies':'Advice');
+          return`<div style="font-size:0.58rem;background:${bg};color:${color};padding:2px 7px;border-radius:2px;margin-top:3px;display:inline-block;">💡 ${prefix}: ${bv.label}</div>`;
+        })()}
       </div></td><td><span class="berth-tag" title="${r.berth}" ${berthClick}>${r.berth}</span></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.arrDt,'date')}</span><span class="time-hour arr">&#11014; ${fmt(r.arrDt,'time')}</span></div></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.depDt,'date')}</span><span class="time-hour dep">&#11015; ${fmt(r.depDt,'time')}</span></div></td><td><div class="duration-bar-wrap"><div class="duration-bar" style="width:${barW}px"></div><span class="duration-text">${duration(r.arrDt,r.depDt)}</span></div></td><td>${pill(r.status)}</td>`;tbody.appendChild(tr);});document.getElementById('result-count').textContent=t('results',f.length);document.getElementById('empty-state').style.display=f.length===0?'block':'none';document.getElementById('stat-total').textContent=currentData.length;document.getElementById('stat-docked').textContent=currentData.filter(d=>d.status==='docked').length;document.getElementById('stat-berths').textContent=new Set(currentData.map(d=>d.berth)).size;const tod=new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');document.getElementById('stat-today').textContent=currentData.filter(d=>d.arr.startsWith(tod)||d.dep.startsWith(tod)).length;}
+
+function updateNowIdealBar(){
+  const idealNow = currentData.filter(r => {
+    const bv = getBestVisitTime(r.arrDt, r.depDt);
+    return bv && bv.isNow;
+  });
+  const bar = document.getElementById('now-ideal-bar');
+  const ships = document.getElementById('now-ideal-ships');
+  const lbl = document.getElementById('now-ideal-label');
+  if (!bar || !ships) return;
+  if (idealNow.length > 0) {
+    bar.style.display = 'block';
+    ships.textContent = idealNow.map(r => r.ship).join(' · ');
+    if (lbl) lbl.textContent = lang === 'nl' ? 'Nu ideaal om te bezoeken' : 'Now ideal to visit';
+  } else {
+    bar.style.display = 'none';
+  }
+}
 
 function filterTable(){if(currentView==='timeline')renderTimeline();else renderTable();if(mapVisible)updateMap();}
 function sortTable(col){if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}document.querySelectorAll('th').forEach((th,i)=>{th.classList.toggle('sorted',i===col);const ic=th.querySelector('.sort-icon');if(ic)ic.textContent=i===col?(sortDir===1?' ↑':' ↓'):' ⇅';});renderTable();}
