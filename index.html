@@ -384,15 +384,15 @@ footer a{color:var(--amber);text-decoration:none}
     <!-- Water surface -->
     <rect x="0" y="68" width="1440" height="42" fill="url(#waterGrad)"/>
 
-    <!-- Wave layers -->
-    <path d="M-480,72 Q-360,67 -240,72 Q-120,77 0,72 Q120,67 240,72 Q360,77 480,72 Q600,67 720,72 Q840,77 960,72 Q1080,67 1200,72 Q1320,77 1440,72 Q1560,67 1680,72 Q1800,77 1920,72 L1920,110 L-480,110 Z" fill="#1e4a6e" opacity="0.6">
+    <!-- Wave layers - wilder -->
+    <path d="M-480,69 Q-360,61 -240,69 Q-120,77 0,69 Q120,61 240,69 Q360,77 480,69 Q600,61 720,69 Q840,77 960,69 Q1080,61 1200,69 Q1320,77 1440,69 Q1560,61 1680,69 Q1800,77 1920,69 L1920,110 L-480,110 Z" fill="#1e4a6e" opacity="0.65">
+      <animateTransform attributeName="transform" type="translate" from="0,0" to="-480,0" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M-480,73 Q-300,65 -120,73 Q60,81 240,73 Q420,65 600,73 Q780,81 960,73 Q1140,65 1320,73 Q1500,81 1680,73 Q1860,65 1920,73 L1920,110 L-480,110 Z" fill="#164060" opacity="0.55">
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-480,0" dur="7s" repeatCount="indefinite"/>
     </path>
-    <path d="M-480,76 Q-300,71 -120,76 Q60,81 240,76 Q420,71 600,76 Q780,81 960,76 Q1140,71 1320,76 Q1500,81 1680,76 Q1860,71 1920,76 L1920,110 L-480,110 Z" fill="#164060" opacity="0.5">
-      <animateTransform attributeName="transform" type="translate" from="0,0" to="-480,0" dur="9s" repeatCount="indefinite"/>
-    </path>
-    <path d="M-720,80 Q-480,76 -240,80 Q0,84 240,80 Q480,76 720,80 Q960,84 1200,80 Q1440,76 1680,80 Q1920,84 2160,80 L2160,110 L-720,110 Z" fill="#0e2a40" opacity="0.7">
-      <animateTransform attributeName="transform" type="translate" from="0,0" to="-720,0" dur="11s" repeatCount="indefinite"/>
+    <path d="M-720,78 Q-480,70 -240,78 Q0,86 240,78 Q480,70 720,78 Q960,86 1200,78 Q1440,70 1680,78 Q1920,86 2160,78 L2160,110 L-720,110 Z" fill="#0e2a40" opacity="0.7">
+      <animateTransform attributeName="transform" type="translate" from="0,0" to="-720,0" dur="8s" repeatCount="indefinite"/>
     </path>
 
     <!-- Water reflections full width -->
@@ -400,9 +400,10 @@ footer a{color:var(--amber);text-decoration:none}
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-320,0" dur="5s" repeatCount="indefinite"/>
     </path>
 
-    <!-- Ship - much slower: 55 seconds -->
+    <!-- Ship - slow sail + bobbing on waves -->
     <g id="ship">
-      <animateTransform attributeName="transform" type="translate" from="-220,0" to="1660,0" dur="55s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="translate" from="-220,0" to="1660,0" dur="75s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="translate" from="0,0" to="0,3" dur="2.5s" repeatCount="indefinite" additive="sum" calcMode="spline" keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95" values="0,0;0,3;0,0"/>
       <!-- Hull -->
       <path d="M0,65 L8,57 L180,57 L188,65 Z" fill="#0c1f3a"/>
       <!-- Main deck -->
