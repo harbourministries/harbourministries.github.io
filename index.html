@@ -88,7 +88,7 @@ header{background:var(--ink);color:var(--paper)}
 .status-inner.success{background:#d4edda;color:#155724;border:1px solid #a8d5b5;display:block}
 .wave-strip{background:var(--ink);line-height:0}
 .wave-strip svg{display:block;width:100%}
-.stats-bar{background:var(--canal);color:white;padding:14px 32px}
+.stats-bar{background:rgba(12,31,58,0.55);color:white;padding:14px 32px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(200,168,75,0.12);border-bottom:1px solid rgba(200,168,75,0.18);box-shadow:0 4px 32px rgba(0,0,0,0.25)}
 .stats-inner{max-width:1200px;margin:0 auto;display:flex;gap:32px;flex-wrap:wrap;align-items:center}
 .stat-item{display:flex;align-items:baseline;gap:8px}
 .stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--amber-light)}
@@ -169,8 +169,7 @@ th{padding:12px 16px;text-align:left;font-size:0.63rem;letter-spacing:0.15em;tex
 th:hover{background:#1e2733}
 th .sort-icon{margin-left:4px;opacity:0.4}
 th.sorted .sort-icon{opacity:1;color:var(--amber-light)}
-tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;animation:fadeIn 0.3s ease both}
-tbody tr:hover{background:var(--warm)}
+/* tbody tr handled above */
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 td{padding:13px 16px;vertical-align:middle}
 .ship-name{font-family:'Playfair Display',serif;font-size:0.92rem;font-weight:700}
@@ -250,6 +249,10 @@ td{padding:13px 16px;vertical-align:middle}
 .bottom-sheet-close{background:var(--warm);color:var(--ink);border:1px solid var(--border);padding:10px 16px;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;cursor:pointer;font-family:'DM Mono',monospace}
 .share-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);font-family:'DM Mono',monospace;font-size:0.72rem;padding:10px 20px;border-radius:4px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:9999;white-space:nowrap}
 .share-toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+.fade-in-section{opacity:0;transform:translateY(18px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-in-section.visible{opacity:1;transform:translateY(0)}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s,box-shadow 0.15s,transform 0.15s;animation:fadeIn 0.3s ease both}
+tbody tr:hover{background:linear-gradient(90deg,rgba(200,168,75,0.06),var(--warm));box-shadow:inset 3px 0 0 var(--amber)}
 footer{background:var(--ink);color:#6a6a6a;padding:24px 32px;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;text-align:center}
 footer a{color:var(--amber);text-decoration:none}
 @media(min-width:769px){
@@ -339,6 +342,8 @@ footer a{color:var(--amber);text-decoration:none}
     <circle cx="78%" cy="80%" r="0.6" fill="white" opacity="0.3"><animate attributeName="opacity" values="0.3;0.1;0.3" dur="3.2s" repeatCount="indefinite"/></circle>
     <circle cx="88%" cy="60%" r="0.5" fill="white" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.3s" repeatCount="indefinite"/></circle>
     <circle cx="96%" cy="50%" r="0.6" fill="#c8a84b" opacity="0.3"><animate attributeName="opacity" values="0.3;0.1;0.3" dur="4.4s" repeatCount="indefinite"/></circle>
+    <!-- Moon/Sun based on time of day -->
+    <g id="celestial-body"></g>
   </svg>
   <div class="header-inner">
     <div>
@@ -476,6 +481,24 @@ footer a{color:var(--amber);text-decoration:none}
       <path d="M10,66 L185,66 L185,70 Q100,73 10,70 Z" fill="#0a1a2e" opacity="0.35"/>
     </g>
 
+    <!-- Birds - slow and spread out -->
+    <g id="birds1" opacity="0.5">
+      <animateTransform attributeName="transform" type="translate" from="-400,0" to="1800,0" dur="60s" repeatCount="indefinite" begin="2s"/>
+      <path d="M0,18 Q8,12 16,18 Q24,12 32,18" stroke="white" stroke-width="1.2" fill="none"/>
+      <path d="M55,22 Q63,16 71,22 Q79,16 87,22" stroke="white" stroke-width="1.2" fill="none"/>
+      <path d="M120,15 Q128,9 136,15 Q144,9 152,15" stroke="white" stroke-width="1.2" fill="none"/>
+      <path d="M200,20 Q208,14 216,20 Q224,14 232,20" stroke="white" stroke-width="1.0" fill="none"/>
+      <path d="M290,17 Q298,11 306,17 Q314,11 322,17" stroke="white" stroke-width="1.0" fill="none"/>
+    </g>
+    <g id="birds2" opacity="0.35">
+      <animateTransform attributeName="transform" type="translate" from="-600,0" to="1800,0" dur="80s" repeatCount="indefinite" begin="15s"/>
+      <path d="M0,25 Q7,19 14,25 Q21,19 28,25" stroke="white" stroke-width="1.0" fill="none"/>
+      <path d="M70,22 Q77,16 84,22 Q91,16 98,22" stroke="white" stroke-width="1.0" fill="none"/>
+      <path d="M160,27 Q167,21 174,27 Q181,21 188,27" stroke="white" stroke-width="0.9" fill="none"/>
+      <path d="M260,23 Q267,17 274,23 Q281,17 288,23" stroke="white" stroke-width="0.9" fill="none"/>
+      <path d="M370,26 Q377,20 384,26 Q391,20 398,26" stroke="white" stroke-width="0.9" fill="none"/>
+      <path d="M480,24 Q487,18 494,24 Q501,18 508,24" stroke="white" stroke-width="0.8" fill="none"/>
+    </g>
     <!-- Paper wave transition at bottom -->
     <path d="M0,88 C360,80 720,96 1080,88 C1260,84 1350,92 1440,88 L1440,110 L0,110 Z" fill="#f4f0e8"/>
   </svg>
@@ -786,7 +809,7 @@ function renderTable(){const search=document.getElementById('search-ship').value
           const prefix=bv.isNow?(lang==='nl'?'✓ Nu ideaal':'✓ Now ideal'):(lang==='nl'?'Advies':'Advice');
           return`<div style="font-size:0.58rem;background:${bg};color:${color};padding:2px 7px;border-radius:2px;margin-top:3px;display:inline-block;">💡 ${prefix}: ${bv.label}</div>`;
         })()}
-      </div></td><td><span class="berth-tag" title="${r.berth}" ${berthClick}>${r.berth}</span></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.arrDt,'date')}</span><span class="time-hour arr">&#11014; ${fmt(r.arrDt,'time')}</span></div></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.depDt,'date')}</span><span class="time-hour dep">&#11015; ${fmt(r.depDt,'time')}</span></div></td><td><div class="duration-bar-wrap"><div class="duration-bar" style="width:${barW}px"></div><span class="duration-text">${duration(r.arrDt,r.depDt)}</span></div></td><td>${pill(r.status)}</td>`;tbody.appendChild(tr);});document.getElementById('result-count').textContent=t('results',f.length);document.getElementById('empty-state').style.display=f.length===0?'block':'none';document.getElementById('stat-total').textContent=currentData.length;document.getElementById('stat-docked').textContent=currentData.filter(d=>d.status==='docked').length;document.getElementById('stat-berths').textContent=new Set(currentData.map(d=>d.berth)).size;const tod=new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');document.getElementById('stat-today').textContent=currentData.filter(d=>d.arr.startsWith(tod)||d.dep.startsWith(tod)).length;}
+      </div></td><td><span class="berth-tag" title="${r.berth}" ${berthClick}>${r.berth}</span></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.arrDt,'date')}</span><span class="time-hour arr">&#11014; ${fmt(r.arrDt,'time')}</span></div></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.depDt,'date')}</span><span class="time-hour dep">&#11015; ${fmt(r.depDt,'time')}</span></div></td><td><div class="duration-bar-wrap"><div class="duration-bar" style="width:${barW}px"></div><span class="duration-text">${duration(r.arrDt,r.depDt)}</span></div></td><td>${pill(r.status)}</td>`;tbody.appendChild(tr);});document.getElementById('result-count').textContent=t('results',f.length);document.getElementById('empty-state').style.display=f.length===0?'block':'none';animateCounter(document.getElementById('stat-total'), currentData.length);animateCounter(document.getElementById('stat-docked'), currentData.filter(d=>d.status==='docked').length);animateCounter(document.getElementById('stat-berths'), new Set(currentData.map(d=>d.berth)).size);const tod=new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');document.getElementById('stat-today').textContent=currentData.filter(d=>d.arr.startsWith(tod)||d.dep.startsWith(tod)).length;}
 
 function updateNowIdealBar(){
   const idealNow = currentData.filter(r => {
@@ -858,6 +881,57 @@ const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
 document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);
 if('serviceWorker' in navigator){const swCode=`const CACHE='hm-cruise-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/']).catch(()=>{})));});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`;const swBlob=new Blob([swCode],{type:'application/javascript'});navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});}
 
+// ── MOON/SUN ──────────────────────────────────────────────────────────────────
+function updateCelestialBody() {
+  const hour = new Date().getHours();
+  const isNight = hour < 6 || hour >= 20;
+  const el = document.getElementById('celestial-body');
+  if (!el) return;
+  if (isNight) {
+    // Moon
+    el.innerHTML = `
+      <circle cx="88%" cy="30%" r="12" fill="#e8dfc8" opacity="0.85"/>
+      <circle cx="calc(88% + 5px)" cy="27%" r="10" fill="#0d1219" opacity="0.9"/>
+      <circle cx="91%" cy="22%" r="1.5" fill="#c8a84b" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>`;
+  } else {
+    // Sun with rays
+    el.innerHTML = `
+      <circle cx="88%" cy="30%" r="14" fill="#e8a030" opacity="0.25"/>
+      <circle cx="88%" cy="30%" r="9" fill="#f0c040" opacity="0.8"/>
+      <line x1="88%" y1="10%" x2="88%" y2="16%" stroke="#f0c040" stroke-width="1.5" opacity="0.5"/>
+      <line x1="88%" y1="44%" x2="88%" y2="50%" stroke="#f0c040" stroke-width="1.5" opacity="0.5"/>`;
+  }
+}
+updateCelestialBody();
+
+// ── ANIMATED COUNTERS ─────────────────────────────────────────────────────────
+function animateCounter(el, target, duration=800) {
+  if (!el) return;
+  const start = 0;
+  const startTime = performance.now();
+  const update = (now) => {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(start + (target - start) * ease);
+    if (progress < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+const originalRenderTable = renderTable;
+
+// ── SCROLL FADE-IN ────────────────────────────────────────────────────────────
+function initScrollObserver() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.chart-section,.map-section,.controls-wrap,.berth-info-section').forEach(el => {
+    el.classList.add('fade-in-section');
+    observer.observe(el);
+  });
+}
+
 currentData=process(FALLBACK);
 populateBerths(currentData);
 applyTranslations();
@@ -868,6 +942,7 @@ applyDark();
 fetchWeather();
 setInterval(fetchWeather,10*60*1000);
 startAutoRefresh();
+initScrollObserver();
 </script>
 </body>
 </html>
