@@ -342,6 +342,7 @@ footer a{color:var(--amber);text-decoration:none}
     <circle cx="78%" cy="80%" r="0.6" fill="white" opacity="0.3"><animate attributeName="opacity" values="0.3;0.1;0.3" dur="3.2s" repeatCount="indefinite"/></circle>
     <circle cx="88%" cy="60%" r="0.5" fill="white" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.3s" repeatCount="indefinite"/></circle>
     <circle cx="96%" cy="50%" r="0.6" fill="#c8a84b" opacity="0.3"><animate attributeName="opacity" values="0.3;0.1;0.3" dur="4.4s" repeatCount="indefinite"/></circle>
+    </g>
     <!-- Moon/Sun based on time of day -->
     <g id="celestial-body"></g>
   </svg>
@@ -382,16 +383,16 @@ footer a{color:var(--amber);text-decoration:none}
   <svg id="river-animation" viewBox="0 0 1440 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;bottom:0;left:0;width:100%;height:100%;">
     <defs>
       <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"   stop-color="#0d1117"/>
-        <stop offset="8%"   stop-color="#0d1219"/>
-        <stop offset="18%"  stop-color="#0d141e"/>
-        <stop offset="28%"  stop-color="#0d1828"/>
-        <stop offset="40%"  stop-color="#0e1e32"/>
-        <stop offset="52%"  stop-color="#10243c"/>
-        <stop offset="64%"  stop-color="#122b46"/>
-        <stop offset="76%"  stop-color="#153150"/>
-        <stop offset="88%"  stop-color="#193c5e"/>
-        <stop offset="100%" stop-color="#1e4a6e"/>
+        <stop offset="0%"   stop-color="#0d1117" id="sky0"/>
+        <stop offset="8%"   stop-color="#0d1219" id="sky1"/>
+        <stop offset="18%"  stop-color="#0d141e" id="sky2"/>
+        <stop offset="28%"  stop-color="#0d1828" id="sky3"/>
+        <stop offset="40%"  stop-color="#0e1e32" id="sky4"/>
+        <stop offset="52%"  stop-color="#10243c" id="sky5"/>
+        <stop offset="64%"  stop-color="#122b46" id="sky6"/>
+        <stop offset="76%"  stop-color="#153150" id="sky7"/>
+        <stop offset="88%"  stop-color="#193c5e" id="sky8"/>
+        <stop offset="100%" stop-color="#1e4a6e" id="sky9"/>
       </linearGradient>
       <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#1a3a5c"/>
@@ -403,6 +404,7 @@ footer a{color:var(--amber);text-decoration:none}
     <rect x="0" y="0" width="1440" height="110" fill="url(#skyGrad)"/>
 
     <!-- Stars spread across full width -->
+    <g id="stars-group">
     <circle cx="50"   cy="10" r="0.8" fill="#c8a84b" opacity="0.7"/>
     <circle cx="180"  cy="6"  r="0.6" fill="white"   opacity="0.5"/>
     <circle cx="320"  cy="12" r="0.7" fill="white"   opacity="0.4"/>
@@ -868,21 +870,39 @@ function updateCelestialBody() {
   const hour = new Date().getHours();
   const isNight = hour < 6 || hour >= 20;
   const el = document.getElementById('celestial-body');
+  const starsEl = document.getElementById('stars-group');
+
+  // Day sky colors
+  const DAY_STOPS = ['#0d1117','#0e1520','#10253a','#1a4a70','#1e6090','#1a5580','#165070','#163260','#1a3a6a','#1e4a7e'];
+  // Night sky colors
+  const NIGHT_STOPS = ['#0d1117','#0d1219','#0d141e','#0d1828','#0e1e32','#10243c','#122b46','#153150','#193c5e','#1e4a6e'];
+
+  const stops = isNight ? NIGHT_STOPS : DAY_STOPS;
+  for (let i = 0; i <= 9; i++) {
+    const s = document.getElementById('sky' + i);
+    if (s) s.setAttribute('stop-color', stops[i]);
+  }
+
+  // Show/hide stars
+  if (starsEl) starsEl.style.display = isNight ? 'block' : 'none';
+
   if (!el) return;
   if (isNight) {
-    // Moon
     el.innerHTML = `
       <circle cx="88%" cy="30%" r="12" fill="#e8dfc8" opacity="0.85"/>
       <circle cx="calc(88% + 5px)" cy="27%" r="10" fill="#0d1219" opacity="0.9"/>
       <circle cx="91%" cy="22%" r="1.5" fill="#c8a84b" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>`;
   } else {
-    // Sun with rays
+    // Sun - positioned in upper right
     el.innerHTML = `
-      <circle cx="88%" cy="30%" r="14" fill="#e8a030" opacity="0.25"/>
-      <circle cx="88%" cy="30%" r="9" fill="#f0c040" opacity="0.8"/>
-      <line x1="88%" y1="10%" x2="88%" y2="16%" stroke="#f0c040" stroke-width="1.5" opacity="0.5"/>
-      <line x1="88%" y1="44%" x2="88%" y2="50%" stroke="#f0c040" stroke-width="1.5" opacity="0.5"/>`;
+      <circle cx="88%" cy="28%" r="18" fill="#ffe08a" opacity="0.15"/>
+      <circle cx="88%" cy="28%" r="12" fill="#ffd060" opacity="0.6"/>
+      <circle cx="88%" cy="28%" r="8"  fill="#fff0a0" opacity="0.9"/>`;
   }
+
+  // Also update header stars visibility
+  const headerSvg = document.querySelector('header svg');
+  if (headerSvg) headerSvg.style.display = isNight ? 'block' : 'none';
 }
 updateCelestialBody();
 
