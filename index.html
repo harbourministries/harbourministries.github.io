@@ -349,9 +349,105 @@ footer a{color:var(--amber);text-decoration:none}
 </header>
 <div class="loading-bar" id="loading-bar"></div>
 <div class="status-msg"><div class="status-inner" id="status-msg"></div></div>
-<div class="wave-strip">
-  <svg viewBox="0 0 1440 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="28">
-    <path d="M0,14 C240,28 480,0 720,14 C960,28 1200,0 1440,14 L1440,28 L0,28 Z" fill="#f4f0e8"/>
+<div style="background:var(--ink);position:relative;overflow:hidden;height:90px;">
+  <svg id="river-animation" viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" style="position:absolute;bottom:0;left:0;width:100%;height:100%;">
+    <!-- Sky gradient -->
+    <defs>
+      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0c1f3a"/>
+        <stop offset="100%" stop-color="#1a3a5c"/>
+      </linearGradient>
+      <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1a3a5c"/>
+        <stop offset="100%" stop-color="#0c2a48"/>
+      </linearGradient>
+      <linearGradient id="paperGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1a3a5c" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#f4f0e8" stop-opacity="1"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Background -->
+    <rect width="1440" height="90" fill="url(#skyGrad)"/>
+
+    <!-- Stars -->
+    <circle cx="100" cy="8" r="0.8" fill="#c8a84b" opacity="0.6"/>
+    <circle cx="320" cy="5" r="0.6" fill="white" opacity="0.5"/>
+    <circle cx="580" cy="9" r="0.8" fill="white" opacity="0.4"/>
+    <circle cx="820" cy="4" r="0.6" fill="#c8a84b" opacity="0.5"/>
+    <circle cx="1100" cy="7" r="0.8" fill="white" opacity="0.4"/>
+    <circle cx="1350" cy="5" r="0.6" fill="white" opacity="0.5"/>
+
+    <!-- Water surface -->
+    <rect x="0" y="55" width="1440" height="35" fill="url(#waterGrad)"/>
+
+    <!-- Animated water waves -->
+    <g id="waves">
+      <path d="M0,60 Q120,55 240,60 Q360,65 480,60 Q600,55 720,60 Q840,65 960,60 Q1080,55 1200,60 Q1320,65 1440,60 L1440,90 L0,90 Z" fill="#1e4a6e" opacity="0.6">
+        <animateTransform attributeName="transform" type="translate" from="0,0" to="-240,0" dur="4s" repeatCount="indefinite"/>
+      </path>
+      <path d="M240,62 Q360,57 480,62 Q600,67 720,62 Q840,57 960,62 Q1080,67 1200,62 Q1320,57 1440,62 Q1560,67 1680,62 L1680,90 L240,90 Z" fill="#164060" opacity="0.5">
+        <animateTransform attributeName="transform" type="translate" from="0,0" to="-240,0" dur="5s" repeatCount="indefinite"/>
+      </path>
+      <path d="M0,65 Q180,61 360,65 Q540,69 720,65 Q900,61 1080,65 Q1260,69 1440,65 L1440,90 L0,90 Z" fill="#0e2a40" opacity="0.7">
+        <animateTransform attributeName="transform" type="translate" from="0,0" to="-360,0" dur="6s" repeatCount="indefinite"/>
+      </path>
+    </g>
+
+    <!-- Water reflections -->
+    <path d="M0,68 Q80,66 160,68 Q240,70 320,68" stroke="#c8a84b" stroke-width="0.4" fill="none" opacity="0.3">
+      <animateTransform attributeName="transform" type="translate" from="0,0" to="-160,0" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <path d="M400,70 Q480,68 560,70 Q640,72 720,70" stroke="white" stroke-width="0.3" fill="none" opacity="0.2">
+      <animateTransform attributeName="transform" type="translate" from="0,0" to="-160,0" dur="4s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- River cruise ship silhouette - animated sailing left to right -->
+    <g id="ship">
+      <animateTransform attributeName="transform" type="translate" from="-280,0" to="1500,0" dur="22s" repeatCount="indefinite"/>
+      <!-- Hull -->
+      <path d="M0,52 L8,44 L180,44 L188,52 Z" fill="#0c1f3a"/>
+      <!-- Deck superstructure -->
+      <rect x="15" y="34" width="155" height="10" rx="1" fill="#142840"/>
+      <!-- Upper deck -->
+      <rect x="25" y="26" width="120" height="8" rx="1" fill="#1a3a58"/>
+      <!-- Bridge -->
+      <rect x="40" y="20" width="50" height="6" rx="1" fill="#1e4268"/>
+      <!-- Funnel -->
+      <rect x="75" y="14" width="10" height="6" rx="1" fill="#c8841a"/>
+      <!-- Gold accent stripe -->
+      <rect x="15" y="43" width="155" height="1.5" fill="#c8a84b" opacity="0.8"/>
+      <!-- Windows deck 1 -->
+      <rect x="20" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="32" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="44" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="56" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="68" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="80" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="92" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="104" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="116" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="128" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="140" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="152" y="36" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <!-- Windows deck 2 -->
+      <rect x="30" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="42" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="54" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="66" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="78" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="90" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="102" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="114" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="126" y="28" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <!-- Wake/bow wave -->
+      <path d="M188,50 Q200,48 210,52 Q200,54 188,52 Z" fill="white" opacity="0.3"/>
+      <!-- Water reflection of ship -->
+      <path d="M10,53 L185,53 L185,56 Q100,58 10,56 Z" fill="#0a1a2e" opacity="0.4"/>
+    </g>
+
+    <!-- Paper transition at bottom -->
+    <path d="M0,75 C240,68 480,82 720,75 C960,68 1200,82 1440,75 L1440,90 L0,90 Z" fill="#f4f0e8"/>
   </svg>
 </div>
 <div class="stats-bar">
