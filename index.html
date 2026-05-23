@@ -12,14 +12,14 @@
 <link rel="manifest" id="pwa-manifest">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzBkMTExNyIvPjx0ZXh0IHg9IjMyIiB5PSI0NiIgZm9udC1zaXplPSIzNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+aaPC/dGV4dD48L3N2Zz4=">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzBkMTExNyIvPjx0ZXh0IHg9IjMyIiB5PSI0NiIgZm9udC1zaXplPSIzNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+aaPC/dGV4dD48L3N2Zz4=">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root{--ink:#0d1117;--paper:#f4f0e8;--warm:#e8dfc8;--canal:#2a5c7a;--canal-light:#3a7fa8;--amber:#c8841a;--amber-light:#e8a030;--departure:#c84040;--arrival:#2a7a4a;--border:#c8bea8;--muted:#7a7060}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Mono',monospace;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
 body.dark{--ink:#e8e0d0;--paper:#141820;--warm:#1e2430;--canal:#3a7fa8;--canal-light:#4a9fc8;--amber:#e8a030;--amber-light:#f0b840;--departure:#e06060;--arrival:#4a9a6a;--border:#2a3040;--muted:#8a8878}
 body.dark header{background:#0a0e14}
 body.dark .header-title{color:#e8e0d0}
@@ -61,18 +61,18 @@ header{background:var(--ink);color:var(--paper)}
 .header-sub{font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:#8a8070;margin-top:8px}
 .header-right{display:flex;flex-direction:column;gap:10px;align-items:flex-end}
 .lang-toggle{display:flex;gap:4px}
-.lang-btn{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;background:transparent;color:#8a8070;border:1px solid #3a3a4a;padding:5px 10px;cursor:pointer;border-radius:2px;transition:all 0.2s}
+.lang-btn{font-family:'Inter',sans-serif;font-size:0.68rem;letter-spacing:0.1em;background:transparent;color:#8a8070;border:1px solid #3a3a4a;padding:5px 10px;cursor:pointer;border-radius:2px;transition:all 0.2s}
 .lang-btn.active{background:var(--amber);color:var(--ink);border-color:var(--amber)}
 .lang-btn:hover:not(.active){border-color:var(--amber);color:var(--amber)}
-.dark-btn{font-family:'DM Mono',monospace;font-size:0.68rem;background:transparent;color:#8a8070;border:1px solid #3a3a4a;padding:5px 10px;cursor:pointer;border-radius:2px;transition:all 0.2s}
+.dark-btn{font-family:'Inter',sans-serif;font-size:0.68rem;background:transparent;color:#8a8070;border:1px solid #3a3a4a;padding:5px 10px;cursor:pointer;border-radius:2px;transition:all 0.2s}
 .dark-btn:hover{border-color:var(--amber);color:var(--amber)}
-.share-btn{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:5px 12px;cursor:pointer;border-radius:2px;transition:background 0.2s;display:flex;align-items:center;gap:6px}
+.share-btn{font-family:'Inter',sans-serif;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:5px 12px;cursor:pointer;border-radius:2px;transition:background 0.2s;display:flex;align-items:center;gap:6px}
 .share-btn:hover{background:var(--canal-light)}
 .live-badge{display:flex;align-items:center;gap:8px;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-light);border:1px solid var(--amber);padding:8px 14px;border-radius:2px}
 .live-dot{width:7px;height:7px;background:var(--amber-light);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.refresh-btn{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--amber);color:var(--ink);border:none;padding:10px 18px;cursor:pointer;transition:background 0.2s;border-radius:2px}
+.refresh-btn{display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--amber);color:var(--ink);border:none;padding:10px 18px;cursor:pointer;transition:background 0.2s;border-radius:2px}
 .refresh-btn:hover:not(:disabled){background:var(--amber-light)}
 .refresh-btn:disabled{opacity:0.6;cursor:not-allowed}
 .refresh-icon{font-size:0.9rem}
@@ -109,12 +109,12 @@ header{background:var(--ink);color:var(--paper)}
 .map-section{max-width:1200px;margin:32px auto 0;padding:0 32px}
 .map-section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .map-section-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic}
-.map-toggle-btn{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:7px 14px;cursor:pointer;border-radius:2px}
+.map-toggle-btn{font-family:'Inter',sans-serif;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:7px 14px;cursor:pointer;border-radius:2px}
 .map-toggle-btn:hover{background:var(--canal-light)}
 #map-container{height:380px;border:1px solid var(--border);border-radius:2px;overflow:hidden;display:none}
 #map-container.visible{display:block}
 #cruise-map{height:100%;width:100%}
-.leaflet-popup-content-wrapper{font-family:'DM Mono',monospace;font-size:0.75rem;border-radius:4px}
+.leaflet-popup-content-wrapper{font-family:'Inter',sans-serif;font-size:0.75rem;border-radius:4px}
 .leaflet-popup-content{max-height:340px;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:10px 14px}
 .popup-ship{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:4px}
 .popup-berth{color:var(--canal);font-size:0.68rem;margin-bottom:6px;font-weight:600}
@@ -130,13 +130,13 @@ header{background:var(--ink);color:var(--paper)}
 .controls{background:var(--warm);border:1px solid var(--border);padding:20px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
 .ctrl-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .ctrl-group{display:flex;flex-direction:column;flex:1;min-width:200px}
-.ctrl-input,.ctrl-select{font-family:'DM Mono',monospace;font-size:0.78rem;background:white;border:1px solid var(--border);padding:8px 12px;color:var(--ink);outline:none;width:100%}
+.ctrl-input,.ctrl-select{font-family:'Inter',sans-serif;font-size:0.78rem;background:white;border:1px solid var(--border);padding:8px 12px;color:var(--ink);outline:none;width:100%}
 .ctrl-input:focus,.ctrl-select:focus{border-color:var(--canal)}
-.ctrl-btn{font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:10px 20px;cursor:pointer;align-self:flex-end;margin-bottom:1px;flex-shrink:0}
+.ctrl-btn{font-family:'Inter',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:10px 20px;cursor:pointer;align-self:flex-end;margin-bottom:1px;flex-shrink:0}
 .ctrl-btn:hover{background:var(--canal-light)}
 .ctrl-btn.reset{background:transparent;color:var(--muted);border:1px solid var(--border)}
 .ctrl-btn.reset:hover{background:var(--warm);color:var(--ink)}
-.today-btn{font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--arrival);color:white;border:none;padding:10px 16px;cursor:pointer;border-radius:2px;transition:background 0.2s;display:flex;align-items:center;gap:6px;white-space:nowrap;align-self:flex-end;margin-bottom:1px}
+.today-btn{font-family:'Inter',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--arrival);color:white;border:none;padding:10px 16px;cursor:pointer;border-radius:2px;transition:background 0.2s;display:flex;align-items:center;gap:6px;white-space:nowrap;align-self:flex-end;margin-bottom:1px}
 .today-btn:hover{background:#3a9a5a}
 .today-btn.active{background:#1a5c30;box-shadow:inset 0 2px 4px rgba(0,0,0,0.2)}
 .ctrl-input[type="date"]{min-width:160px;cursor:pointer}
@@ -152,7 +152,7 @@ header{background:var(--ink);color:var(--paper)}
 .chart-legend-item{display:flex;align-items:center;gap:5px}
 .chart-legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
 .view-switcher{display:flex;gap:4px;margin-bottom:8px}
-.view-btn{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);padding:6px 14px;cursor:pointer;border-radius:2px;transition:all 0.2s}
+.view-btn{font-family:'Inter',sans-serif;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);padding:6px 14px;cursor:pointer;border-radius:2px;transition:all 0.2s}
 .view-btn.active{background:var(--canal);color:white;border-color:var(--canal)}
 .view-btn:hover:not(.active){border-color:var(--canal);color:var(--canal)}
 .table-wrap{max-width:1200px;margin:24px auto 0;padding:0 32px 48px}
@@ -174,7 +174,7 @@ th.sorted .sort-icon{opacity:1;color:var(--amber-light)}
 td{padding:13px 16px;vertical-align:middle}
 .ship-name{font-family:'Playfair Display',serif;font-size:0.92rem;font-weight:700}
 .ship-cell{display:flex;flex-direction:column;gap:4px}
-.operator-badge{display:inline-block;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;font-family:'DM Mono',monospace;font-weight:500;color:white;width:fit-content}
+.operator-badge{display:inline-block;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;font-family:'Inter',sans-serif;font-weight:500;color:white;width:fit-content}
 .berth-tag{display:inline-block;background:var(--canal);color:white;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:2px;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:background 0.2s}
 .berth-tag:hover{background:var(--canal-light)}
 .time-cell{white-space:nowrap}
@@ -245,9 +245,9 @@ td{padding:13px 16px;vertical-align:middle}
 .bottom-sheet-arr{color:var(--arrival)}
 .bottom-sheet-dep{color:var(--departure)}
 .bottom-sheet-footer{padding:12px 20px 0;flex-shrink:0;border-top:1px solid var(--border);display:flex;gap:8px}
-.bottom-sheet-nav{flex:1;background:var(--canal);color:white;text-align:center;padding:10px;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border-radius:4px;display:block;font-family:'DM Mono',monospace}
-.bottom-sheet-close{background:var(--warm);color:var(--ink);border:1px solid var(--border);padding:10px 16px;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;cursor:pointer;font-family:'DM Mono',monospace}
-.share-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);font-family:'DM Mono',monospace;font-size:0.72rem;padding:10px 20px;border-radius:4px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.bottom-sheet-nav{flex:1;background:var(--canal);color:white;text-align:center;padding:10px;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border-radius:4px;display:block;font-family:'Inter',sans-serif}
+.bottom-sheet-close{background:var(--warm);color:var(--ink);border:1px solid var(--border);padding:10px 16px;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;cursor:pointer;font-family:'Inter',sans-serif}
+.share-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);font-family:'Inter',sans-serif;font-size:0.72rem;padding:10px 20px;border-radius:4px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:9999;white-space:nowrap}
 .share-toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
 .fade-in-section{opacity:0;transform:translateY(18px);transition:opacity 0.6s ease,transform 0.6s ease}
 .fade-in-section.visible{opacity:1;transform:translateY(0)}
@@ -649,7 +649,7 @@ footer a{color:var(--amber);text-decoration:none}
   <div class="bottom-sheet-body" id="bs-body"></div>
   <div class="bottom-sheet-footer">
     <a class="bottom-sheet-nav" id="bs-nav" href="#" target="_blank">&#128741; Navigeren</a>
-    <button id="bs-whatsapp-btn" onclick="shareBottomSheetWhatsApp()" style="background:#25D366;color:white;border:none;padding:10px 12px;font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;cursor:pointer;flex-shrink:0;">&#128242;</button>
+    <button id="bs-whatsapp-btn" onclick="shareBottomSheetWhatsApp()" style="background:#25D366;color:white;border:none;padding:10px 12px;font-family:'Inter',sans-serif;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;cursor:pointer;flex-shrink:0;">&#128242;</button>
     <button class="bottom-sheet-close" onclick="closeBottomSheet()" id="bs-close-btn">Sluiten</button>
   </div>
 </div>
@@ -831,7 +831,7 @@ function initMap(){leafletMap=L.map('cruise-map').setView([52.385,4.905],13);L.t
 
 function getMarkerColor(status){return{docked:'#2a7a4a',arriving:'#c8841a',expected:'#1a5c9a',departed:'#c84040'}[status]||'#666';}
 
-function updateMap(){if(!leafletMap)return;mapMarkers.forEach(m=>m.remove());mapMarkers=[];const byBerth={};currentData.forEach(r=>{if(!byBerth[r.berth])byBerth[r.berth]=[];byBerth[r.berth].push(r);});const bounds=[];Object.entries(byBerth).forEach(([berth,ships])=>{const coords=getBerthCoords(berth);if(!coords)return;bounds.push(coords);const statusPriority=['docked','arriving','expected','departed'];const topStatus=statusPriority.find(s=>ships.some(r=>r.status===s))||'expected';const color=getMarkerColor(topStatus);const icon=L.divIcon({className:'',html:`<div style="background:${color};color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;font-family:'DM Mono',monospace;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;">${ships.length}</div>`,iconSize:[32,32],iconAnchor:[16,16],popupAnchor:[0,-18]});const mapsUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(berth+' Amsterdam')}`;const info=getBerthInfo(berth);const infoHtml=info?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e0d8c8;font-size:0.65rem;display:flex;flex-direction:column;gap:3px;"><div>🚶 <strong>${lang==='nl'?'Looptijd CS':'Walk from CS'}:</strong> ${info.walk}</div><div>🚋 <strong>OV:</strong> ${info.ov}</div><div>🅿️ <strong>${lang==='nl'?'Parkeren':'Parking'}:</strong> ${info.parking}</div></div>`:'';const shipRows=ships.map(r=>`<div style="border-top:1px solid #e0d8c8;margin-top:8px;padding-top:8px;"><div class="popup-ship">${r.ship}</div><div class="popup-times"><span class="popup-arr">${t('popupArr')}: ${fmt(r.arrDt,'date')} ${fmt(r.arrDt,'time')}</span><span class="popup-dep">${t('popupDep')}: ${fmt(r.depDt,'date')} ${fmt(r.depDt,'time')}</span></div><span class="popup-status ${r.status}">${t(r.status)}</span></div>`).join('');const popupHtml=`<div style="min-width:280px;"><div class="popup-berth">⚓ ${berth}</div>${shipRows}${infoHtml}<div style="margin-top:10px;"><a href="${mapsUrl}" target="_blank" style="display:inline-block;background:#2a5c7a;color:white;font-size:0.62rem;padding:4px 10px;border-radius:2px;text-decoration:none;font-family:'DM Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;">🧭 ${t('navBtn')}</a></div></div>`;const marker=L.marker(coords,{icon}).addTo(leafletMap);marker.bindPopup(popupHtml,{maxWidth:320,maxHeight:360});marker.on('click',()=>{if(window.innerWidth<=768||ships.length>1){setTimeout(()=>{leafletMap.closePopup();openBottomSheet(berth,ships);},50);}});mapMarkers.push(marker);});if(bounds.length>0){leafletMap.fitBounds(bounds,{padding:[40,40]});setTimeout(()=>leafletMap.invalidateSize(),100);}}
+function updateMap(){if(!leafletMap)return;mapMarkers.forEach(m=>m.remove());mapMarkers=[];const byBerth={};currentData.forEach(r=>{if(!byBerth[r.berth])byBerth[r.berth]=[];byBerth[r.berth].push(r);});const bounds=[];Object.entries(byBerth).forEach(([berth,ships])=>{const coords=getBerthCoords(berth);if(!coords)return;bounds.push(coords);const statusPriority=['docked','arriving','expected','departed'];const topStatus=statusPriority.find(s=>ships.some(r=>r.status===s))||'expected';const color=getMarkerColor(topStatus);const icon=L.divIcon({className:'',html:`<div style="background:${color};color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;font-family:'Inter',sans-serif;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;">${ships.length}</div>`,iconSize:[32,32],iconAnchor:[16,16],popupAnchor:[0,-18]});const mapsUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(berth+' Amsterdam')}`;const info=getBerthInfo(berth);const infoHtml=info?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e0d8c8;font-size:0.65rem;display:flex;flex-direction:column;gap:3px;"><div>🚶 <strong>${lang==='nl'?'Looptijd CS':'Walk from CS'}:</strong> ${info.walk}</div><div>🚋 <strong>OV:</strong> ${info.ov}</div><div>🅿️ <strong>${lang==='nl'?'Parkeren':'Parking'}:</strong> ${info.parking}</div></div>`:'';const shipRows=ships.map(r=>`<div style="border-top:1px solid #e0d8c8;margin-top:8px;padding-top:8px;"><div class="popup-ship">${r.ship}</div><div class="popup-times"><span class="popup-arr">${t('popupArr')}: ${fmt(r.arrDt,'date')} ${fmt(r.arrDt,'time')}</span><span class="popup-dep">${t('popupDep')}: ${fmt(r.depDt,'date')} ${fmt(r.depDt,'time')}</span></div><span class="popup-status ${r.status}">${t(r.status)}</span></div>`).join('');const popupHtml=`<div style="min-width:280px;"><div class="popup-berth">⚓ ${berth}</div>${shipRows}${infoHtml}<div style="margin-top:10px;"><a href="${mapsUrl}" target="_blank" style="display:inline-block;background:#2a5c7a;color:white;font-size:0.62rem;padding:4px 10px;border-radius:2px;text-decoration:none;font-family:'Inter',sans-serif;letter-spacing:0.08em;text-transform:uppercase;">🧭 ${t('navBtn')}</a></div></div>`;const marker=L.marker(coords,{icon}).addTo(leafletMap);marker.bindPopup(popupHtml,{maxWidth:320,maxHeight:360});marker.on('click',()=>{if(window.innerWidth<=768||ships.length>1){setTimeout(()=>{leafletMap.closePopup();openBottomSheet(berth,ships);},50);}});mapMarkers.push(marker);});if(bounds.length>0){leafletMap.fitBounds(bounds,{padding:[40,40]});setTimeout(()=>leafletMap.invalidateSize(),100);}}
 
 function openMapAt(lat,lng,berth){if(!mapVisible)toggleMap();setTimeout(()=>{if(leafletMap){leafletMap.setView([lat,lng],16);const shipsAtBerth=currentData.filter(r=>{const c=getBerthCoords(r.berth);return c&&Math.abs(c[0]-lat)<0.001&&Math.abs(c[1]-lng)<0.001;});if(window.innerWidth<=768||shipsAtBerth.length>1){if(shipsAtBerth.length>0)openBottomSheet(berth,shipsAtBerth);}else{mapMarkers.forEach(m=>{const pos=m.getLatLng();if(Math.abs(pos.lat-lat)<0.001&&Math.abs(pos.lng-lng)<0.001)m.openPopup();});}}},300);}
 
@@ -844,7 +844,7 @@ function closeBottomSheet(){document.getElementById('bs-overlay').classList.remo
 let bsTouchStartY=0;
 document.addEventListener('DOMContentLoaded',()=>{const bs=document.getElementById('bottom-sheet');if(bs){bs.addEventListener('touchstart',e=>{bsTouchStartY=e.touches[0].clientY;},{passive:true});bs.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-bsTouchStartY>80)closeBottomSheet();},{passive:true});}});
 
-function renderBerthCards(){const grid=document.getElementById('berth-info-grid');grid.innerHTML='';Object.entries(BERTH_INFO).forEach(([berth,info])=>{const card=document.createElement('div');card.className='berth-card';const coords=getBerthCoords(berth);const mapsUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(berth+' Amsterdam')}`;const shipsOnBerth=currentData.filter(r=>r.berth===berth&&r.status!=='departed');const shipLines=shipsOnBerth.map(r=>r.ship+' (arr: '+fmt(r.arrDt,'time')+' - dep: '+fmt(r.depDt,'time')+')').join('\n');const waMsg=['Ligplaats: '+berth,'',shipLines?((lang==='nl'?'Schepen:':'Vessels:')+'\n'+shipLines):'','','Lopen: '+info.walk+(info.walkM<9999?' ('+info.walkM+'m)':''),'OV: '+info.ov,(lang==='nl'?'Parkeren':'Parking')+': '+info.parking,'',lang==='nl'?'Navigeer naar Google Maps:':'Navigate to Google Maps:',mapsUrl].filter(p=>p!==undefined).join('\n').trim();const waUrl='https://wa.me/?text='+encodeURIComponent(waMsg);card.innerHTML=`<div class="berth-card-name">${berth}</div><div class="berth-card-row"><span class="berth-card-icon">🚶</span><div><div class="berth-card-label">${lang==='nl'?'Looptijd vanaf CS':'Walk from CS'}</div><div class="berth-card-value">${info.walk}${info.walkM<9999?' · '+info.walkM+'m':''}</div></div></div><div class="berth-card-row"><span class="berth-card-icon">🚋</span><div><div class="berth-card-label">OV</div><div class="berth-card-value">${info.ov}</div></div></div><div class="berth-card-row"><span class="berth-card-icon">🅿️</span><div><div class="berth-card-label">${lang==='nl'?'Parkeren':'Parking'}</div><div class="berth-card-value">${info.parking}</div></div></div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;"><a href="${mapsUrl}" target="_blank" style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;background:var(--canal);color:white;padding:4px 10px;border-radius:2px;text-decoration:none;">🧭 ${lang==='nl'?'Navigeren':'Navigate'}</a><a href="${waUrl}" target="_blank" style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;background:#25D366;color:white;padding:4px 10px;border-radius:2px;text-decoration:none;">📲 WhatsApp</a></div>`;grid.appendChild(card);});const title=document.getElementById('berth-info-title');if(title)title.textContent=lang==='nl'?'⚓ Ligplaatsen — Praktische informatie':'⚓ Berths — Practical information';}
+function renderBerthCards(){const grid=document.getElementById('berth-info-grid');grid.innerHTML='';Object.entries(BERTH_INFO).forEach(([berth,info])=>{const card=document.createElement('div');card.className='berth-card';const coords=getBerthCoords(berth);const mapsUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(berth+' Amsterdam')}`;const shipsOnBerth=currentData.filter(r=>r.berth===berth&&r.status!=='departed');const shipLines=shipsOnBerth.map(r=>r.ship+' (arr: '+fmt(r.arrDt,'time')+' - dep: '+fmt(r.depDt,'time')+')').join('\n');const waMsg=['Ligplaats: '+berth,'',shipLines?((lang==='nl'?'Schepen:':'Vessels:')+'\n'+shipLines):'','','Lopen: '+info.walk+(info.walkM<9999?' ('+info.walkM+'m)':''),'OV: '+info.ov,(lang==='nl'?'Parkeren':'Parking')+': '+info.parking,'',lang==='nl'?'Navigeer naar Google Maps:':'Navigate to Google Maps:',mapsUrl].filter(p=>p!==undefined).join('\n').trim();const waUrl='https://wa.me/?text='+encodeURIComponent(waMsg);card.innerHTML=`<div class="berth-card-name">${berth}</div><div class="berth-card-row"><span class="berth-card-icon">🚶</span><div><div class="berth-card-label">${lang==='nl'?'Looptijd vanaf CS':'Walk from CS'}</div><div class="berth-card-value">${info.walk}${info.walkM<9999?' · '+info.walkM+'m':''}</div></div></div><div class="berth-card-row"><span class="berth-card-icon">🚋</span><div><div class="berth-card-label">OV</div><div class="berth-card-value">${info.ov}</div></div></div><div class="berth-card-row"><span class="berth-card-icon">🅿️</span><div><div class="berth-card-label">${lang==='nl'?'Parkeren':'Parking'}</div><div class="berth-card-value">${info.parking}</div></div></div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;"><a href="${mapsUrl}" target="_blank" style="font-family:'Inter',sans-serif;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;background:var(--canal);color:white;padding:4px 10px;border-radius:2px;text-decoration:none;">🧭 ${lang==='nl'?'Navigeren':'Navigate'}</a><a href="${waUrl}" target="_blank" style="font-family:'Inter',sans-serif;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;background:#25D366;color:white;padding:4px 10px;border-radius:2px;text-decoration:none;">📲 WhatsApp</a></div>`;grid.appendChild(card);});const title=document.getElementById('berth-info-title');if(title)title.textContent=lang==='nl'?'⚓ Ligplaatsen — Praktische informatie':'⚓ Berths — Practical information';}
 
 function showStatus(msg,type){const el=document.getElementById('status-msg');el.textContent=msg;el.className=`status-inner ${type}`;if(type==='success')setTimeout(()=>{el.className='status-inner';},6000);}
 
