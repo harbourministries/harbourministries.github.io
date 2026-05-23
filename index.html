@@ -440,7 +440,7 @@ footer a{color:var(--amber);text-decoration:none}
 
     <!-- Ship - slow sail + bobbing on waves -->
     <g id="ship">
-      <animateTransform attributeName="transform" type="translate" from="-220,0" to="1660,0" dur="75s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="translate" from="200,0" to="1660,0" dur="60s" repeatCount="indefinite" repeatCount="indefinite"/>
       <animateTransform attributeName="transform" type="translate" from="0,0" to="0,3" dur="2.5s" repeatCount="indefinite" additive="sum" calcMode="spline" keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95" values="0,0;0,3;0,0"/>
       <!-- Hull -->
       <path d="M0,65 L8,57 L180,57 L188,65 Z" fill="#0c1f3a"/>
@@ -900,9 +900,15 @@ function updateCelestialBody() {
       <circle cx="88%" cy="28%" r="8"  fill="#fff0a0" opacity="0.9"/>`;
   }
 
-  // Also update header stars visibility
+  // Header stars visibility
   const headerSvg = document.querySelector('header svg');
   if (headerSvg) headerSvg.style.display = isNight ? 'block' : 'none';
+
+  // Ship visibility - add white outline during day so it stands out
+  const ship = document.getElementById('ship');
+  if (ship) {
+    ship.style.filter = isNight ? 'none' : 'drop-shadow(0 0 4px rgba(255,255,255,0.4))';
+  }
 }
 updateCelestialBody();
 
