@@ -393,7 +393,7 @@ footer a{color:var(--amber);text-decoration:none}
 </header>
 <div class="loading-bar" id="loading-bar"></div>
 <div class="status-msg"><div class="status-inner" id="status-msg"></div></div>
-<div style="background:#0d1117;position:relative;overflow:hidden;height:150px;">
+<div style="background:#1a3f62;position:relative;overflow:hidden;height:150px;">
   <svg id="river-animation" viewBox="0 0 1440 150" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;bottom:0;left:0;width:100%;height:100%;">
     <defs>
       <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
@@ -411,6 +411,16 @@ footer a{color:var(--amber);text-decoration:none}
       <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#1a3a5c"/>
         <stop offset="100%" stop-color="#0c2a48"/>
+      </linearGradient>
+      <radialGradient id="horizonGlow" cx="50%" cy="100%" r="60%" fx="50%" fy="85%">
+        <stop offset="0%" stop-color="#d4780a" stop-opacity="0.55"/>
+        <stop offset="40%" stop-color="#8a4010" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#0e1e32" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="waveTransGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#b86820" stop-opacity="0.9"/>
+        <stop offset="45%" stop-color="#1e4a6e" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#1a3f62" stop-opacity="1"/>
       </linearGradient>
     </defs>
 
@@ -526,8 +536,13 @@ footer a{color:var(--amber);text-decoration:none}
       <path d="M10,106 L185,106 L185,110 Q100,113 10,110 Z" fill="#0a1a2e" opacity="0.35"/>
     </g><!-- /ship -->
 
-    <!-- Paper wave transition at bottom -->
-    <path d="M0,128 C360,120 720,136 1080,128 C1260,124 1350,132 1440,128 L1440,150 L0,150 Z" fill="#f4f0e8"/>
+    <!-- Warm amber horizon glow at waterline -->
+    <rect x="0" y="88" width="1440" height="62" fill="url(#horizonGlow)"/>
+
+    <!-- Gradient wave transition: amber glow → navy stats bar -->
+    <path d="M0,128 C360,120 720,136 1080,128 C1260,124 1350,132 1440,128 L1440,150 L0,150 Z" fill="url(#waveTransGrad)"/>
+    <!-- Second subtle wave for depth -->
+    <path d="M0,135 C240,130 480,140 720,135 C960,130 1200,140 1440,135 L1440,150 L0,150 Z" fill="#1a3f62" opacity="0.7"/>
   </svg>
 </div>
 <div class="stats-bar">
