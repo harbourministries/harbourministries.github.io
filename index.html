@@ -23,7 +23,7 @@ body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);min
 body.dark{--ink:#e8e0d0;--paper:#141820;--warm:#1e2430;--canal:#3a7fa8;--canal-light:#4a9fc8;--amber:#e8a030;--amber-light:#f0b840;--departure:#e06060;--arrival:#4a9a6a;--border:#2a3040;--muted:#8a8878}
 body.dark header{background:#0a0e14}
 body.dark .header-title{color:#e8e0d0}
-body.dark thead tr{background:#0a0e14;color:#e8e0d0}
+body.dark thead tr{background:#1a3a50;color:#e8e0d0}
 body.dark th{color:#e8e0d0}
 body.dark .ctrl-input,body.dark .ctrl-select{background:#1e2430;color:var(--ink);border-color:var(--border)}
 body.dark .proxy-input{background:#1e2430;color:var(--ink)}
@@ -88,13 +88,15 @@ header{background:var(--ink);color:var(--paper)}
 .status-inner.success{background:#d4edda;color:#155724;border:1px solid #a8d5b5;display:block}
 .wave-strip{background:var(--ink);line-height:0}
 .wave-strip svg{display:block;width:100%}
-.stats-bar{background:rgba(12,31,58,0.55);color:white;padding:14px 32px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(200,168,75,0.12);border-bottom:1px solid rgba(200,168,75,0.18);box-shadow:0 4px 32px rgba(0,0,0,0.25)}
-.stats-inner{max-width:1200px;margin:0 auto;display:flex;gap:32px;flex-wrap:wrap;align-items:center}
-.stat-item{display:flex;align-items:baseline;gap:8px}
-.stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--amber-light)}
-.stat-label{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.8}
-.stat-divider{width:1px;height:24px;background:rgba(255,255,255,0.25);flex-shrink:0}
-.weather-widget{display:flex;align-items:center;gap:10px;margin-left:auto;font-size:0.78rem;opacity:0.95}
+.stats-bar{background:var(--warm);color:var(--ink);padding:16px 32px;border-bottom:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.stats-inner{max-width:1200px;margin:0 auto;display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
+.stat-item{display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:transparent;border:none;border-left:2px solid var(--amber);padding:6px 18px;flex:1;min-width:100px;transition:border-color 0.2s}
+.stat-item:hover{border-left-color:var(--amber-light)}
+.stat-icon{font-size:1.1rem;line-height:1;margin-bottom:2px}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--amber);line-height:1}
+.stat-label{font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);line-height:1.3;opacity:0.75}
+.stat-divider{display:none}
+.weather-widget{display:flex;align-items:center;gap:12px;margin-left:auto;font-size:0.78rem;background:transparent;border:none;border-left:2px solid var(--amber);padding:6px 16px;flex-shrink:0}
 .weather-icon{font-size:1.6rem;line-height:1}
 .weather-info{display:flex;flex-direction:column;gap:1px}
 .weather-temp{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--amber-light);line-height:1}
@@ -127,9 +129,9 @@ header{background:var(--ink);color:var(--paper)}
 .popup-status.expected{background:#cce5ff;color:#004085}
 .popup-status.departed{background:#f8d7da;color:#721c24}
 .controls-wrap{max-width:1200px;margin:24px auto 0;padding:0 32px}
-.controls{background:var(--warm);border:1px solid var(--border);padding:20px 24px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.controls{background:var(--warm);border:1px solid var(--border);padding:20px 24px;display:grid;grid-template-columns:2fr 2fr 1fr 2fr auto;gap:12px;align-items:end}
 .ctrl-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.ctrl-group{display:flex;flex-direction:column;flex:1;min-width:200px}
+.ctrl-group{display:flex;flex-direction:column;min-width:0}
 .ctrl-input,.ctrl-select{font-family:'Inter',sans-serif;font-size:0.78rem;background:white;border:1px solid var(--border);padding:8px 12px;color:var(--ink);outline:none;width:100%}
 .ctrl-input:focus,.ctrl-select:focus{border-color:var(--canal)}
 .ctrl-btn{font-family:'Inter',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:10px 20px;cursor:pointer;align-self:flex-end;margin-bottom:1px;flex-shrink:0}
@@ -156,6 +158,8 @@ header{background:var(--ink);color:var(--paper)}
 .view-btn.active{background:var(--canal);color:white;border-color:var(--canal)}
 .view-btn:hover:not(.active){border-color:var(--canal);color:var(--canal)}
 .table-wrap{max-width:1200px;margin:24px auto 0;padding:0 32px 48px}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{min-width:720px}
 .table-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
 .table-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic}
 .result-count{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
@@ -164,15 +168,16 @@ header{background:var(--ink);color:var(--paper)}
 .legend-item{display:flex;align-items:center;gap:6px}
 .legend-dot{width:8px;height:8px;border-radius:50%}
 table{width:100%;border-collapse:collapse;font-size:0.78rem}
-thead tr{background:var(--ink);color:var(--paper)}
+thead{position:sticky;top:0;z-index:10}
+thead tr{background:var(--canal);color:white}
 th{padding:12px 16px;text-align:left;font-size:0.63rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:400;cursor:pointer;user-select:none;white-space:nowrap}
-th:hover{background:#1e2733}
+th:hover{background:var(--canal-light)}
 th .sort-icon{margin-left:4px;opacity:0.4}
 th.sorted .sort-icon{opacity:1;color:var(--amber-light)}
 /* tbody tr handled above */
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 td{padding:13px 16px;vertical-align:middle}
-.ship-name{font-family:'Playfair Display',serif;font-size:0.92rem;font-weight:700}
+.ship-name{font-family:'Playfair Display',serif;font-size:0.92rem;font-weight:700;color:var(--canal)}
 .ship-cell{display:flex;flex-direction:column;gap:4px}
 .operator-badge{display:inline-block;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;font-family:'Inter',sans-serif;font-weight:500;color:white;width:fit-content}
 .berth-tag{display:inline-block;background:var(--canal);color:white;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:2px;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:background 0.2s}
@@ -253,6 +258,12 @@ td{padding:13px 16px;vertical-align:middle}
 .fade-in-section.visible{opacity:1;transform:translateY(0)}
 tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s,box-shadow 0.15s,transform 0.15s;animation:fadeIn 0.3s ease both}
 tbody tr:hover{background:linear-gradient(90deg,rgba(200,168,75,0.06),var(--warm));box-shadow:inset 3px 0 0 var(--amber)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;padding:20px 0 4px;flex-wrap:wrap}
+.page-btn{font-family:'Inter',sans-serif;font-size:0.7rem;letter-spacing:0.08em;background:transparent;color:var(--muted);border:1px solid var(--border);padding:6px 12px;cursor:pointer;border-radius:2px;transition:all 0.2s;min-width:36px}
+.page-btn:hover:not(:disabled){border-color:var(--canal);color:var(--canal)}
+.page-btn.active{background:var(--canal);color:white;border-color:var(--canal)}
+.page-btn:disabled{opacity:0.35;cursor:not-allowed}
+.page-info{font-size:0.68rem;color:var(--muted);letter-spacing:0.06em;padding:0 8px}
 footer{background:var(--ink);color:#6a6a6a;padding:24px 32px;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;text-align:center}
 footer a{color:var(--amber);text-decoration:none}
 @media(min-width:769px){
@@ -282,11 +293,14 @@ footer a{color:var(--amber);text-decoration:none}
   .map-section{padding:0 16px}
   .map-section-header{flex-wrap:wrap;gap:8px}
   .controls-wrap{padding:0 16px;margin-top:16px}
-  .controls{flex-direction:column;padding:14px 16px;gap:10px}
+  .controls{grid-template-columns:1fr 1fr;padding:14px 16px;gap:10px}
   .ctrl-input,.ctrl-select{min-width:unset;width:100%;font-size:0.85rem;padding:10px 12px}
   .ctrl-label{font-size:0.6rem}
-  .ctrl-btn{width:100%;text-align:center;padding:10px}
-  .ctrl-group{flex:unset;width:100%;min-width:unset}
+  .ctrl-btn{width:100%;text-align:center;padding:10px;grid-column:1/-1}
+  .ctrl-group{min-width:unset}
+  .stats-inner{gap:8px}
+  .stat-item{min-width:calc(50% - 4px);flex:unset;padding:6px 12px}
+  .weather-widget{width:100%;margin-left:0;border-left:none;border-top:1px solid rgba(200,168,75,0.35);padding:10px 0 4px}
   .chart-section{padding:0 16px}
   .table-wrap{padding:0 16px 32px;margin-top:16px}
   .table-header{flex-direction:column;gap:4px;align-items:flex-start}
@@ -379,8 +393,8 @@ footer a{color:var(--amber);text-decoration:none}
 </header>
 <div class="loading-bar" id="loading-bar"></div>
 <div class="status-msg"><div class="status-inner" id="status-msg"></div></div>
-<div style="background:#0d1117;position:relative;overflow:hidden;height:110px;">
-  <svg id="river-animation" viewBox="0 0 1440 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;bottom:0;left:0;width:100%;height:100%;">
+<div style="background:#0d1117;position:relative;overflow:hidden;height:150px;">
+  <svg id="river-animation" viewBox="0 0 1440 150" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;bottom:0;left:0;width:100%;height:100%;">
     <defs>
       <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%"   stop-color="#0d1117" id="sky0"/>
@@ -449,83 +463,79 @@ footer a{color:var(--amber);text-decoration:none}
     </g>
 
     <!-- Water surface -->
-    <rect x="0" y="68" width="1440" height="42" fill="url(#waterGrad)"/>
+    <rect x="0" y="108" width="1440" height="42" fill="url(#waterGrad)"/>
 
     <!-- Wave layers -->
-    <path id="wave1" d="M-480,69 Q-360,61 -240,69 Q-120,77 0,69 Q120,61 240,69 Q360,77 480,69 Q600,61 720,69 Q840,77 960,69 Q1080,61 1200,69 Q1320,77 1440,69 Q1560,61 1680,69 Q1800,77 1920,69 L1920,110 L-480,110 Z" fill="#1e4a6e" opacity="0.65">
+    <path id="wave1" d="M-480,109 Q-360,101 -240,109 Q-120,117 0,109 Q120,101 240,109 Q360,117 480,109 Q600,101 720,109 Q840,117 960,109 Q1080,101 1200,109 Q1320,117 1440,109 Q1560,101 1680,109 Q1800,117 1920,109 L1920,150 L-480,150 Z" fill="#1e4a6e" opacity="0.65">
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-480,0" dur="5s" repeatCount="indefinite"/>
     </path>
-    <path id="wave2" d="M-480,73 Q-300,65 -120,73 Q60,81 240,73 Q420,65 600,73 Q780,81 960,73 Q1140,65 1320,73 Q1500,81 1680,73 Q1860,65 1920,73 L1920,110 L-480,110 Z" fill="#164060" opacity="0.55">
+    <path id="wave2" d="M-480,113 Q-300,105 -120,113 Q60,121 240,113 Q420,105 600,113 Q780,121 960,113 Q1140,105 1320,113 Q1500,121 1680,113 Q1860,105 1920,113 L1920,150 L-480,150 Z" fill="#164060" opacity="0.55">
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-480,0" dur="7s" repeatCount="indefinite"/>
     </path>
-    <path id="wave3" d="M-720,78 Q-480,70 -240,78 Q0,86 240,78 Q480,70 720,78 Q960,86 1200,78 Q1440,70 1680,78 Q1920,86 2160,78 L2160,110 L-720,110 Z" fill="#0e2a40" opacity="0.7">
+    <path id="wave3" d="M-720,118 Q-480,110 -240,118 Q0,126 240,118 Q480,110 720,118 Q960,126 1200,118 Q1440,110 1680,118 Q1920,126 2160,118 L2160,150 L-720,150 Z" fill="#0e2a40" opacity="0.7">
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-720,0" dur="8s" repeatCount="indefinite"/>
     </path>
 
     <!-- Water reflections full width -->
-    <path d="M-320,82 Q-240,80 -160,82 Q-80,84 0,82 Q80,80 160,82 Q240,84 320,82 Q400,80 480,82 Q560,84 640,82 Q720,80 800,82 Q880,84 960,82 Q1040,80 1120,82 Q1200,84 1280,82 Q1360,80 1440,82 Q1520,84 1600,82" stroke="#c8a84b" stroke-width="0.5" fill="none" opacity="0.25">
+    <path d="M-320,122 Q-240,120 -160,122 Q-80,124 0,122 Q80,120 160,122 Q240,124 320,122 Q400,120 480,122 Q560,124 640,122 Q720,120 800,122 Q880,124 960,122 Q1040,120 1120,122 Q1200,124 1280,122 Q1360,120 1440,122 Q1520,124 1600,122" stroke="#c8a84b" stroke-width="0.5" fill="none" opacity="0.25">
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-320,0" dur="5s" repeatCount="indefinite"/>
     </path>
 
     <!-- Ship - slow sail + bobbing on waves -->
     <g id="ship">
-      <animateTransform attributeName="transform" type="translate" from="200,0" to="1660,0" dur="60s" repeatCount="indefinite" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="translate" from="-200,0" to="1660,0" dur="60s" repeatCount="indefinite"/>
       <animateTransform attributeName="transform" type="translate" from="0,0" to="0,3" dur="2.5s" repeatCount="indefinite" additive="sum" calcMode="spline" keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95" values="0,0;0,3;0,0"/>
       <!-- Hull -->
-      <path d="M0,65 L8,57 L180,57 L188,65 Z" fill="#0c1f3a"/>
+      <path d="M0,105 L8,97 L180,97 L188,105 Z" fill="#0c1f3a"/>
       <!-- Main deck -->
-      <rect x="15" y="47" width="155" height="10" rx="1" fill="#142840"/>
+      <rect x="15" y="87" width="155" height="10" rx="1" fill="#142840"/>
       <!-- Upper deck -->
-      <rect x="25" y="39" width="120" height="8" rx="1" fill="#1a3a58"/>
+      <rect x="25" y="79" width="120" height="8" rx="1" fill="#1a3a58"/>
       <!-- Bridge -->
-      <rect x="40" y="33" width="50" height="6" rx="1" fill="#1e4268"/>
+      <rect x="40" y="73" width="50" height="6" rx="1" fill="#1e4268"/>
       <!-- Funnel -->
-      <rect x="75" y="27" width="10" height="6" rx="1" fill="#c8841a"/>
+      <rect x="75" y="67" width="10" height="6" rx="1" fill="#c8841a"/>
       <!-- Gold stripe -->
-      <rect x="15" y="56" width="155" height="1.5" fill="#c8a84b" opacity="0.9"/>
+      <rect x="15" y="96" width="155" height="1.5" fill="#c8a84b" opacity="0.9"/>
       <!-- Windows deck 1 -->
-      <rect x="20"  y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="32"  y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="44"  y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="56"  y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="68"  y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="80"  y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="92"  y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="104" y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="116" y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="128" y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="140" y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
-      <rect x="152" y="49" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="20"  y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="32"  y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="44"  y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="56"  y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="68"  y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="80"  y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="92"  y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="104" y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="116" y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="128" y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="140" y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
+      <rect x="152" y="89" width="6" height="4" rx="0.5" fill="#e8a030" opacity="0.9"/>
       <!-- Windows deck 2 -->
-      <rect x="30"  y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
-      <rect x="42"  y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
-      <rect x="54"  y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
-      <rect x="66"  y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
-      <rect x="78"  y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
-      <rect x="90"  y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
-      <rect x="102" y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
-      <rect x="114" y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
-      <rect x="126" y="41" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="30"  y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="42"  y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="54"  y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="66"  y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="78"  y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="90"  y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="102" y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="114" y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
+      <rect x="126" y="81" width="5" height="3" rx="0.5" fill="#e8a030" opacity="0.7"/>
       <!-- Bow wave -->
-      <path d="M188,63 Q202,60 215,65 Q202,68 188,65 Z" fill="white" opacity="0.25"/>
+      <path d="M188,103 Q202,100 215,105 Q202,108 188,105 Z" fill="white" opacity="0.25"/>
       <!-- Hull reflection -->
-      <path d="M10,66 L185,66 L185,70 Q100,73 10,70 Z" fill="#0a1a2e" opacity="0.35"/>
+      <path d="M10,106 L185,106 L185,110 Q100,113 10,110 Z" fill="#0a1a2e" opacity="0.35"/>
     </g><!-- /ship -->
 
     <!-- Paper wave transition at bottom -->
-    <path d="M0,88 C360,80 720,96 1080,88 C1260,84 1350,92 1440,88 L1440,110 L0,110 Z" fill="#f4f0e8"/>
+    <path d="M0,128 C360,120 720,136 1080,128 C1260,124 1350,132 1440,128 L1440,150 L0,150 Z" fill="#f4f0e8"/>
   </svg>
 </div>
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat-item"><span class="stat-num" id="stat-total">25</span><span class="stat-label" id="lbl-total">Schepen<br>in overzicht</span></div>
-    <div class="stat-divider"></div>
-    <div class="stat-item"><span class="stat-num" id="stat-docked">—</span><span class="stat-label" id="lbl-docked">Nu<br>aangemeerd</span></div>
-    <div class="stat-divider"></div>
-    <div class="stat-item"><span class="stat-num" id="stat-today">—</span><span class="stat-label" id="lbl-today">Vandaag<br>aankomst/vertrek</span></div>
-    <div class="stat-divider"></div>
-    <div class="stat-item"><span class="stat-num" id="stat-berths">7</span><span class="stat-label" id="lbl-berths">Unieke<br>ligplaatsen</span></div>
-    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-icon">🚢</span><span class="stat-num" id="stat-total">25</span><span class="stat-label" id="lbl-total">Schepen<br>in overzicht</span></div>
+    <div class="stat-item"><span class="stat-icon">⚓</span><span class="stat-num" id="stat-docked">—</span><span class="stat-label" id="lbl-docked">Nu<br>aangemeerd</span></div>
+    <div class="stat-item"><span class="stat-icon">📅</span><span class="stat-num" id="stat-today">—</span><span class="stat-label" id="lbl-today">Vandaag<br>aankomst/vertrek</span></div>
+    <div class="stat-item"><span class="stat-icon">🗺️</span><span class="stat-num" id="stat-berths">7</span><span class="stat-label" id="lbl-berths">Unieke<br>ligplaatsen</span></div>
     <div class="weather-widget" id="weather-widget">
       <div class="weather-icon" id="weather-icon">&#9925;</div>
       <div class="weather-info">
@@ -627,6 +637,7 @@ footer a{color:var(--amber);text-decoration:none}
     <div class="legend-item"><span class="legend-dot" style="background:#1a5c9a"></span><span id="leg-expected">Komende dagen</span></div>
     <div class="legend-item"><span class="legend-dot" style="background:#c84040"></span><span id="leg-departed">Vertrokken</span></div>
   </div>
+  <div class="table-scroll">
   <table>
     <thead>
       <tr>
@@ -640,6 +651,8 @@ footer a{color:var(--amber);text-decoration:none}
     </thead>
     <tbody id="table-body"></tbody>
   </table>
+  </div><!-- /table-scroll -->
+  <div id="pagination" class="pagination" style="display:none;"></div>
   <div id="empty-state" class="empty-state" style="display:none;">
     <div class="empty-state-icon">&#9875;</div>
     <p id="empty-txt">Geen schepen gevonden voor deze zoekopdracht.</p>
@@ -717,6 +730,8 @@ const FALLBACK=[{ship:"RHEIN MELODIE",berth:"Ruijterkade Oost 3",arr:"18-05-2026
 
 let currentData=[];
 let sortCol=2,sortDir=1;
+let currentPage=1;
+const ITEMS_PER_PAGE=25;
 let lang=localStorage.getItem('cruiseLang')||'nl';
 let proxyUrl='https://harbourministries-production.up.railway.app';
 let leafletMap=null,mapMarkers=[],mapVisible=false;
@@ -741,7 +756,7 @@ function process(rows){return rows.map(r=>{const a=parseDateTime(r.arr),d=parseD
 function getBerthCoords(berth){if(BERTH_COORDS[berth])return BERTH_COORDS[berth];for(const key of Object.keys(BERTH_COORDS)){if(berth.includes(key)||key.includes(berth.split(',')[0]))return BERTH_COORDS[key];}return null;}
 function getBerthInfo(berth){if(BERTH_INFO[berth])return BERTH_INFO[berth];for(const key of Object.keys(BERTH_INFO)){if(berth.includes(key)||key.includes(berth.split(',')[0]))return BERTH_INFO[key];}return null;}
 function getOperator(shipName){const upper=shipName.toUpperCase();for(const op of OPERATORS){if(upper.includes(op.match.toUpperCase()))return op;}return{name:'Other',color:'#7a7060'};}
-function operatorBadge(shipName){const op=getOperator(shipName);return`<span class="operator-badge" style="background:${op.color}">${op.name}</span>`;}
+function operatorBadge(shipName){const op=getOperator(shipName);if(op.name==='Other')return'';return`<span class="operator-badge" style="background:${op.color}">${op.name}</span>`;}
 
 function setLang(l){lang=l;localStorage.setItem('cruiseLang',l);document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===l.toUpperCase()));applyTranslations();renderTable();renderBerthCards();
 updateNowIdealBar();if(cruiseChart){cruiseChart.destroy();cruiseChart=null;}buildChart();updateNowIdealBar();
@@ -812,7 +827,9 @@ function getBestVisitTime(arrDt, depDt) {
   }
 }
 
-function renderTable(){const search=document.getElementById('search-ship').value.toLowerCase();const berth=document.getElementById('filter-berth').value;const st=document.getElementById('filter-status').value;const dateFilter=document.getElementById('filter-date').value;let f=currentData.filter(r=>{if(search&&!r.ship.toLowerCase().includes(search))return false;if(berth&&r.berth!==berth)return false;if(st&&r.status!==st)return false;if(dateFilter){const sel=new Date(dateFilter);sel.setHours(23,59,59);const selStart=new Date(dateFilter);selStart.setHours(0,0,0);if(r.depDt<selStart||r.arrDt>sel)return false;}return true;});f.sort((a,b)=>{if(sortCol===0)return sortDir*a.ship.localeCompare(b.ship);if(sortCol===1)return sortDir*a.berth.localeCompare(b.berth);if(sortCol===2)return sortDir*(a.arrDt-b.arrDt);if(sortCol===3)return sortDir*(a.depDt-b.depDt);if(sortCol===4)return sortDir*((a.depDt-a.arrDt)-(b.depDt-b.arrDt));return 0;});const tbody=document.getElementById('table-body');tbody.innerHTML='';f.forEach((r,i)=>{const barW=Math.min(80,Math.max(16,(r.depDt-r.arrDt)/3600000*2.5));const coords=getBerthCoords(r.berth);const berthClick=coords?`onclick="openMapAt(${coords[0]},${coords[1]},'${r.berth.replace(/'/g,"\\'")}');return false;"` :'';const tr=document.createElement('tr');tr.style.animationDelay=`${i*0.03}s`;tr.innerHTML=`<td><div class="ship-cell">
+function renderTable(){const search=document.getElementById('search-ship').value.toLowerCase();const berth=document.getElementById('filter-berth').value;const st=document.getElementById('filter-status').value;const dateFilter=document.getElementById('filter-date').value;let f=currentData.filter(r=>{if(search&&!r.ship.toLowerCase().includes(search))return false;if(berth&&r.berth!==berth)return false;if(st&&r.status!==st)return false;if(dateFilter){const sel=new Date(dateFilter);sel.setHours(23,59,59);const selStart=new Date(dateFilter);selStart.setHours(0,0,0);if(r.depDt<selStart||r.arrDt>sel)return false;}return true;});f.sort((a,b)=>{if(sortCol===0)return sortDir*a.ship.localeCompare(b.ship);if(sortCol===1)return sortDir*a.berth.localeCompare(b.berth);if(sortCol===2)return sortDir*(a.arrDt-b.arrDt);if(sortCol===3)return sortDir*(a.depDt-b.depDt);if(sortCol===4)return sortDir*((a.depDt-a.arrDt)-(b.depDt-b.arrDt));return 0;});
+const totalPages=Math.ceil(f.length/ITEMS_PER_PAGE);if(currentPage>totalPages)currentPage=1;const pageStart=(currentPage-1)*ITEMS_PER_PAGE;const pageItems=f.slice(pageStart,pageStart+ITEMS_PER_PAGE);
+const tbody=document.getElementById('table-body');tbody.innerHTML='';pageItems.forEach((r,i)=>{const barW=Math.min(80,Math.max(16,(r.depDt-r.arrDt)/3600000*2.5));const coords=getBerthCoords(r.berth);const berthClick=coords?`onclick="openMapAt(${coords[0]},${coords[1]},'${r.berth.replace(/'/g,"\\'")}');return false;"` :'';const tr=document.createElement('tr');tr.style.animationDelay=`${i*0.03}s`;tr.innerHTML=`<td><div class="ship-cell">
         <div class="ship-name">${r.ship}</div>
         ${operatorBadge(r.ship)}
         ${(()=>{const si=getShipInfo(r.ship);return`<div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">${si.flag} ${si.flagLabel} · ${si.length}m · ~${si.crew} crew</div>`;})()}
@@ -824,7 +841,10 @@ function renderTable(){const search=document.getElementById('search-ship').value
           const prefix=bv.isNow?(lang==='nl'?'✓ Nu ideaal':'✓ Now ideal'):(lang==='nl'?'Advies':'Advice');
           return`<div style="font-size:0.58rem;background:${bg};color:${color};padding:2px 7px;border-radius:2px;margin-top:3px;display:inline-block;">💡 ${prefix}: ${bv.label}</div>`;
         })()}
-      </div></td><td><span class="berth-tag" title="${r.berth}" ${berthClick}>${r.berth}</span></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.arrDt,'date')}</span><span class="time-hour arr">&#11014; ${fmt(r.arrDt,'time')}</span></div></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.depDt,'date')}</span><span class="time-hour dep">&#11015; ${fmt(r.depDt,'time')}</span></div></td><td><div class="duration-bar-wrap"><div class="duration-bar" style="width:${barW}px"></div><span class="duration-text">${duration(r.arrDt,r.depDt)}</span></div></td><td>${pill(r.status)}</td>`;tbody.appendChild(tr);});document.getElementById('result-count').textContent=t('results',f.length);document.getElementById('empty-state').style.display=f.length===0?'block':'none';animateCounter(document.getElementById('stat-total'), currentData.length);animateCounter(document.getElementById('stat-docked'), currentData.filter(d=>d.status==='docked').length);animateCounter(document.getElementById('stat-berths'), new Set(currentData.map(d=>d.berth)).size);const tod=new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');document.getElementById('stat-today').textContent=currentData.filter(d=>d.arr.startsWith(tod)||d.dep.startsWith(tod)).length;}
+      </div></td><td><span class="berth-tag" title="${r.berth}" ${berthClick}>${r.berth}</span></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.arrDt,'date')}</span><span class="time-hour arr">&#11014; ${fmt(r.arrDt,'time')}</span></div></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.depDt,'date')}</span><span class="time-hour dep">&#11015; ${fmt(r.depDt,'time')}</span></div></td><td><div class="duration-bar-wrap"><div class="duration-bar" style="width:${barW}px"></div><span class="duration-text">${duration(r.arrDt,r.depDt)}</span></div></td><td>${pill(r.status)}</td>`;tbody.appendChild(tr);});document.getElementById('result-count').textContent=t('results',f.length);document.getElementById('empty-state').style.display=f.length===0?'block':'none';
+// Paginering
+const pgEl=document.getElementById('pagination');
+if(totalPages<=1){pgEl.style.display='none';}else{pgEl.style.display='flex';let html='';html+=`<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹ Vorige</button>`;const range=[];for(let p=1;p<=totalPages;p++){if(p===1||p===totalPages||Math.abs(p-currentPage)<=1)range.push(p);else if(range[range.length-1]!=='…')range.push('…');}range.forEach(p=>{if(p==='…'){html+=`<span class="page-info">…</span>`;}else{html+=`<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;}});html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Volgende ›</button>`;html+=`<span class="page-info">${pageStart+1}–${Math.min(pageStart+ITEMS_PER_PAGE,f.length)} van ${f.length}</span>`;pgEl.innerHTML=html;}animateCounter(document.getElementById('stat-total'), currentData.length);animateCounter(document.getElementById('stat-docked'), currentData.filter(d=>d.status==='docked').length);animateCounter(document.getElementById('stat-berths'), new Set(currentData.map(d=>d.berth)).size);const tod=new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');document.getElementById('stat-today').textContent=currentData.filter(d=>d.arr.startsWith(tod)||d.dep.startsWith(tod)).length;}
 
 function updateNowIdealBar(){
   const idealNow = currentData.filter(r => {
@@ -844,8 +864,9 @@ function updateNowIdealBar(){
   }
 }
 
-function filterTable(){if(currentView==='timeline')renderTimeline();else renderTable();if(mapVisible)updateMap();}
-function sortTable(col){if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}document.querySelectorAll('th').forEach((th,i)=>{th.classList.toggle('sorted',i===col);const ic=th.querySelector('.sort-icon');if(ic)ic.textContent=i===col?(sortDir===1?' ↑':' ↓'):' ⇅';});renderTable();}
+function goPage(p){currentPage=p;renderTable();window.scrollTo({top:document.getElementById('table-body').getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});}
+function filterTable(){currentPage=1;if(currentView==='timeline')renderTimeline();else renderTable();if(mapVisible)updateMap();}
+function sortTable(col){currentPage=1;if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}document.querySelectorAll('th').forEach((th,i)=>{th.classList.toggle('sorted',i===col);const ic=th.querySelector('.sort-icon');if(ic)ic.textContent=i===col?(sortDir===1?' ↑':' ↓'):' ⇅';});renderTable();}
 function resetFilters(){document.getElementById('search-ship').value='';document.getElementById('filter-berth').value='';document.getElementById('filter-status').value='';document.getElementById('filter-date').value='';document.getElementById('today-btn').classList.remove('active');renderTable();buildChart();}
 function filterToday(){const today=new Date().toISOString().split('T')[0];document.getElementById('filter-date').value=today;document.getElementById('today-btn').classList.add('active');renderTable();buildChart();}
 function onDateChange(){const today=new Date().toISOString().split('T')[0];const val=document.getElementById('filter-date').value;document.getElementById('today-btn').classList.toggle('active',val===today);renderTable();buildChart();}
