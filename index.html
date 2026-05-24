@@ -158,8 +158,8 @@ header{background:var(--ink);color:var(--paper)}
 .view-btn.active{background:var(--canal);color:white;border-color:var(--canal)}
 .view-btn:hover:not(.active){border-color:var(--canal);color:var(--canal)}
 .table-wrap{max-width:1200px;margin:24px auto 0;padding:0 32px 48px}
-.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{min-width:720px}
+.table-scroll{display:contents}
+table{min-width:720px;width:100%}
 .table-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
 .table-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic}
 .result-count{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
@@ -302,7 +302,7 @@ footer a{color:var(--amber);text-decoration:none}
   .stat-item{min-width:calc(50% - 4px);flex:unset;padding:6px 12px}
   .weather-widget{width:100%;margin-left:0;border-left:none;border-top:1px solid rgba(200,168,75,0.35);padding:10px 0 4px}
   .chart-section{padding:0 16px}
-  .table-wrap{padding:0 16px 32px;margin-top:16px}
+  .table-wrap{padding:0 16px 32px;margin-top:16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .table-header{flex-direction:column;gap:4px;align-items:flex-start}
   .table-title{font-size:0.95rem}
   .result-count{font-size:0.6rem}
