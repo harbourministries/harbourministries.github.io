@@ -418,18 +418,47 @@ footer a{color:var(--amber);text-decoration:none}
     <circle cx="250"  cy="18" r="0.5" fill="white"   opacity="0.3"/>
     <circle cx="700"  cy="16" r="0.5" fill="white"   opacity="0.3"/>
     <circle cx="1100" cy="18" r="0.5" fill="white"   opacity="0.3"/>
+    </g>
+
+    <!-- Clouds - only shown during daytime -->
+    <g id="clouds-group" style="display:none;">
+      <!-- Cloud links -->
+      <g opacity="0.32">
+        <ellipse cx="155" cy="14" rx="22" ry="7" fill="white"/>
+        <ellipse cx="138" cy="18" rx="14" ry="6" fill="white"/>
+        <ellipse cx="172" cy="17" rx="16" ry="6" fill="white"/>
+      </g>
+      <!-- Cloud midden-links -->
+      <g opacity="0.22">
+        <ellipse cx="470" cy="11" rx="16" ry="5" fill="white"/>
+        <ellipse cx="456" cy="15" rx="10" ry="5" fill="white"/>
+        <ellipse cx="484" cy="14" rx="12" ry="5" fill="white"/>
+      </g>
+      <!-- Cloud midden-rechts -->
+      <g opacity="0.28">
+        <ellipse cx="900" cy="13" rx="26" ry="8" fill="white"/>
+        <ellipse cx="878" cy="18" rx="15" ry="6" fill="white"/>
+        <ellipse cx="922" cy="17" rx="18" ry="6" fill="white"/>
+      </g>
+      <!-- Cloud rechts -->
+      <g opacity="0.20">
+        <ellipse cx="1260" cy="10" rx="18" ry="6" fill="white"/>
+        <ellipse cx="1244" cy="14" rx="11" ry="5" fill="white"/>
+        <ellipse cx="1276" cy="13" rx="13" ry="5" fill="white"/>
+      </g>
+    </g>
 
     <!-- Water surface -->
     <rect x="0" y="68" width="1440" height="42" fill="url(#waterGrad)"/>
 
-    <!-- Wave layers - wilder -->
-    <path d="M-480,69 Q-360,61 -240,69 Q-120,77 0,69 Q120,61 240,69 Q360,77 480,69 Q600,61 720,69 Q840,77 960,69 Q1080,61 1200,69 Q1320,77 1440,69 Q1560,61 1680,69 Q1800,77 1920,69 L1920,110 L-480,110 Z" fill="#1e4a6e" opacity="0.65">
+    <!-- Wave layers -->
+    <path id="wave1" d="M-480,69 Q-360,61 -240,69 Q-120,77 0,69 Q120,61 240,69 Q360,77 480,69 Q600,61 720,69 Q840,77 960,69 Q1080,61 1200,69 Q1320,77 1440,69 Q1560,61 1680,69 Q1800,77 1920,69 L1920,110 L-480,110 Z" fill="#1e4a6e" opacity="0.65">
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-480,0" dur="5s" repeatCount="indefinite"/>
     </path>
-    <path d="M-480,73 Q-300,65 -120,73 Q60,81 240,73 Q420,65 600,73 Q780,81 960,73 Q1140,65 1320,73 Q1500,81 1680,73 Q1860,65 1920,73 L1920,110 L-480,110 Z" fill="#164060" opacity="0.55">
+    <path id="wave2" d="M-480,73 Q-300,65 -120,73 Q60,81 240,73 Q420,65 600,73 Q780,81 960,73 Q1140,65 1320,73 Q1500,81 1680,73 Q1860,65 1920,73 L1920,110 L-480,110 Z" fill="#164060" opacity="0.55">
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-480,0" dur="7s" repeatCount="indefinite"/>
     </path>
-    <path d="M-720,78 Q-480,70 -240,78 Q0,86 240,78 Q480,70 720,78 Q960,86 1200,78 Q1440,70 1680,78 Q1920,86 2160,78 L2160,110 L-720,110 Z" fill="#0e2a40" opacity="0.7">
+    <path id="wave3" d="M-720,78 Q-480,70 -240,78 Q0,86 240,78 Q480,70 720,78 Q960,86 1200,78 Q1440,70 1680,78 Q1920,86 2160,78 L2160,110 L-720,110 Z" fill="#0e2a40" opacity="0.7">
       <animateTransform attributeName="transform" type="translate" from="0,0" to="-720,0" dur="8s" repeatCount="indefinite"/>
     </path>
 
@@ -481,7 +510,7 @@ footer a{color:var(--amber);text-decoration:none}
       <path d="M188,63 Q202,60 215,65 Q202,68 188,65 Z" fill="white" opacity="0.25"/>
       <!-- Hull reflection -->
       <path d="M10,66 L185,66 L185,70 Q100,73 10,70 Z" fill="#0a1a2e" opacity="0.35"/>
-    </g>
+    </g><!-- /ship -->
 
     <!-- Paper wave transition at bottom -->
     <path d="M0,88 C360,80 720,96 1080,88 C1260,84 1350,92 1440,88 L1440,110 L0,110 Z" fill="#f4f0e8"/>
@@ -872,8 +901,8 @@ function updateCelestialBody() {
   const el = document.getElementById('celestial-body');
   const starsEl = document.getElementById('stars-group');
 
-  // Day sky colors
-  const DAY_STOPS = ['#0d1117','#0e1520','#10253a','#1a4a70','#1e6090','#1a5580','#165070','#163260','#1a3a6a','#1e4a7e'];
+  // Proper light blue daylight sky
+  const DAY_STOPS = ['#5a9dc8','#68a8d0','#76b2d6','#84bcda','#90c4de','#98c8e2','#90c0dc','#86bad8','#7ab2d4','#6eacd0'];
   // Night sky colors
   const NIGHT_STOPS = ['#0d1117','#0d1219','#0d141e','#0d1828','#0e1e32','#10243c','#122b46','#153150','#193c5e','#1e4a6e'];
 
@@ -883,34 +912,104 @@ function updateCelestialBody() {
     if (s) s.setAttribute('stop-color', stops[i]);
   }
 
-  // Show/hide stars
-  if (starsEl) starsEl.style.display = isNight ? 'block' : 'none';
+  // Auto dark/light modus op basis van tijd (tenzij gebruiker handmatig heeft ingesteld)
+  const hasManualPref = localStorage.getItem('cruiseDark') !== null;
+  if (!hasManualPref && typeof darkMode !== 'undefined' && typeof applyDark === 'function') {
+    if (darkMode !== isNight) {
+      darkMode = isNight;
+      applyDark();
+    }
+  }
+  const isDark = typeof darkMode !== 'undefined' ? darkMode : isNight;
 
-  if (!el) return;
+  // Update background wrapper div behind de SVG
+  const riverWrap = document.getElementById('river-animation');
+  if (riverWrap && riverWrap.parentElement) {
+    riverWrap.parentElement.style.background = isNight ? '#0d1117' : '#5a9dc8';
+  }
+
+  // Header: daggradient alleen in lichtmodus, anders CSS dark-mode regel
+  const headerEl = document.querySelector('header');
+  if (headerEl) {
+    headerEl.style.background = (!isNight && !isDark)
+      ? 'linear-gradient(160deg, #1a3f62 0%, #1e4f7a 60%, #215a8a 100%)'
+      : '';
+  }
+
+  // Watergradient dag/nacht
+  const waterStart = document.querySelector('#waterGrad stop:first-child');
+  const waterEnd   = document.querySelector('#waterGrad stop:last-child');
+  if (waterStart) waterStart.setAttribute('stop-color', isNight ? '#0e2848' : '#3a82a8');
+  if (waterEnd)   waterEnd.setAttribute('stop-color',   isNight ? '#081830' : '#2a6e92');
+
+  // Golfkleuren dag/nacht
+  const wave1 = document.getElementById('wave1');
+  const wave2 = document.getElementById('wave2');
+  const wave3 = document.getElementById('wave3');
   if (isNight) {
-    el.innerHTML = `
-      <circle cx="88%" cy="30%" r="12" fill="#e8dfc8" opacity="0.85"/>
-      <circle cx="calc(88% + 5px)" cy="27%" r="10" fill="#0d1219" opacity="0.9"/>
-      <circle cx="91%" cy="22%" r="1.5" fill="#c8a84b" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>`;
+    if (wave1) wave1.setAttribute('fill', '#1a3a6a');
+    if (wave2) wave2.setAttribute('fill', '#122a52');
+    if (wave3) wave3.setAttribute('fill', '#0a1e3c');
   } else {
-    // Sun - positioned in upper right
-    el.innerHTML = `
-      <circle cx="88%" cy="28%" r="18" fill="#ffe08a" opacity="0.15"/>
-      <circle cx="88%" cy="28%" r="12" fill="#ffd060" opacity="0.6"/>
-      <circle cx="88%" cy="28%" r="8"  fill="#fff0a0" opacity="0.9"/>`;
+    if (wave1) wave1.setAttribute('fill', '#2e7aaa');
+    if (wave2) wave2.setAttribute('fill', '#246090');
+    if (wave3) wave3.setAttribute('fill', '#1a5078');
+  }
+
+  // Sterren en wolken tonen/verbergen
+  if (starsEl) starsEl.style.display = isNight ? 'block' : 'none';
+  const cloudsEl = document.getElementById('clouds-group');
+  if (cloudsEl) cloudsEl.style.display = isNight ? 'none' : 'block';
+
+  if (el) {
+    if (isNight) {
+      el.innerHTML = `
+        <circle cx="88%" cy="30%" r="12" fill="#e8dfc8" opacity="0.85"/>
+        <circle cx="calc(88% + 5px)" cy="27%" r="10" fill="#0d1219" opacity="0.9"/>
+        <circle cx="91%" cy="22%" r="1.5" fill="#c8a84b" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>`;
+    } else {
+      el.innerHTML = `
+        <circle cx="88%" cy="26%" r="22" fill="#ffe08a" opacity="0.25"/>
+        <circle cx="88%" cy="26%" r="15" fill="#ffd060" opacity="0.75"/>
+        <circle cx="88%" cy="26%" r="10" fill="#fff4b0" opacity="0.95"/>`;
+    }
   }
 
   // Header stars visibility
   const headerSvg = document.querySelector('header svg');
   if (headerSvg) headerSvg.style.display = isNight ? 'block' : 'none';
 
-  // Ship visibility - add white outline during day so it stands out
+  // Ship - lichtgrijze romp overdag zodat hij zichtbaar is tegen de blauwe lucht
   const ship = document.getElementById('ship');
   if (ship) {
-    ship.style.filter = isNight ? 'none' : 'drop-shadow(0 0 4px rgba(255,255,255,0.4))';
+    const hull       = ship.querySelector('path');
+    const rects      = ship.querySelectorAll('rect');
+    const mainDeck   = rects[0];
+    const upperDeck  = rects[1];
+    const bridge     = rects[2];
+    const allPaths   = [...ship.querySelectorAll('path')];
+    const reflection = allPaths[allPaths.length - 1];
+
+    if (isNight) {
+      ship.style.filter = 'none';
+      if (hull)       hull.setAttribute('fill', '#0c1f3a');
+      if (mainDeck)   mainDeck.setAttribute('fill', '#142840');
+      if (upperDeck)  upperDeck.setAttribute('fill', '#1a3a58');
+      if (bridge)     bridge.setAttribute('fill', '#1e4268');
+      if (reflection) reflection.setAttribute('fill', '#0a1a2e');
+    } else {
+      // Donker silhouet tegen lichte daghemel — goed zichtbaar
+      ship.style.filter = 'drop-shadow(0 2px 8px rgba(0,20,50,0.7))';
+      if (hull)       hull.setAttribute('fill', '#0c1f3a');
+      if (mainDeck)   mainDeck.setAttribute('fill', '#142840');
+      if (upperDeck)  upperDeck.setAttribute('fill', '#1a3858');
+      if (bridge)     bridge.setAttribute('fill', '#1e4060');
+      if (reflection) reflection.setAttribute('fill', '#0a1828');
+    }
   }
 }
 updateCelestialBody();
+setInterval(updateCelestialBody, 60 * 1000); // elke minuut controleren op dag/nacht overgang
 
 // ── ANIMATED COUNTERS ─────────────────────────────────────────────────────────
 function animateCounter(el, target, duration=800) {
