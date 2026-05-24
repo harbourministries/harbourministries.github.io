@@ -722,7 +722,9 @@ let proxyUrl='https://harbourministries-production.up.railway.app';
 let leafletMap=null,mapMarkers=[],mapVisible=false;
 let cruiseChart=null;
 let currentView='table';
-let darkMode=localStorage.getItem('cruiseDark')!==null?localStorage.getItem('cruiseDark')==='true':window.matchMedia('(prefers-color-scheme: dark)').matches;
+const _initM=new Date().getHours()*60+new Date().getMinutes();
+const _initIsNight=_initM<6*60||_initM>=20*60;
+let darkMode=localStorage.getItem('cruiseDark')!==null?localStorage.getItem('cruiseDark')==='true':(_initIsNight||window.matchMedia('(prefers-color-scheme: dark)').matches);
 const AUTO_REFRESH_INTERVAL=15*60;
 let autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;
 let autoRefreshTimer=null,countdownTimer=null;
@@ -894,122 +896,162 @@ const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
 document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);
 if('serviceWorker' in navigator){const swCode=`const CACHE='hm-cruise-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/']).catch(()=>{})));});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`;const swBlob=new Blob([swCode],{type:'application/javascript'});navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});}
 
-// ── MOON/SUN ──────────────────────────────────────────────────────────────────
-function updateCelestialBody() {
-  const hour = new Date().getHours();
-  const isNight = hour < 6 || hour >= 20;
-  const el = document.getElementById('celestial-body');
-  const starsEl = document.getElementById('stars-group');
+// ── SKY SYSTEEM: smooth dag/nacht + zonsopgang/ondergang ─────────────────────
 
-  // Proper light blue daylight sky
-  const DAY_STOPS = ['#5a9dc8','#68a8d0','#76b2d6','#84bcda','#90c4de','#98c8e2','#90c0dc','#86bad8','#7ab2d4','#6eacd0'];
-  // Night sky colors
-  const NIGHT_STOPS = ['#0d1117','#0d1219','#0d141e','#0d1828','#0e1e32','#10243c','#122b46','#153150','#193c5e','#1e4a6e'];
+function _h2r(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function _r2h(r,g,b){return'#'+[r,g,b].map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');}
+function _lerp(a,b,t){const[r1,g1,b1]=_h2r(a),[r2,g2,b2]=_h2r(b);return _r2h(r1+(r2-r1)*t,g1+(g2-g1)*t,b1+(b2-b1)*t);}
+function _lerpStops(s1,s2,t){return s1.map((c,i)=>_lerp(c,s2[i],t));}
+function _lerpWater(a,b,t){return{start:_lerp(a.start,b.start,t),end:_lerp(a.end,b.end,t),w1:_lerp(a.w1,b.w1,t),w2:_lerp(a.w2,b.w2,t),w3:_lerp(a.w3,b.w3,t)};}
 
-  const stops = isNight ? NIGHT_STOPS : DAY_STOPS;
-  for (let i = 0; i <= 9; i++) {
-    const s = document.getElementById('sky' + i);
-    if (s) s.setAttribute('stop-color', stops[i]);
+const SKY={
+  NIGHT:   ['#0d1117','#0d1219','#0d141e','#0d1828','#0e1e32','#10243c','#122b46','#153150','#193c5e','#1e4a6e'],
+  SUNRISE: ['#1a0d30','#2a1428','#501a28','#8a2a20','#c84820','#e87030','#f09040','#f0a848','#e89040','#d07030'],
+  DAY:     ['#5a9dc8','#68a8d0','#76b2d6','#84bcda','#90c4de','#98c8e2','#90c0dc','#86bad8','#7ab2d4','#6eacd0'],
+  SUNSET:  ['#1a2848','#28203a','#4a1e30','#822a20','#c04820','#e07030','#f09038','#e88030','#cc6820','#a85010'],
+};
+const SKY_WATER={
+  NIGHT:   {start:'#0e2848',end:'#081830',w1:'#1a3a6a',w2:'#122a52',w3:'#0a1e3c'},
+  SUNRISE: {start:'#7a4a20',end:'#5a3010',w1:'#8a4a18',w2:'#6a3810',w3:'#4a2808'},
+  DAY:     {start:'#3a82a8',end:'#2a6e92',w1:'#2e7aaa',w2:'#246090',w3:'#1a5078'},
+  SUNSET:  {start:'#7a3a18',end:'#5a2810',w1:'#883a14',w2:'#6a2e10',w3:'#48200c'},
+};
+
+function _getSkyPhase(){
+  const m=new Date().getHours()*60+new Date().getMinutes();
+  const NE=5*60,SR=7*60,SS=19*60,NS=21*60;
+  if(m<NE)   return{stops:SKY.NIGHT,  water:SKY_WATER.NIGHT,  phase:'night',  t:0};
+  if(m<SR){  const t=(m-NE)/(SR-NE); return{stops:t<0.5?_lerpStops(SKY.NIGHT,SKY.SUNRISE,t*2):_lerpStops(SKY.SUNRISE,SKY.DAY,(t-0.5)*2), water:t<0.5?_lerpWater(SKY_WATER.NIGHT,SKY_WATER.SUNRISE,t*2):_lerpWater(SKY_WATER.SUNRISE,SKY_WATER.DAY,(t-0.5)*2),phase:'sunrise',t}; }
+  if(m<SS)   return{stops:SKY.DAY,    water:SKY_WATER.DAY,    phase:'day',    t:0};
+  if(m<NS){  const t=(m-SS)/(NS-SS); return{stops:t<0.5?_lerpStops(SKY.DAY,SKY.SUNSET,t*2):_lerpStops(SKY.SUNSET,SKY.NIGHT,(t-0.5)*2),   water:t<0.5?_lerpWater(SKY_WATER.DAY,SKY_WATER.SUNSET,t*2):_lerpWater(SKY_WATER.SUNSET,SKY_WATER.NIGHT,(t-0.5)*2),phase:'sunset',t}; }
+  return{stops:SKY.NIGHT,water:SKY_WATER.NIGHT,phase:'night',t:1};
+}
+
+function _applySky(stops,water){
+  stops.forEach((c,i)=>{const s=document.getElementById('sky'+i);if(s)s.setAttribute('stop-color',c);});
+  const ws=document.querySelector('#waterGrad stop:first-child');
+  const we=document.querySelector('#waterGrad stop:last-child');
+  if(ws)ws.setAttribute('stop-color',water.start);
+  if(we)we.setAttribute('stop-color',water.end);
+  ['wave1','wave2','wave3'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.setAttribute('fill',[water.w1,water.w2,water.w3][i]);});
+}
+
+let _skyAnimId=null;
+function _animateSky(targetStops,targetWater,duration=2800){
+  if(_skyAnimId)cancelAnimationFrame(_skyAnimId);
+  const startStops=Array.from({length:10},(_,i)=>{const el=document.getElementById('sky'+i);return el?(el.getAttribute('stop-color')||SKY.DAY[i]):SKY.DAY[i];});
+  const ws=document.querySelector('#waterGrad stop:first-child');
+  const we=document.querySelector('#waterGrad stop:last-child');
+  const startWater={
+    start:ws?.getAttribute('stop-color')||SKY_WATER.DAY.start,
+    end:  we?.getAttribute('stop-color')||SKY_WATER.DAY.end,
+    w1:   document.getElementById('wave1')?.getAttribute('fill')||SKY_WATER.DAY.w1,
+    w2:   document.getElementById('wave2')?.getAttribute('fill')||SKY_WATER.DAY.w2,
+    w3:   document.getElementById('wave3')?.getAttribute('fill')||SKY_WATER.DAY.w3,
+  };
+  const t0=performance.now();
+  function step(now){
+    const raw=Math.min((now-t0)/duration,1);
+    const e=raw<0.5?2*raw*raw:-1+(4-2*raw)*raw; // easeInOut
+    _applySky(_lerpStops(startStops,targetStops,e),_lerpWater(startWater,targetWater,e));
+    if(raw<1)_skyAnimId=requestAnimationFrame(step);
+  }
+  _skyAnimId=requestAnimationFrame(step);
+}
+
+function updateCelestialBody(){
+  const {stops,water,phase,t}=_getSkyPhase();
+  const isNight  = phase==='night';
+  const isSunrise= phase==='sunrise';
+  const isSunset = phase==='sunset';
+  const isGolden = isSunrise||isSunset;
+
+  // Smooth sky + water overgang
+  _animateSky(stops,water);
+
+  // Auto dark mode op basis van tijd
+  const hasManualPref=localStorage.getItem('cruiseDark')!==null;
+  const autoDark=isNight||(isSunset&&t>0.5);
+  if(!hasManualPref&&typeof darkMode!=='undefined'&&typeof applyDark==='function'){
+    if(darkMode!==autoDark){darkMode=autoDark;applyDark();}
+  }
+  const isDark=typeof darkMode!=='undefined'?darkMode:autoDark;
+
+  // Achtergrond wrapper
+  const riverWrap=document.getElementById('river-animation');
+  if(riverWrap&&riverWrap.parentElement){
+    riverWrap.parentElement.style.transition='background 3s ease';
+    riverWrap.parentElement.style.background=isNight?'#0d1117':stops[0];
   }
 
-  // Auto dark/light modus op basis van tijd (tenzij gebruiker handmatig heeft ingesteld)
-  const hasManualPref = localStorage.getItem('cruiseDark') !== null;
-  if (!hasManualPref && typeof darkMode !== 'undefined' && typeof applyDark === 'function') {
-    if (darkMode !== isNight) {
-      darkMode = isNight;
-      applyDark();
+  // Header — vloeiende overgang met juiste kleur per fase
+  const headerEl=document.querySelector('header');
+  if(headerEl){
+    headerEl.style.transition='background 3s ease';
+    if(!isDark){
+      if(isSunrise)      headerEl.style.background='linear-gradient(160deg,#3a1a10 0%,#8a3a18 50%,#c06020 100%)';
+      else if(isSunset)  headerEl.style.background='linear-gradient(160deg,#2a1820 0%,#6a2818 50%,#a84820 100%)';
+      else               headerEl.style.background='linear-gradient(160deg,#1a3f62 0%,#1e4f7a 60%,#215a8a 100%)';
+    } else {
+      headerEl.style.background='';
     }
   }
-  const isDark = typeof darkMode !== 'undefined' ? darkMode : isNight;
 
-  // Update background wrapper div behind de SVG
-  const riverWrap = document.getElementById('river-animation');
-  if (riverWrap && riverWrap.parentElement) {
-    riverWrap.parentElement.style.background = isNight ? '#0d1117' : '#5a9dc8';
-  }
+  // Sterren & wolken
+  const starsEl=document.getElementById('stars-group');
+  const cloudsEl=document.getElementById('clouds-group');
+  if(starsEl) starsEl.style.display=isNight?'block':'none';
+  if(cloudsEl)cloudsEl.style.display=(isNight||(isSunrise&&t<0.4))?'none':'block';
+  const headerSvg=document.querySelector('header svg');
+  if(headerSvg)headerSvg.style.display=isNight?'block':'none';
 
-  // Header: daggradient alleen in lichtmodus, anders CSS dark-mode regel
-  const headerEl = document.querySelector('header');
-  if (headerEl) {
-    headerEl.style.background = (!isNight && !isDark)
-      ? 'linear-gradient(160deg, #1a3f62 0%, #1e4f7a 60%, #215a8a 100%)'
-      : '';
-  }
-
-  // Watergradient dag/nacht
-  const waterStart = document.querySelector('#waterGrad stop:first-child');
-  const waterEnd   = document.querySelector('#waterGrad stop:last-child');
-  if (waterStart) waterStart.setAttribute('stop-color', isNight ? '#0e2848' : '#3a82a8');
-  if (waterEnd)   waterEnd.setAttribute('stop-color',   isNight ? '#081830' : '#2a6e92');
-
-  // Golfkleuren dag/nacht
-  const wave1 = document.getElementById('wave1');
-  const wave2 = document.getElementById('wave2');
-  const wave3 = document.getElementById('wave3');
-  if (isNight) {
-    if (wave1) wave1.setAttribute('fill', '#1a3a6a');
-    if (wave2) wave2.setAttribute('fill', '#122a52');
-    if (wave3) wave3.setAttribute('fill', '#0a1e3c');
-  } else {
-    if (wave1) wave1.setAttribute('fill', '#2e7aaa');
-    if (wave2) wave2.setAttribute('fill', '#246090');
-    if (wave3) wave3.setAttribute('fill', '#1a5078');
-  }
-
-  // Sterren en wolken tonen/verbergen
-  if (starsEl) starsEl.style.display = isNight ? 'block' : 'none';
-  const cloudsEl = document.getElementById('clouds-group');
-  if (cloudsEl) cloudsEl.style.display = isNight ? 'none' : 'block';
-
-  if (el) {
-    if (isNight) {
-      el.innerHTML = `
+  // Hemellichaam (maan / gouden zon / dagzon)
+  const el=document.getElementById('celestial-body');
+  if(el){
+    if(isNight){
+      el.innerHTML=`
         <circle cx="88%" cy="30%" r="12" fill="#e8dfc8" opacity="0.85"/>
         <circle cx="calc(88% + 5px)" cy="27%" r="10" fill="#0d1219" opacity="0.9"/>
         <circle cx="91%" cy="22%" r="1.5" fill="#c8a84b" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></circle>`;
+    } else if(isSunrise){
+      const cy=Math.round(95-t*69); // 95%→26% van boven
+      const r =Math.round(20-t*8);
+      el.innerHTML=`
+        <circle cx="12%" cy="${cy}%" r="${r+10}" fill="#ff8c20" opacity="${(0.12+t*0.08).toFixed(2)}"/>
+        <circle cx="12%" cy="${cy}%" r="${r+4}"  fill="#ffb040" opacity="${(0.45+t*0.25).toFixed(2)}"/>
+        <circle cx="12%" cy="${cy}%" r="${r}"    fill="#ffe090" opacity="${(0.75+t*0.2).toFixed(2)}"/>`;
+    } else if(isSunset){
+      const cy=Math.round(26+t*69); // 26%→95%
+      const r =Math.round(12+t*8);
+      el.innerHTML=`
+        <circle cx="88%" cy="${cy}%" r="${r+10}" fill="#ff6820" opacity="${(0.22-t*0.1).toFixed(2)}"/>
+        <circle cx="88%" cy="${cy}%" r="${r+4}"  fill="#ff9030" opacity="${(0.55-t*0.1).toFixed(2)}"/>
+        <circle cx="88%" cy="${cy}%" r="${r}"    fill="#ffd060" opacity="${(0.88-t*0.08).toFixed(2)}"/>`;
     } else {
-      el.innerHTML = `
+      el.innerHTML=`
         <circle cx="88%" cy="26%" r="22" fill="#ffe08a" opacity="0.25"/>
         <circle cx="88%" cy="26%" r="15" fill="#ffd060" opacity="0.75"/>
         <circle cx="88%" cy="26%" r="10" fill="#fff4b0" opacity="0.95"/>`;
     }
   }
 
-  // Header stars visibility
-  const headerSvg = document.querySelector('header svg');
-  if (headerSvg) headerSvg.style.display = isNight ? 'block' : 'none';
-
-  // Ship - lichtgrijze romp overdag zodat hij zichtbaar is tegen de blauwe lucht
-  const ship = document.getElementById('ship');
-  if (ship) {
-    const hull       = ship.querySelector('path');
-    const rects      = ship.querySelectorAll('rect');
-    const mainDeck   = rects[0];
-    const upperDeck  = rects[1];
-    const bridge     = rects[2];
-    const allPaths   = [...ship.querySelectorAll('path')];
-    const reflection = allPaths[allPaths.length - 1];
-
-    if (isNight) {
-      ship.style.filter = 'none';
-      if (hull)       hull.setAttribute('fill', '#0c1f3a');
-      if (mainDeck)   mainDeck.setAttribute('fill', '#142840');
-      if (upperDeck)  upperDeck.setAttribute('fill', '#1a3a58');
-      if (bridge)     bridge.setAttribute('fill', '#1e4268');
-      if (reflection) reflection.setAttribute('fill', '#0a1a2e');
-    } else {
-      // Donker silhouet tegen lichte daghemel — goed zichtbaar
-      ship.style.filter = 'drop-shadow(0 2px 8px rgba(0,20,50,0.7))';
-      if (hull)       hull.setAttribute('fill', '#0c1f3a');
-      if (mainDeck)   mainDeck.setAttribute('fill', '#142840');
-      if (upperDeck)  upperDeck.setAttribute('fill', '#1a3858');
-      if (bridge)     bridge.setAttribute('fill', '#1e4060');
-      if (reflection) reflection.setAttribute('fill', '#0a1828');
-    }
+  // Schip
+  const ship=document.getElementById('ship');
+  if(ship){
+    const hull=ship.querySelector('path');
+    const rects=ship.querySelectorAll('rect');
+    const allPaths=[...ship.querySelectorAll('path')];
+    const reflection=allPaths[allPaths.length-1];
+    ship.style.filter=(isNight||isGolden)?'none':'drop-shadow(0 2px 8px rgba(0,20,50,0.7))';
+    if(hull)       hull.setAttribute('fill','#0c1f3a');
+    if(rects[0])   rects[0].setAttribute('fill','#142840');
+    if(rects[1])   rects[1].setAttribute('fill','#1a3858');
+    if(rects[2])   rects[2].setAttribute('fill','#1e4060');
+    if(reflection) reflection.setAttribute('fill','#0a1828');
   }
 }
 updateCelestialBody();
-setInterval(updateCelestialBody, 60 * 1000); // elke minuut controleren op dag/nacht overgang
+setInterval(updateCelestialBody,60*1000);
 
 // ── ANIMATED COUNTERS ─────────────────────────────────────────────────────────
 function animateCounter(el, target, duration=800) {
