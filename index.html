@@ -88,15 +88,15 @@ header{background:var(--ink);color:var(--paper)}
 .status-inner.success{background:#d4edda;color:#155724;border:1px solid #a8d5b5;display:block}
 .wave-strip{background:var(--ink);line-height:0}
 .wave-strip svg{display:block;width:100%}
-.stats-bar{background:var(--warm);color:var(--ink);padding:16px 32px;border-bottom:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.stats-bar{background:linear-gradient(160deg,#1a3f62 0%,#1e4f7a 60%,#215a8a 100%);color:white;padding:16px 32px;border-bottom:1px solid rgba(200,168,75,0.2);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
 .stats-inner{max-width:1200px;margin:0 auto;display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
-.stat-item{display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:transparent;border:none;border-left:2px solid var(--amber);padding:6px 18px;flex:1;min-width:100px;transition:border-color 0.2s}
+.stat-item{display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:transparent;border:none;border-left:2px solid rgba(200,168,75,0.5);padding:6px 18px;flex:1;min-width:100px;transition:border-color 0.2s}
 .stat-item:hover{border-left-color:var(--amber-light)}
 .stat-icon{font-size:1.1rem;line-height:1;margin-bottom:2px}
 .stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--amber);line-height:1}
-.stat-label{font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);line-height:1.3;opacity:0.75}
+.stat-label{font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);line-height:1.3}
 .stat-divider{display:none}
-.weather-widget{display:flex;align-items:center;gap:12px;margin-left:auto;font-size:0.78rem;background:transparent;border:none;border-left:2px solid var(--amber);padding:6px 16px;flex-shrink:0}
+.weather-widget{display:flex;align-items:center;gap:12px;margin-left:auto;font-size:0.78rem;background:transparent;border:none;border-left:2px solid rgba(200,168,75,0.5);padding:6px 16px;flex-shrink:0}
 .weather-icon{font-size:1.6rem;line-height:1}
 .weather-info{display:flex;flex-direction:column;gap:1px}
 .weather-temp{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--amber-light);line-height:1}
@@ -546,6 +546,12 @@ footer a{color:var(--amber);text-decoration:none}
       <div class="weather-forecast" id="weather-forecast"></div>
     </div>
   </div>
+</div>
+<div style="background:linear-gradient(160deg,#1a3f62 0%,#215a8a 100%);line-height:0;overflow:hidden;">
+  <svg viewBox="0 0 1440 52" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;display:block;height:52px;">
+    <path d="M0,20 C180,40 360,8 540,24 C720,40 900,8 1080,24 C1260,40 1380,14 1440,22 L1440,52 L0,52 Z" fill="#e8dfc8" opacity="0.5"/>
+    <path d="M0,28 C200,48 400,12 600,30 C800,48 1000,16 1200,32 C1320,42 1400,24 1440,30 L1440,52 L0,52 Z" fill="#f4f0e8"/>
+  </svg>
 </div>
 <div id="now-ideal-bar" style="display:none;max-width:1200px;margin:16px auto 0;padding:0 32px;">
   <div style="background:#d4edda;border:1px solid #a8d5b5;border-left:4px solid #2a7a4a;padding:10px 16px;border-radius:2px;">
