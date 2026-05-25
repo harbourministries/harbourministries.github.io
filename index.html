@@ -672,8 +672,7 @@ footer a{color:var(--amber);text-decoration:none}
       <div class="ctrl-label" id="lbl-search">Zoek schip</div>
       <div class="ctrl-search-wrap">
         <svg class="ctrl-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input class="ctrl-input" type="text" id="search-ship" placeholder="b.v. Viking, Amadeus…" oninput="filterTable();updateDatalist()" list="ship-datalist" autocomplete="off">
-        <datalist id="ship-datalist"></datalist>
+        <input class="ctrl-input" type="text" id="search-ship" placeholder="b.v. Viking, Amadeus…" oninput="filterTable();inlineComplete(this)" autocomplete="off">
       </div>
     </div>
     <div class="ctrl-group">
@@ -1137,7 +1136,9 @@ function renderBerthCards(){const grid=document.getElementById('berth-info-grid'
 
 function showStatus(msg,type){const el=document.getElementById('status-msg');el.textContent=msg;el.className=`status-inner ${type}`;if(type==='success')setTimeout(()=>{el.className='status-inner';},6000);}
 
-function updateDatalist(){const dl=document.getElementById('ship-datalist');const names=[...new Set(currentData.map(r=>r.ship))].sort();dl.innerHTML=names.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">`).join('');}
+let _acPrev='';
+function inlineComplete(inp){const val=inp.value;if(val.length<=_acPrev.length){_acPrev=val;return;}_acPrev=val;if(!val)return;const q=val.toLowerCase();const match=[...new Set(currentData.map(r=>r.ship))].find(n=>n.toLowerCase().startsWith(q));if(!match)return;inp.value=match;inp.setSelectionRange(val.length,match.length);}
+function updateDatalist(){}
 
 async function fetchLiveData(silent=false){if(!proxyUrl){if(!silent)showStatus(t('errNoUrl'),'error');return;}const btn=document.getElementById('refresh-btn');const bar=document.getElementById('loading-bar');let slowTimer=null;if(!silent){btn.disabled=true;btn.classList.add('spinning');bar.classList.add('active');showStatus(t('loadingMsg'),'info');slowTimer=setTimeout(()=>{showStatus(lang==='nl'?'⏳ Server wordt gestart… even geduld a.u.b':'⏳ Server is starting… please wait','info');},5000);}const fetchWithTimeout=async(url,ms=40000)=>{const ctrl=new AbortController();const id=setTimeout(()=>ctrl.abort(),ms);try{const res=await fetch(url,{signal:ctrl.signal});clearTimeout(id);return res;}catch(e){clearTimeout(id);throw e;}};const fetchWithRetry=async(url,retries=2)=>{for(let i=0;i<=retries;i++){try{if(i>0){if(!silent)showStatus(lang==='nl'?`⟳ Opnieuw proberen (poging ${i+1})…`:`⟳ Retrying (attempt ${i+1})…`,'info');await new Promise(r=>setTimeout(r,3000));}return await fetchWithTimeout(url);}catch(e){if(i===retries)throw e;}}};try{const response=await fetchWithRetry(`${proxyUrl}/api/ships`);if(!response.ok)throw new Error(t('errServer',response.status));const json=await response.json();if(!json.ok||!Array.isArray(json.ships)||json.ships.length===0)throw new Error(json.error||t('errNoShips'));currentData=process(json.ships);populateBerths(currentData);populateOperators(currentData);updateDatalist();renderTable();buildChart();if(mapVisible)updateMap();const now=new Date();const ti=now.toLocaleTimeString(lang==='nl'?'nl-NL':'en-GB',{hour:'2-digit',minute:'2-digit'});const da=now.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{day:'numeric',month:'long',year:'numeric'});document.getElementById('last-updated').textContent=t('liveNote',da,ti,json.ships.length);document.getElementById('last-refresh-time').textContent=ti;document.getElementById('last-refresh').style.display='block';const msg=json.from_cache?t('cacheMsg',json.ships.length,json.cache_age_minutes):t('freshMsg',json.ships.length);if(!silent)showStatus(msg,'success');autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;}catch(err){console.error(err);if(!silent)showStatus(t('errFetch',err.message),'error');}finally{clearTimeout(slowTimer);if(!silent){btn.disabled=false;btn.classList.remove('spinning');bar.classList.remove('active');}}}
 
