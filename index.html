@@ -652,9 +652,9 @@ footer a{color:var(--amber);text-decoration:none}
     </div>
   </div>
   <div id="map-edit-banner" style="display:none;background:rgba(200,132,26,0.12);border:1px solid rgba(200,132,26,0.35);color:var(--amber);padding:8px 14px;border-radius:4px;font-size:0.7rem;margin-bottom:8px;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-    <span>✏️ Sleep een pin naar de juiste plek — wordt automatisch opgeslagen in je browser.</span>
+    <span>✏️ Sleep een pin naar de juiste plek — klaar? Klik "Kopieer voor Claude" en plak het in de chat.</span>
     <div style="display:flex;gap:6px;">
-      <button onclick="exportBerthCoords()" style="background:transparent;border:1px solid var(--amber);color:var(--amber);padding:3px 10px;border-radius:2px;cursor:pointer;font-size:0.65rem;font-family:'Inter',sans-serif;white-space:nowrap;">↑ Exporteer</button>
+      <button onclick="exportBerthCoords()" style="background:rgba(200,132,26,0.2);border:1px solid var(--amber);color:var(--amber);padding:3px 10px;border-radius:2px;cursor:pointer;font-size:0.65rem;font-family:'Inter',sans-serif;white-space:nowrap;font-weight:600;">📋 Kopieer voor Claude</button>
       <button onclick="resetBerthCoords()" style="background:transparent;border:1px solid var(--amber);color:var(--amber);padding:3px 10px;border-radius:2px;cursor:pointer;font-size:0.65rem;font-family:'Inter',sans-serif;white-space:nowrap;">↺ Reset alles</button>
     </div>
   </div>
@@ -1081,7 +1081,26 @@ function toggleMap(){mapVisible=!mapVisible;const container=document.getElementB
 let berthEditMode=false;
 function toggleBerthEdit(){berthEditMode=!berthEditMode;const btn=document.getElementById('map-edit-btn');btn.classList.toggle('active',berthEditMode);btn.textContent=berthEditMode?'✓ Klaar':'✏️ Bewerk';document.getElementById('map-edit-banner').style.display=berthEditMode?'flex':'none';updateMap();}
 function resetBerthCoords(){if(!confirm('Alle aangepaste posities verwijderen en terugzetten naar standaard?'))return;localStorage.removeItem('berth_coords_custom');Object.keys(BERTH_COORDS_DEFAULT).forEach(k=>BERTH_COORDS[k]=BERTH_COORDS_DEFAULT[k]);updateMap();showStatus('Coördinaten teruggezet naar standaard','success');}
-function exportBerthCoords(){const saved=JSON.parse(localStorage.getItem('berth_coords_custom')||'{}');if(Object.keys(saved).length===0){showStatus('Nog geen wijzigingen opgeslagen','info');return;}const txt=JSON.stringify(saved,null,2);const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;max-width:500px;height:300px;z-index:9999;font-family:monospace;font-size:0.8rem;padding:12px;border:2px solid var(--amber);border-radius:4px;background:var(--paper);color:var(--ink);';document.body.appendChild(ta);ta.select();document.execCommand('copy');setTimeout(()=>ta.remove(),8000);showStatus('Gekopieerd naar klembord — stuur dit naar Claude om de code bij te werken','success');}
+function exportBerthCoords(){
+  const saved=JSON.parse(localStorage.getItem('berth_coords_custom')||'{}');
+  if(Object.keys(saved).length===0){showStatus('Nog geen wijzigingen — sleep eerst een pin naar de juiste plek','info');return;}
+  const lines=Object.entries(saved).map(([name,[lat,lng]])=>`  • ${name}: [${lat}, ${lng}]`).join('\n');
+  const msg=`Ik heb de volgende ligplaatsen verplaatst op de kaart:\n\n${lines}\n\nKun je de code updaten en pushen?`;
+  // Overlay
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;display:flex;align-items:center;justify-content:center;';
+  overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+  overlay.innerHTML=`<div style="background:var(--paper);border:2px solid var(--amber);border-radius:6px;padding:20px;width:min(90%,520px);max-height:80vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+    <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--canal);margin-bottom:8px;">📋 Kopieer naar Claude</div>
+    <div style="font-size:0.68rem;color:var(--muted);margin-bottom:10px;">Kopieer dit bericht en plak het in de chat bij Claude:</div>
+    <textarea id="export-ta" readonly style="width:100%;height:160px;font-family:monospace;font-size:0.75rem;padding:10px;border:1px solid var(--border);border-radius:3px;background:#f8f5ee;color:var(--ink);resize:none;">${msg}</textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button onclick="navigator.clipboard.writeText(document.getElementById('export-ta').value).then(()=>{this.textContent='✓ Gekopieerd!';this.style.background='#2a7a3b';setTimeout(()=>{this.textContent='📋 Kopieer';this.style.background='var(--canal)';},2000);})" style="flex:1;background:var(--canal);color:white;border:none;padding:8px;border-radius:3px;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.7rem;font-weight:600;">📋 Kopieer</button>
+      <button onclick="this.closest('div[style*=inset]').remove()" style="background:transparent;color:var(--muted);border:1px solid var(--border);padding:8px 14px;border-radius:3px;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.7rem;">Sluiten</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
 
 function initMap(){leafletMap=L.map('cruise-map').setView([52.385,4.905],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:19}).addTo(leafletMap);updateMap();}
 
