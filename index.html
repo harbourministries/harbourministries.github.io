@@ -312,8 +312,10 @@ footer a{color:var(--amber);text-decoration:none}
   .header-right{align-items:flex-start;flex-direction:row;flex-wrap:wrap;gap:6px}
   .live-badge{font-size:0.55rem;padding:5px 8px;gap:6px}
   .refresh-btn{font-size:0.6rem;padding:6px 10px}
-  .header-menu-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;background:transparent;border:1px solid rgba(200,168,75,0.4);color:var(--amber-light);font-size:1.05rem;cursor:pointer;border-radius:3px;padding:0;line-height:1;transition:background 0.15s,border-color 0.15s}
-  .header-menu-btn:hover,.header-menu-btn.open{background:rgba(200,168,75,0.12);border-color:var(--amber)}
+  .header-menu-btn{display:flex;align-items:center;justify-content:center;width:30px;height:30px;background:transparent;border:none;color:var(--amber-light);cursor:pointer;border-radius:50%;padding:5px;transition:background 0.15s,color 0.15s,transform 0.3s}
+  .header-menu-btn svg{width:100%;height:100%}
+  .header-menu-btn:hover,.header-menu-btn.open{background:rgba(200,168,75,0.15);color:var(--amber)}
+  .header-menu-btn.open{transform:rotate(60deg)}
   .header-tools{display:none;position:absolute;top:42px;right:0;background:var(--ink);border:1px solid rgba(200,168,75,0.25);border-radius:6px;padding:10px;gap:8px;flex-direction:column;align-items:stretch;min-width:170px;box-shadow:0 10px 28px rgba(0,0,0,0.45);z-index:50}
   .header-tools.open{display:flex}
   .header-tools .lang-toggle{display:flex;gap:6px}
@@ -412,7 +414,7 @@ footer a{color:var(--amber);text-decoration:none}
       <div class="header-sub" id="hdr-sub">Cruise Port Amsterdam — Aankomst &amp; Vertrek Overzicht</div>
     </div>
     <div class="header-right">
-      <button class="header-menu-btn" id="header-menu-btn" onclick="toggleHeaderMenu(event)" aria-label="Instellingen">&#9881;</button>
+      <button class="header-menu-btn" id="header-menu-btn" onclick="toggleHeaderMenu(event)" aria-label="Instellingen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <div class="header-tools" id="header-tools">
         <div class="lang-toggle">
           <button class="lang-btn active" onclick="setLang('nl')">NL</button>
