@@ -110,7 +110,7 @@ header{background:var(--ink);color:var(--paper)}
 .forecast-temp-min{font-size:0.58rem;opacity:0.5}
 .map-section{max-width:1200px;margin:32px auto 0;padding:0 32px}
 .map-section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.map-section-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic}
+.map-section-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;border-left:3px solid var(--amber);padding-left:10px}
 .map-toggle-btn{font-family:'Inter',sans-serif;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:7px 14px;cursor:pointer;border-radius:2px}
 .map-toggle-btn:hover{background:var(--canal-light)}
 #map-container{height:380px;border:1px solid var(--border);border-radius:2px;overflow:hidden;display:none}
@@ -145,7 +145,7 @@ header{background:var(--ink);color:var(--paper)}
 .chart-section{max-width:1200px;margin:24px auto 0;padding:0 32px}
 .chart-card{background:var(--warm);border:1px solid var(--border);padding:16px 20px}
 .chart-card-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.chart-card-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-style:italic;color:var(--ink)}
+.chart-card-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-style:italic;color:var(--ink);border-left:3px solid var(--amber);padding-left:10px}
 .chart-stats{display:flex;gap:20px;flex-wrap:wrap}
 .chart-stat{display:flex;flex-direction:column;align-items:flex-end}
 .chart-stat-num{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--amber-light)}
@@ -189,7 +189,7 @@ td{padding:13px 16px;vertical-align:middle}
 .time-hour.arr{color:var(--arrival)}
 .time-hour.dep{color:var(--departure)}
 .status-pill{display:inline-flex;align-items:center;gap:5px;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:2px;font-weight:500}
-.status-pill.docked{background:#d4edda;color:#1a5c30;border:1px solid #a8d5b5}
+.status-pill.docked{background:#d4edda;color:#1a5c30;border:1px solid #a8d5b5;animation:pill-glow 2.5s ease-in-out infinite}
 .status-pill.arriving{background:#fff3cd;color:#7a5200;border:1px solid #ffc966}
 .status-pill.departed{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
 .status-pill.expected{background:#cce5ff;color:#004085;border:1px solid #99caff}
@@ -198,9 +198,11 @@ td{padding:13px 16px;vertical-align:middle}
 .duration-bar-wrap{display:flex;align-items:center;gap:8px}
 .duration-bar{height:3px;background:var(--canal);border-radius:2px;min-width:20px;max-width:80px;opacity:0.6}
 .duration-text{font-size:0.65rem;color:var(--muted)}
-.empty-state{text-align:center;padding:64px 32px;color:var(--muted)}
-.empty-state-icon{font-size:2.5rem;margin-bottom:12px;opacity:0.3}
-.empty-state p{font-family:'Playfair Display',serif;font-style:italic}
+.header-hero-fade{height:26px;background:linear-gradient(to bottom,var(--ink),transparent);position:relative;z-index:5;margin-bottom:-26px;pointer-events:none;}
+.empty-state{text-align:center;padding:48px 32px;color:var(--muted)}
+.empty-state svg{display:block;margin:0 auto 20px}
+.empty-state p{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem}
+@keyframes pill-glow{0%,100%{box-shadow:0 0 0 0 rgba(42,122,74,0.35)}50%{box-shadow:0 0 0 5px rgba(42,122,74,0)}}
 .tl-header-row{display:flex;position:sticky;top:0;background:var(--ink);z-index:2}
 .tl-ship-col{width:260px;flex-shrink:0;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);padding:8px 10px;border-right:1px solid rgba(255,255,255,0.1);position:sticky;left:0;background:var(--ink);z-index:3;display:flex;gap:0}
 .tl-ship-col-ship{width:130px;flex-shrink:0}
@@ -226,7 +228,7 @@ td{padding:13px 16px;vertical-align:middle}
 .berth-info-section{background:var(--warm);border-top:2px solid var(--border);margin-top:0}
 .berth-info-inner{max-width:1200px;margin:0 auto;padding:32px 32px}
 .berth-info-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.berth-info-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic}
+.berth-info-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;border-left:3px solid var(--amber);padding-left:10px}
 .berth-info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
 .berth-card{background:white;border:1px solid var(--border);padding:16px;border-radius:2px}
 .berth-card-name{font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:white;background:var(--canal);padding:4px 10px;border-radius:2px;display:inline-block;margin-bottom:10px}
@@ -392,6 +394,7 @@ footer a{color:var(--amber);text-decoration:none}
   </div>
 </header>
 <div class="loading-bar" id="loading-bar"></div>
+<div class="header-hero-fade"></div>
 <div class="status-msg"><div class="status-inner" id="status-msg"></div></div>
 <div style="background:#1a3f62;position:relative;overflow:hidden;height:150px;">
   <svg id="river-animation" viewBox="0 0 1440 150" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;bottom:0;left:0;width:100%;height:100%;">
@@ -422,6 +425,12 @@ footer a{color:var(--amber);text-decoration:none}
         <stop offset="45%" stop-color="#1e4a6e" stop-opacity="1"/>
         <stop offset="100%" stop-color="#1a3f62" stop-opacity="1"/>
       </linearGradient>
+      <filter id="cloud-sunrise-tint" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.68 0 0 0  0 0 0.42 0 0  0 0 0 1 0"/>
+      </filter>
+      <filter id="cloud-sunset-tint" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.48 0 0 0  0 0 0.28 0 0  0 0 0 1 0"/>
+      </filter>
     </defs>
 
     <!-- Full background sky edge to edge -->
@@ -675,7 +684,20 @@ footer a{color:var(--amber);text-decoration:none}
   </div><!-- /table-scroll -->
   <div id="pagination" class="pagination" style="display:none;"></div>
   <div id="empty-state" class="empty-state" style="display:none;">
-    <div class="empty-state-icon">&#9875;</div>
+    <svg viewBox="0 0 280 110" xmlns="http://www.w3.org/2000/svg" style="width:210px;height:auto;opacity:0.45;">
+      <rect x="0" y="0" width="280" height="70" fill="#c8d8e8"/>
+      <rect x="0" y="70" width="280" height="40" fill="#a8c0d8"/>
+      <rect x="0" y="65" width="280" height="7" fill="#b8a888"/>
+      <path d="M0,68 L0,32 L14,32 L14,25 L19,19 L24,25 L24,32 L44,32 L44,38 L58,38 L58,30 L63,24 L68,30 L68,38 L88,38 L88,32 L94,22 L104,12 L114,22 L114,32 L128,32 L128,40 L148,40 L148,34 L153,28 L158,34 L158,40 L178,40 L178,36 L184,28 L194,20 L204,28 L204,36 L218,36 L218,40 L238,40 L238,32 L246,25 L253,32 L253,40 L280,40 L280,68 Z" fill="#8898a8" opacity="0.45"/>
+      <rect x="108" y="62" width="64" height="5" rx="1" fill="#9a8a70" opacity="0.65"/>
+      <path d="M0,80 Q35,76 70,80 Q105,84 140,80 Q175,76 210,80 Q245,84 280,80" stroke="#90b0c8" stroke-width="1.5" fill="none" opacity="0.55"/>
+      <path d="M0,92 Q40,88 80,92 Q120,96 160,92 Q200,88 240,92 Q260,96 280,92" stroke="#90b0c8" stroke-width="1" fill="none" opacity="0.35"/>
+      <path d="M90,78 Q140,73 190,78" stroke="#c8a84b" stroke-width="0.8" fill="none" opacity="0.35"/>
+      <circle cx="55" cy="83" r="4" fill="#c84040" opacity="0.55"/>
+      <rect x="54" y="70" width="2" height="11" fill="#c84040" opacity="0.35"/>
+      <circle cx="225" cy="86" r="3.5" fill="#2a5c7a" opacity="0.55"/>
+      <rect x="224" y="74" width="2" height="10" fill="#2a5c7a" opacity="0.35"/>
+    </svg>
     <p id="empty-txt">Geen schepen gevonden voor deze zoekopdracht.</p>
   </div>
   <div id="timeline-view" style="display:none;">
@@ -1043,7 +1065,12 @@ function updateCelestialBody(){
   const starsEl=document.getElementById('stars-group');
   const cloudsEl=document.getElementById('clouds-group');
   if(starsEl) starsEl.style.display=isNight?'block':'none';
-  if(cloudsEl)cloudsEl.style.display=(isNight||(isSunrise&&t<0.4))?'none':'block';
+  if(cloudsEl){
+    cloudsEl.style.display=(isNight||(isSunrise&&t<0.4))?'none':'block';
+    if(isSunrise) cloudsEl.setAttribute('filter','url(#cloud-sunrise-tint)');
+    else if(isSunset) cloudsEl.setAttribute('filter','url(#cloud-sunset-tint)');
+    else cloudsEl.removeAttribute('filter');
+  }
   const headerSvg=document.querySelector('header svg');
   if(headerSvg)headerSvg.style.display=isNight?'block':'none';
 
