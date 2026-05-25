@@ -962,10 +962,11 @@ const tbody=document.getElementById('table-body');tbody.innerHTML='';pageItems.f
         ${(()=>{
           const bv=getBestVisitTime(r.arrDt,r.depDt);
           if(!bv)return'';
-          const color=bv.isNow?'#2a7a4a':'#2a5c7a';
-          const bg=bv.isNow?'#d4edda':'#cce5ff';
+          const color=bv.isNow?'var(--amber)':'var(--canal)';
+          const bg=bv.isNow?'rgba(200,132,26,0.13)':'rgba(42,92,122,0.09)';
+          const border=bv.isNow?'1px solid rgba(200,132,26,0.4)':'1px solid rgba(42,92,122,0.25)';
           const prefix=bv.isNow?(lang==='nl'?'✓ Nu ideaal':'✓ Now ideal'):(lang==='nl'?'Advies':'Advice');
-          return`<div style="font-size:0.58rem;background:${bg};color:${color};padding:2px 7px;border-radius:2px;margin-top:3px;display:inline-block;">💡 ${prefix}: ${bv.label}</div>`;
+          return`<div style="font-size:0.58rem;background:${bg};color:${color};padding:2px 7px;border-radius:2px;margin-top:3px;display:inline-block;border:${border};font-weight:600;">💡 ${prefix}: ${bv.label}</div>`;
         })()}
       </div></td><td><span class="berth-tag" title="${r.berth}" ${berthClick}>${r.berth}</span></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.arrDt,'date')}</span><span class="time-hour arr">&#11014; ${fmt(r.arrDt,'time')}</span></div></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.depDt,'date')}</span><span class="time-hour dep">&#11015; ${fmt(r.depDt,'time')}</span></div></td><td><div class="duration-bar-wrap"><div class="duration-bar" style="width:${barW}px"></div><span class="duration-text">${duration(r.arrDt,r.depDt)}</span></div></td><td>${pill(r.status)}</td>`;tbody.appendChild(tr);});document.getElementById('result-count').textContent=t('results',f.length);document.getElementById('empty-state').style.display=f.length===0?'block':'none';
 // Paginering
