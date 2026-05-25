@@ -431,7 +431,12 @@ footer a{color:var(--amber);text-decoration:none}
         <div class="live-badge" id="live-badge">
           <span class="live-dot" id="live-dot"></span>
           <span id="badge-txt">Auto-refresh</span>
-          <span id="auto-refresh-countdown" style="opacity:0.6;font-size:0.6rem;margin-left:2px;"></span>
+          <span id="auto-refresh-ring-wrap" title="" style="margin-left:7px;display:inline-flex;align-items:center;cursor:default;">
+            <svg width="16" height="16" viewBox="0 0 16 16" style="transform:rotate(-90deg)">
+              <circle cx="8" cy="8" r="5.5" fill="none" stroke="rgba(200,132,26,0.2)" stroke-width="2"/>
+              <circle id="auto-refresh-ring" cx="8" cy="8" r="5.5" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-dasharray="34.56" stroke-dashoffset="0" style="transition:stroke-dashoffset 0.9s linear"/>
+            </svg>
+          </span>
         </div>
         <div id="last-refresh" style="display:none;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:#8a8070;white-space:nowrap;">
           <span id="last-refresh-label">Laatste</span> <span id="last-refresh-time" style="color:#e8a030;font-weight:600;"></span>
@@ -1036,7 +1041,7 @@ async function fetchWeather(){try{const url='https://api.open-meteo.com/v1/forec
 
 function startAutoRefresh(){if(autoRefreshTimer)clearInterval(autoRefreshTimer);if(countdownTimer)clearInterval(countdownTimer);autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;updateCountdown();countdownTimer=setInterval(()=>{autoRefreshSecondsLeft--;if(autoRefreshSecondsLeft<=0)autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;updateCountdown();},1000);autoRefreshTimer=setInterval(async()=>{if(!proxyUrl)return;const dot=document.getElementById('live-dot');if(dot)dot.classList.add('syncing');await fetchLiveData(true);if(dot)dot.classList.remove('syncing');autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;},AUTO_REFRESH_INTERVAL*1000);}
 
-function updateCountdown(){const el=document.getElementById('auto-refresh-countdown');if(!el)return;const m=Math.floor(autoRefreshSecondsLeft/60);const s=autoRefreshSecondsLeft%60;el.textContent=`· ${m}:${String(s).padStart(2,'0')}`;}
+function updateCountdown(){const ring=document.getElementById('auto-refresh-ring');const wrap=document.getElementById('auto-refresh-ring-wrap');if(!ring)return;const c=34.56;const progress=autoRefreshSecondsLeft/AUTO_REFRESH_INTERVAL;ring.style.strokeDashoffset=c*(1-progress);const m=Math.floor(autoRefreshSecondsLeft/60);const s=autoRefreshSecondsLeft%60;if(wrap)wrap.title=`Volgende refresh: ${m}:${String(s).padStart(2,'0')}`;}
 
 async function sharePortal(){const url=window.location.href;const title='Amsterdam River Cruise Portal';const text=lang==='nl'?'Bekijk live aankomst- en vertrektijden van riviercruiseschepen in Amsterdam':'View live arrival and departure times of river cruise ships in Amsterdam';if(navigator.share){try{await navigator.share({title,text,url});return;}catch(e){return;}}try{await navigator.clipboard.writeText(url);showToast(lang==='nl'?'✓ Link gekopieerd!':'✓ Link copied!');}catch(e){prompt(lang==='nl'?'Kopieer deze link:':'Copy this link:',url);}}
 
