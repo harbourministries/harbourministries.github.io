@@ -87,10 +87,13 @@ header{background:var(--ink);color:var(--paper)}
 .loading-bar::after{content:'';position:absolute;top:0;left:-40%;width:40%;height:100%;background:linear-gradient(90deg,transparent,var(--amber-light),transparent);animation:loading 1.4s ease-in-out infinite}
 @keyframes loading{from{left:-40%}to{left:100%}}
 .status-msg{max-width:1200px;margin:0 auto;padding:0 32px}
-.status-inner{padding:10px 16px;font-size:0.72rem;border-radius:2px;margin-top:12px;display:none}
-.status-inner.info{background:#cce5ff;color:#004085;border:1px solid #99caff;display:block}
-.status-inner.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;display:block}
-.status-inner.success{background:#d4edda;color:#155724;border:1px solid #a8d5b5;display:block}
+.status-inner{padding:10px 18px;font-size:0.72rem;border-radius:2px;margin-top:12px;display:none;font-family:'Inter',sans-serif;letter-spacing:0.01em;border-left:3px solid transparent}
+.status-inner.info{background:rgba(42,92,122,0.10);color:var(--canal);border:1px solid rgba(42,92,122,0.25);border-left:3px solid var(--canal);display:block}
+.status-inner.success{background:rgba(42,122,74,0.10);color:#1a5a2a;border:1px solid rgba(42,122,74,0.25);border-left:3px solid var(--arrival);display:block}
+.status-inner.error{background:rgba(200,64,64,0.10);color:#7a1c1c;border:1px solid rgba(200,64,64,0.25);border-left:3px solid var(--departure);display:block}
+body.dark .status-inner.info{background:rgba(58,127,168,0.15);color:var(--canal-light);border-color:rgba(58,127,168,0.30);border-left-color:var(--canal-light)}
+body.dark .status-inner.success{background:rgba(74,154,106,0.15);color:#6ad68a;border-color:rgba(74,154,106,0.30);border-left-color:#4a9a6a}
+body.dark .status-inner.error{background:rgba(224,96,96,0.15);color:#e08080;border-color:rgba(224,96,96,0.30);border-left-color:var(--departure)}
 .wave-strip{background:var(--ink);line-height:0}
 .wave-strip svg{display:block;width:100%}
 .stats-bar{background:linear-gradient(160deg,#1a3f62 0%,#1e4f7a 60%,#215a8a 100%);color:white;padding:16px 32px;border-bottom:1px solid rgba(200,168,75,0.2);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
