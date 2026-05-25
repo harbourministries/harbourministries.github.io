@@ -839,7 +839,56 @@ footer a{color:var(--amber);text-decoration:none}
 <script>
 const T={nl:{sub:'Cruise Port Amsterdam — Aankomst & Vertrek Overzicht',badge:'Auto-refresh',lastUpdateLabel:'Laatste',btnRefresh:'Verversen',btnSave:'Opslaan',statTotal:'Schepen<br>in overzicht',statDocked:'Nu<br>aangemeerd',statToday:'Vandaag<br>aankomst/vertrek',statBerths:'Unieke<br>ligplaatsen',mapTitle:'🗺 Ligplaatsen op kaart',mapShow:'Kaart tonen',mapHide:'Kaart verbergen',searchLabel:'Zoek schip',searchPlaceholder:'b.v. Viking, Amadeus…',berthLabel:'Ligplaats',statusLabel:'Status',allBerths:'Alle ligplaatsen',allStatus:'Alle statussen',docked:'Nu aangemeerd',arriving:'Verwacht vandaag',expected:'Komende dagen',departed:'Vertrokken',reset:'Reset',tblTitle:'Riviercruiseschepen in & rondom Amsterdam',thShip:'Scheepsnaam',thBerth:'Ligplaats',thArr:'Aankomst',thDep:'Vertrek',thDur:'Verblijfsduur',thStatus:'Status',legendStatus:'Status:',emptyTxt:'Geen schepen gevonden voor deze zoekopdracht.',results:(n)=>`${n} resultaat${n!==1?'en':''}`,loadingMsg:'⟳ Data ophalen van river.cruiseportamsterdam.com…',staticNote:'Statische data van 18 mei 2026 — klik "Data verversen" voor actuele gegevens',liveNote:(d,ti,n)=>`Live data bijgewerkt: ${d} om ${ti} — ${n} schepen`,cacheMsg:(n,age)=>`✓ ${n} schepen — uit cache (${age} min. oud)`,freshMsg:(n)=>`✓ ${n} schepen — verse data opgehaald`,errNoUrl:'⚠ Vul eerst je Railway URL in.',errFetch:(e)=>`⚠ Ophalen mislukt: ${e}`,errServer:(s)=>`Server fout: ${s}`,errNoShips:'Geen schepen ontvangen van de server.',footer:'Brondata: <a href="https://river.cruiseportamsterdam.com" target="_blank">river.cruiseportamsterdam.com</a> &nbsp;·&nbsp; Kaart: OpenStreetMap &nbsp;·&nbsp; Contact CPA: +31 (0)20 509 1009',popupArr:'⬆ Aankomst',popupDep:'⬇ Vertrek',navBtn:'Navigeren'},en:{sub:'Cruise Port Amsterdam — Arrivals & Departures Overview',badge:'Auto-refresh',lastUpdateLabel:'Last',btnRefresh:'Refresh',statTotal:'Vessels<br>in overview',statDocked:'Currently<br>docked',statToday:"Today's<br>arrivals/departures",statBerths:'Unique<br>berths',mapTitle:'🗺 Berth locations on map',mapShow:'Show map',mapHide:'Hide map',searchLabel:'Search vessel',searchPlaceholder:'e.g. Viking, Amadeus…',berthLabel:'Berth',statusLabel:'Status',allBerths:'All berths',allStatus:'All statuses',docked:'Currently docked',arriving:'Expected today',expected:'Upcoming days',departed:'Departed',reset:'Reset',tblTitle:'River cruise vessels in & around Amsterdam',thShip:'Vessel name',thBerth:'Berth',thArr:'Arrival',thDep:'Departure',thDur:'Stay duration',thStatus:'Status',legendStatus:'Status:',emptyTxt:'No vessels found for this search.',results:(n)=>`${n} result${n!==1?'s':''}`,loadingMsg:'⟳ Fetching data from river.cruiseportamsterdam.com…',staticNote:'Static data from 18 May 2026 — click "Refresh data" for current information',liveNote:(d,ti,n)=>`Live data updated: ${d} at ${ti} — ${n} vessels`,cacheMsg:(n,age)=>`✓ ${n} vessels — from cache (${age} min. old)`,freshMsg:(n)=>`✓ ${n} vessels — fresh data fetched`,errNoUrl:'⚠ Please enter your Railway URL first.',errFetch:(e)=>`⚠ Refresh failed: ${e}`,errServer:(s)=>`Server error: ${s}`,errNoShips:'No vessels received from the server.',footer:'Data source: <a href="https://river.cruiseportamsterdam.com" target="_blank">river.cruiseportamsterdam.com</a> &nbsp;·&nbsp; Map: OpenStreetMap &nbsp;·&nbsp; Contact CPA: +31 (0)20 509 1009',popupArr:'⬆ Arrival',popupDep:'⬇ Departure',navBtn:'Navigate'}};
 
-const BERTH_COORDS_DEFAULT={'Prins Hendrikkade 1':[52.3763,4.8967],'Ruijterkade Oost 2':[52.3762,4.9082],'Ruijterkade Oost 3':[52.3762,4.9102],'Ruijterkade West 2':[52.3820,4.8948],'Ruijterkade West 3':[52.3823,4.8929],'Ruijterkade West 4':[52.3825,4.8910],'Ruijterkade West 5':[52.3828,4.8892],'Ruijterkade West 6':[52.3831,4.8873],'PTA, LP 1 via Muziekgebouw':[52.3766,4.9112],'PTA, LP 2 via Muziekgebouw':[52.3762,4.9152],'PTA, LP 3 via Vriesseveem':[52.3751,4.9222],'PTA, LP 4 via Vriesseveem':[52.3747,4.9261],'Westerdoksdijk':[52.3862,4.8930],'Tolhuis LP 1':[52.3831,4.9028],'Tolhuis LP 2':[52.3834,4.9041],'IJRO 1':[52.3749,4.9205],'Minervahaven Passagierssteiger Steiger Noord':[52.3988,4.8744],'Minervahaven Passagierssteiger Steiger Zuid':[52.3975,4.8748],'Coen Haven Westerhoofd paal 1':[52.4087,4.8657],'Coen Haven Westerhoofd paal 6':[52.4090,4.8680],'Bodecentrum Buiten (Zaantheater), Zaandam':[52.4381,4.8246],'Bodecentrum Binnen (Zaantheater), Zaandam':[52.4378,4.8255]};
+const BERTH_COORDS_DEFAULT={
+  // === AMSTERDAM — bron: Port of Amsterdam ArcGIS (geo.portofamsterdam.com) ===
+  // Prins Hendrikkade (Zaandam — ZG PK1)
+  'Prins Hendrikkade 1':[52.43832,4.82856],
+  'Prins Hendrikkade 2':[52.43727,4.82898],
+  // Ruijterkade West (IJ RW2-6)
+  'Ruijterkade West 2':[52.38215,4.89630],
+  'Ruijterkade West 3':[52.38234,4.89634],
+  'Ruijterkade West 4':[52.38250,4.89614],
+  'Ruijterkade West 5':[52.38268,4.89614],
+  'Ruijterkade West 6':[52.38290,4.89595],
+  // IJ Waterplein (nabij CS, IJ WP6-7)
+  'IJ Waterplein 6':[52.38133,4.89824],
+  'IJ Waterplein 7':[52.38134,4.89871],
+  // Ruijterkade Oost (IJ RO1-3)
+  'IJRO 1':[52.37822,4.90900],
+  'Ruijterkade Oost 2':[52.37857,4.90914],
+  'Ruijterkade Oost 3':[52.37888,4.90918],
+  // PTA — Piet Heinkade 27 / HK PTA [52.378329, 4.917073]
+  'PTA, LP 1 via Muziekgebouw':[52.37833,4.91200],
+  'PTA, LP 2 via Muziekgebouw':[52.37833,4.91550],
+  'PTA, LP 3 via Vriesseveem':[52.37833,4.92100],
+  'PTA, LP 4 via Vriesseveem':[52.37833,4.92530],
+  // Javakade & Sumatrakade (JK RC1 / SM PA1)
+  'Javakade Riviercruise 1':[52.37922,4.91854],
+  'Sumatrakade Passagiers 1':[52.37802,4.93620],
+  // Westerdoksdijk (IJ WSD)
+  'Westerdoksdijk':[52.38656,4.89350],
+  // Tolhuis (NK TO1-2) — noordkant IJ
+  'Tolhuis LP 1':[52.38304,4.90569],
+  'Tolhuis LP 2':[52.38244,4.90435],
+  // Minervahaven — Minervahavenweg 17 (niet in ArcGIS, Nominatim)
+  'Minervahaven Passagierssteiger Steiger Noord':[52.40008,4.87524],
+  'Minervahaven Passagierssteiger Steiger Zuid':[52.39900,4.87500],
+  // Coenhaven (CH WHD)
+  'Coen Haven Westerhoofd paal 1':[52.40788,4.85951],
+  'Coen Haven Westerhoofd paal 6':[52.40788,4.86010],
+  // Suezhaven (SZ NZY)
+  'Suezhaven Kade Noordzijde':[52.39956,4.82666],
+  // === ZAANSTREEK — bron: Port of Amsterdam ArcGIS ===
+  // Zaandam Bodecentrum (ZG BCO / ZG DBK)
+  'Bodecentrum Buiten (Zaantheater), Zaandam':[52.43896,4.82670],
+  'Bodecentrum Binnen (Zaantheater), Zaandam':[52.43918,4.82788],
+  'Burchtkade, Zaandam':[52.43918,4.82788],
+  // Zaanse Schans (ZN ZSN / ZN SJB)
+  'Zaanse Schans ligplaats 1':[52.47500,4.81745],
+  'Zaanse Schans ligplaats 2':[52.47162,4.81479],
+  // Noordeinde Wormerveer (ZN ZNE)
+  'Noordeinde Wormerveer':[52.49556,4.79364],
+};
 const BERTH_COORDS=Object.assign({},BERTH_COORDS_DEFAULT,JSON.parse(localStorage.getItem('berth_coords_custom')||'{}'));
 
 const BERTH_INFO={'Ruijterkade Oost 3':{walk:'8 min',walkM:650,ov:'Tram 26 → halte Muziekgebouw/Bimhuis',parking:'P Piet Hein (~5 min lopen)'},'Ruijterkade West 3':{walk:'6 min',walkM:500,ov:'Tram 26 → halte Centraal Station, richting IJ',parking:'P Oosterdok (~4 min lopen)'},'Ruijterkade West 6':{walk:'7 min',walkM:550,ov:'Tram 26 → halte Centraal Station, richting IJ',parking:'P Oosterdok (~5 min lopen)'},'PTA, LP 1 via Muziekgebouw':{walk:'12 min',walkM:950,ov:'Tram 26 → halte Muziekgebouw/Bimhuis',parking:'P Piet Hein (~7 min lopen)'},'PTA, LP 2 via Muziekgebouw':{walk:'13 min',walkM:1000,ov:'Tram 26 → halte Muziekgebouw/Bimhuis',parking:'P Piet Hein (~8 min lopen)'},'PTA, LP 3 via Vriesseveem':{walk:'14 min',walkM:1100,ov:'Tram 26 → halte Muziekgebouw/Bimhuis',parking:'P Piet Hein (~9 min lopen)'},'PTA, LP 4 via Vriesseveem':{walk:'15 min',walkM:1150,ov:'Tram 26 → halte Muziekgebouw/Bimhuis',parking:'P Piet Hein (~10 min lopen)'},'Prins Hendrikkade 1':{walk:'5 min',walkM:400,ov:'Direct vanaf Centraal Station (5 min lopen)',parking:'P Oosterdok (~4 min lopen)'},'Westerdoksdijk':{walk:'18 min',walkM:1400,ov:'Bus 48 → halte Westerdok, of 18 min lopen',parking:'P Westerdok (gratis, op de dijk)'},'Tolhuis LP 2':{walk:'22 min',walkM:1750,ov:'GVB Pont (gratis ferry) vanaf Centraal Station Noord → 5 min lopen',parking:'Gratis parkeren op terrein Tolhuis'},'Minervahaven Passagierssteiger Steiger Zuid':{walk:'45 min',walkM:3500,ov:'Bus 22 of 48 → halte Minervahaven',parking:'Gratis parkeren Minervahaven terrein'},'Bodecentrum Buiten (Zaantheater), Zaandam':{walk:'— (Zaandam)',walkM:9999,ov:'Trein Amsterdam CS → Zaandam (8 min) + 10 min lopen',parking:'P Zaantheater (betaald, naast locatie)'}};
