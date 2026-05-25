@@ -133,20 +133,24 @@ header{background:var(--ink);color:var(--paper)}
 .popup-status.arriving{background:#fff3cd;color:#7a5200}
 .popup-status.expected{background:#cce5ff;color:#004085}
 .popup-status.departed{background:#f8d7da;color:#721c24}
-.controls-wrap{max-width:1200px;margin:24px auto 0;padding:0 32px}
-.controls{background:var(--warm);border:1px solid var(--border);padding:20px 24px;display:grid;grid-template-columns:2fr 2fr 1fr 2fr auto;gap:12px;align-items:end}
-.ctrl-label{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.controls-wrap{max-width:1200px;margin:28px auto 0;padding:0 32px}
+.controls{background:rgba(232,223,200,0.35);border:1px solid rgba(200,168,75,0.18);padding:20px 22px;display:grid;grid-template-columns:2fr 2fr 1fr 2fr auto;gap:14px;align-items:end;border-radius:10px;backdrop-filter:blur(4px)}
+.ctrl-label{font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:500}
 .ctrl-group{display:flex;flex-direction:column;min-width:0}
-.ctrl-input,.ctrl-select{font-family:'Inter',sans-serif;font-size:0.78rem;background:white;border:1px solid var(--border);padding:8px 12px;color:var(--ink);outline:none;width:100%}
-.ctrl-input:focus,.ctrl-select:focus{border-color:var(--canal)}
-.ctrl-btn{font-family:'Inter',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:10px 20px;cursor:pointer;align-self:flex-end;margin-bottom:1px;flex-shrink:0}
+.ctrl-input,.ctrl-select{font-family:'Inter',sans-serif;font-size:0.78rem;background:white;border:1px solid var(--border);padding:9px 12px;color:var(--ink);outline:none;width:100%;border-radius:6px;transition:border-color 0.15s,box-shadow 0.15s}
+.ctrl-input:focus,.ctrl-select:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(200,132,26,0.15)}
+.ctrl-search-wrap{position:relative}
+.ctrl-search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted);pointer-events:none}
+.ctrl-search-wrap .ctrl-input{padding-left:34px}
+.ctrl-btn{font-family:'Inter',sans-serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:9px 18px;cursor:pointer;align-self:flex-end;margin-bottom:1px;flex-shrink:0;border-radius:6px;transition:all 0.18s}
 .ctrl-btn:hover{background:var(--canal-light)}
 .ctrl-btn.reset{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.ctrl-btn.reset:hover{background:var(--warm);color:var(--ink)}
-.today-btn{font-family:'Inter',sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--arrival);color:white;border:none;padding:10px 16px;cursor:pointer;border-radius:2px;transition:background 0.2s;display:flex;align-items:center;gap:6px;white-space:nowrap;align-self:flex-end;margin-bottom:1px}
-.today-btn:hover{background:#3a9a5a}
-.today-btn.active{background:#1a5c30;box-shadow:inset 0 2px 4px rgba(0,0,0,0.2)}
+.ctrl-btn.reset:hover{background:var(--paper);color:var(--ink);border-color:var(--muted)}
+.today-btn{font-family:'Inter',sans-serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--canal);color:white;border:none;padding:9px 16px;cursor:pointer;border-radius:6px;transition:all 0.18s;display:flex;align-items:center;gap:6px;white-space:nowrap;align-self:flex-end;margin-bottom:1px}
+.today-btn:hover{background:var(--canal-light)}
+.today-btn.active{background:var(--amber);color:var(--ink);box-shadow:0 1px 3px rgba(200,132,26,0.35)}
 .ctrl-input[type="date"]{min-width:160px;cursor:pointer}
+body.dark .controls{background:rgba(30,36,48,0.5);border-color:rgba(200,168,75,0.18)}
 .chart-section{max-width:1200px;margin:24px auto 0;padding:0 32px}
 .chart-card{background:var(--warm);border:1px solid var(--border);padding:16px 20px}
 .chart-card-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;flex-wrap:wrap;gap:8px}
@@ -642,7 +646,10 @@ footer a{color:var(--amber);text-decoration:none}
   <div class="controls">
     <div class="ctrl-group">
       <div class="ctrl-label" id="lbl-search">Zoek schip</div>
-      <input class="ctrl-input" type="text" id="search-ship" placeholder="b.v. Viking, Amadeus…" oninput="filterTable()">
+      <div class="ctrl-search-wrap">
+        <svg class="ctrl-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="ctrl-input" type="text" id="search-ship" placeholder="b.v. Viking, Amadeus…" oninput="filterTable()">
+      </div>
     </div>
     <div class="ctrl-group">
       <div class="ctrl-label" id="lbl-berth-filter">Ligplaats</div>
