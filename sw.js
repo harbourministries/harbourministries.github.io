@@ -1,5 +1,6 @@
-const CACHE = 'hm-cruise-v2';
+const CACHE = 'hm-cruise-v3';
 const OFFLINE_URLS = ['/', '/index.html'];
+const offlineResponse = () => new Response('', { status: 504, statusText: 'Offline' });
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(OFFLINE_URLS).catch(() => {})));
@@ -16,7 +17,11 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   // API calls altijd live ophalen, fallback naar cache
   if (e.request.url.includes('/api/')) {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+    e.respondWith(
+      fetch(e.request).catch(() =>
+        caches.match(e.request).then(r => r || offlineResponse())
+      )
+    );
     return;
   }
   // Overige requests: network-first, cache als fallback
@@ -29,6 +34,6 @@ self.addEventListener('fetch', e => {
         }
         return res;
       })
-      .catch(() => caches.match(e.request))
+      .catch(() => caches.match(e.request).then(r => r || offlineResponse()))
   );
 });
