@@ -56,6 +56,31 @@ body.dark .dark-btn{color:var(--amber-light);border-color:var(--amber)}
 body.dark .bottom-sheet{background:#1e2430}
 body.dark .bottom-sheet-close{background:#2a3040;color:var(--ink)}
 
+/* 2026 visual refresh: retain the editorial maritime identity, standardise UI details */
+.ui-icon{width:1.1em;height:1.1em;display:inline-block;flex:0 0 auto;vertical-align:-0.16em;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.icon-only{display:inline-flex;align-items:center;justify-content:center}
+.dark-btn{min-width:30px;min-height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:5px}
+.share-btn,.refresh-btn,.map-toggle-btn,.today-btn,.ctrl-btn,.view-btn{border-radius:5px}
+.share-btn,.refresh-btn,.map-toggle-btn,.today-btn{gap:7px}
+.share-btn .ui-icon,.refresh-btn .ui-icon,.map-toggle-btn .ui-icon,.today-btn .ui-icon{font-size:1rem}
+.stat-icon{font-size:1.3rem;color:var(--amber-light);margin-bottom:4px}
+.stat-icon .ui-icon{display:block}
+.weather-icon{font-size:1.9rem;color:var(--amber-light)}
+.weather-extra{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.weather-extra .weather-metric{display:inline-flex;align-items:center;gap:3px}
+.forecast-icon{font-size:1.1rem;color:rgba(255,255,255,.9)}
+.map-section-title{display:flex;align-items:center;gap:8px}
+.map-section-title .ui-icon{color:var(--canal);font-size:1.05rem}
+.today-btn .ui-icon{font-size:.95rem}
+.controls,.chart-card{box-shadow:0 10px 28px rgba(13,17,23,.035)}
+.ctrl-input,.ctrl-select{min-height:38px}
+.status-pill{border-radius:999px;padding:5px 11px}
+tbody tr{border-bottom:1px solid color-mix(in srgb,var(--border) 72%,transparent)}
+tbody tr:hover{background:rgba(42,92,122,.035)}
+th .sort-icon{display:inline-flex;margin-left:5px}
+th .sort-icon .ui-icon{width:12px;height:12px}
+@media (max-width:768px){.stat-icon{font-size:1.15rem}.weather-icon{font-size:1.5rem}}
+
 header{background:var(--ink);color:var(--paper)}
 .header-inner{max-width:1200px;margin:0 auto;padding:40px 32px 32px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px}
 .header-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4.5vw,3rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em}
@@ -432,9 +457,9 @@ footer a{color:var(--amber);text-decoration:none}
           <button class="lang-btn active" onclick="setLang('nl')">NL</button>
           <button class="lang-btn" onclick="setLang('en')">EN</button>
         </div>
-        <button class="dark-btn" id="dark-toggle-btn" onclick="toggleDark()" title="Donkere modus">🌙</button>
-        <button id="pwa-install-btn" class="share-btn" onclick="installPWA()" style="display:none;background:var(--amber);color:#1a3f62;">📲 <span>Installeer</span></button>
-        <button class="share-btn" onclick="sharePortal()">🔗 <span id="share-btn-txt">Delen</span></button>
+        <button class="dark-btn icon-only" id="dark-toggle-btn" onclick="toggleDark()" title="Donkere modus" aria-label="Donkere modus"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.7 15.8A9 9 0 1 1 8.2 3.3 7 7 0 0 0 20.7 15.8Z"/></svg></button>
+        <button id="pwa-install-btn" class="share-btn" onclick="installPWA()" style="display:none;background:var(--amber);color:#1a3f62;"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 17v3h14v-3"/></svg><span>Installeer</span></button>
+        <button class="share-btn" onclick="sharePortal()"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"/></svg><span id="share-btn-txt">Delen</span></button>
       </div>
       <div class="header-info-row">
         <div class="live-badge" id="live-badge">
@@ -451,7 +476,7 @@ footer a{color:var(--amber);text-decoration:none}
           <span id="last-refresh-label">Laatste</span> <span id="last-refresh-time" style="color:#e8a030;font-weight:600;"></span>
         </div>
         <button class="refresh-btn" id="refresh-btn" onclick="fetchLiveData()">
-          <span class="refresh-icon">&#8635;</span> <span id="btn-refresh-txt">Verversen</span>
+          <svg class="ui-icon refresh-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v5h-5"/><path d="M18.5 15a7 7 0 1 1-1.7-8.2L20 11"/></svg><span id="btn-refresh-txt">Verversen</span>
         </button>
       </div>
     </div>
@@ -620,12 +645,12 @@ footer a{color:var(--amber);text-decoration:none}
 </div>
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat-item"><span class="stat-icon">🚢</span><span class="stat-num" id="stat-total">25</span><span class="stat-label" id="lbl-total">Schepen<br>in overzicht</span></div>
-    <div class="stat-item"><span class="stat-icon">⚓</span><span class="stat-num" id="stat-docked">—</span><span class="stat-label" id="lbl-docked">Nu<br>aangemeerd</span></div>
-    <div class="stat-item"><span class="stat-icon">📅</span><span class="stat-num" id="stat-today">—</span><span class="stat-label" id="lbl-today">Vandaag<br>aankomst/vertrek</span></div>
-    <div class="stat-item"><span class="stat-icon">🗺️</span><span class="stat-num" id="stat-berths">7</span><span class="stat-label" id="lbl-berths">Unieke<br>ligplaatsen</span></div>
+    <div class="stat-item"><span class="stat-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 2.5 13h19L20 18l-4 3-4-2-4 2-4-3Z"/><path d="M7 13V7h10v6M10 7V3h4v4"/></svg></span><span class="stat-num" id="stat-total">25</span><span class="stat-label" id="lbl-total">Schepen<br>in overzicht</span></div>
+    <div class="stat-item"><span class="stat-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><path d="M12 7v14M5 12h14M5 12c0 5 3 8 7 9m7-9c0 5-3 8-7 9"/></svg></span><span class="stat-num" id="stat-docked">—</span><span class="stat-label" id="lbl-docked">Nu<br>aangemeerd</span></div>
+    <div class="stat-item"><span class="stat-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4m8-4v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span><span class="stat-num" id="stat-today">—</span><span class="stat-label" id="lbl-today">Vandaag<br>aankomst/vertrek</span></div>
+    <div class="stat-item"><span class="stat-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="stat-num" id="stat-berths">7</span><span class="stat-label" id="lbl-berths">Unieke<br>ligplaatsen</span></div>
     <div class="weather-widget" id="weather-widget">
-      <div class="weather-icon" id="weather-icon">&#9925;</div>
+      <div class="weather-icon" id="weather-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .7-7.9A6 6 0 0 0 6.3 12 3 3 0 0 0 7 18Z"/><path d="M8 7a4 4 0 0 1 7.7 1.3M12 1v2M4.2 4.2l1.4 1.4M20 4.2l-1.4 1.4M20 10h2"/></svg></div>
       <div class="weather-info">
         <div class="weather-temp"><span id="weather-temp">—</span>°C</div>
         <div class="weather-desc" id="weather-desc">Amsterdam</div>
@@ -644,14 +669,14 @@ footer a{color:var(--amber);text-decoration:none}
 <div id="now-ideal-bar" style="display:none;max-width:1200px;margin:16px auto 0;padding:0 32px;">
   <div style="background:#d4edda;border:1px solid #a8d5b5;border-left:4px solid #2a7a4a;padding:10px 16px;border-radius:2px;">
     <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#1a5c30;font-weight:600;margin-bottom:4px;">
-      💡 <span id="now-ideal-label">Nu ideaal om te bezoeken</span> <span style="font-weight:400;opacity:0.7;">— advies op basis van verblijfsduur</span>
+      <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 22h4M8.5 14.5a6 6 0 1 1 7 0c-.9.6-1.5 1.5-1.5 2.5h-4c0-1-.6-1.9-1.5-2.5Z"/></svg> <span id="now-ideal-label">Nu ideaal om te bezoeken</span> <span style="font-weight:400;opacity:0.7;">— advies op basis van verblijfsduur</span>
     </div>
     <div id="now-ideal-ships" style="font-size:0.82rem;color:#1a3a28;font-family:'Playfair Display',serif;font-weight:700;"></div>
   </div>
 </div>
 <div class="map-section">
   <div class="map-section-header">
-    <div class="map-section-title" id="map-title">🗺 Ligplaatsen op kaart</div>
+    <div class="map-section-title" id="map-title"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span id="map-title-text">Ligplaatsen op kaart</span></div>
     <div style="display:flex;gap:8px;align-items:center;">
       <button class="map-edit-btn" id="map-edit-btn" onclick="toggleBerthEdit()">✏️ Bewerk</button>
       <button class="map-toggle-btn" id="map-toggle-btn" onclick="toggleMap()">Kaart tonen</button>
@@ -701,7 +726,7 @@ footer a{color:var(--amber);text-decoration:none}
       <div class="ctrl-label" id="lbl-date-filter">Datum</div>
       <div style="display:flex;gap:8px;align-items:stretch;">
         <input class="ctrl-input" type="date" id="filter-date" onchange="onDateChange()" style="min-width:0;flex:1;">
-        <button class="today-btn" id="today-btn" onclick="filterToday()">&#128197; <span id="today-btn-txt">Vandaag</span></button>
+        <button class="today-btn" id="today-btn" onclick="filterToday()"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4m8-4v4M3 10h18"/></svg><span id="today-btn-txt">Vandaag</span></button>
       </div>
     </div>
     <button class="ctrl-btn reset" onclick="resetFilters()" id="btn-reset">Reset</button>
@@ -739,8 +764,8 @@ footer a{color:var(--amber);text-decoration:none}
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
     <div class="view-switcher" style="margin-bottom:0;">
-      <button class="view-btn active" id="btn-view-table" onclick="setView('table')">&#8862; Tabel</button>
-      <button class="view-btn" id="btn-view-timeline" onclick="setView('timeline')">&#9654; Tijdlijn</button>
+      <button class="view-btn active" id="btn-view-table" onclick="setView('table')"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg><span id="btn-view-table-text">Tabel</span></button>
+      <button class="view-btn" id="btn-view-timeline" onclick="setView('timeline')"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1.5" fill="currentColor" stroke="none"/></svg><span id="btn-view-timeline-text">Tijdlijn</span></button>
     </div>
   </div>
   <div class="legend">
@@ -754,11 +779,11 @@ footer a{color:var(--amber);text-decoration:none}
   <table>
     <thead>
       <tr>
-        <th onclick="sortTable(0)" id="th-ship">Scheepsnaam <span class="sort-icon">&#8645;</span></th>
-        <th onclick="sortTable(1)" id="th-berth">Ligplaats <span class="sort-icon">&#8645;</span></th>
-        <th onclick="sortTable(2)" id="th-arr">Aankomst <span class="sort-icon">&#8645;</span></th>
-        <th onclick="sortTable(3)" id="th-dep">Vertrek <span class="sort-icon">&#8645;</span></th>
-        <th onclick="sortTable(4)" id="th-dur">Verblijfsduur <span class="sort-icon">&#8645;</span></th>
+        <th onclick="sortTable(0)" id="th-ship">Scheepsnaam <span class="sort-icon"></span></th>
+        <th onclick="sortTable(1)" id="th-berth">Ligplaats <span class="sort-icon"></span></th>
+        <th onclick="sortTable(2)" id="th-arr">Aankomst <span class="sort-icon"></span></th>
+        <th onclick="sortTable(3)" id="th-dep">Vertrek <span class="sort-icon"></span></th>
+        <th onclick="sortTable(4)" id="th-dur">Verblijfsduur <span class="sort-icon"></span></th>
         <th id="th-status">Status</th>
       </tr>
     </thead>
@@ -925,7 +950,7 @@ const SHIP_INFO={
 
 function getShipInfo(shipName){const op=getOperator(shipName);return SHIP_INFO[op.name]||SHIP_INFO['Other'];}
 
-const WMO_CODES={0:['☀️','Helder'],1:['🌤','Vrijwel helder'],2:['⛅','Bewolkt'],3:['☁️','Zwaar bewolkt'],45:['🌫','Mist'],48:['🌫','IJsmist'],51:['🌦','Lichte motregen'],53:['🌦','Motregen'],55:['🌧','Zware motregen'],61:['🌧','Lichte regen'],63:['🌧','Regen'],65:['🌧','Zware regen'],71:['🌨','Lichte sneeuw'],73:['🌨','Sneeuw'],75:['❄️','Zware sneeuw'],80:['🌦','Buien'],81:['🌧','Zware buien'],82:['⛈','Hevige buien'],95:['⛈','Onweer'],96:['⛈','Onweer met hagel'],99:['⛈','Zwaar onweer']};
+const WMO_CODES={0:['sun','Helder'],1:['cloud','Vrijwel helder'],2:['cloud','Bewolkt'],3:['cloud','Zwaar bewolkt'],45:['fog','Mist'],48:['fog','IJsmist'],51:['rain','Lichte motregen'],53:['rain','Motregen'],55:['rain','Zware motregen'],61:['rain','Lichte regen'],63:['rain','Regen'],65:['rain','Zware regen'],71:['snow','Lichte sneeuw'],73:['snow','Sneeuw'],75:['snow','Zware sneeuw'],80:['rain','Buien'],81:['rain','Zware buien'],82:['rain','Hevige buien'],95:['storm','Onweer'],96:['storm','Onweer met hagel'],99:['storm','Zwaar onweer']};
 const WMO_EN={0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Icy fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Showers',81:'Heavy showers',82:'Violent showers',95:'Thunderstorm',96:'Thunderstorm w/ hail',99:'Severe thunderstorm'};
 
 const FALLBACK=[{ship:"RHEIN MELODIE",berth:"Ruijterkade Oost 3",arr:"18-05-2026 09:00",dep:"18-05-2026 19:30"},{ship:"A-ROSA SENA",berth:"PTA, LP 3 via Vriesseveem",arr:"18-05-2026 08:00",dep:"18-05-2026 23:00"},{ship:"ALENA",berth:"PTA, LP 2 via Muziekgebouw",arr:"18-05-2026 09:00",dep:"19-05-2026 04:00"},{ship:"AURELIA",berth:"PTA, LP 2 via Muziekgebouw",arr:"18-05-2026 09:00",dep:"19-05-2026 04:00"},{ship:"HORIZON",berth:"Prins Hendrikkade 1",arr:"18-05-2026 14:00",dep:"19-05-2026 06:00"},{ship:"AMADEUS AUREA",berth:"PTA, LP 1 via Muziekgebouw",arr:"18-05-2026 12:00",dep:"19-05-2026 08:30"},{ship:"ELEGANT",berth:"Ruijterkade West 3",arr:"19-05-2026 04:00",dep:"19-05-2026 10:00"},{ship:"TUI ARIA",berth:"PTA, LP 1 via Muziekgebouw",arr:"17-05-2026 08:00",dep:"19-05-2026 13:00"},{ship:"MAGNIFIQUE I",berth:"Minervahaven Passagierssteiger Steiger Zuid",arr:"18-05-2026 10:00",dep:"19-05-2026 16:00"},{ship:"VIKING SIGYN",berth:"PTA, LP 3 via Vriesseveem",arr:"19-05-2026 02:00",dep:"19-05-2026 23:00"},{ship:"VIKING VE",berth:"PTA, LP 3 via Vriesseveem",arr:"19-05-2026 02:00",dep:"19-05-2026 23:55"},{ship:"AMASERENA",berth:"PTA, LP 4 via Vriesseveem",arr:"18-05-2026 13:00",dep:"20-05-2026 13:00"},{ship:"AVALON ENVISION",berth:"PTA, LP 4 via Vriesseveem",arr:"18-05-2026 08:00",dep:"20-05-2026 13:30"},{ship:"SCENIC RUBY",berth:"Bodecentrum Buiten (Zaantheater), Zaandam",arr:"19-05-2026 08:30",dep:"20-05-2026 22:00"},{ship:"VIKING EINAR",berth:"PTA, LP 2 via Muziekgebouw",arr:"20-05-2026 02:00",dep:"20-05-2026 23:00"},{ship:"VIKING LIF",berth:"PTA, LP 3 via Vriesseveem",arr:"20-05-2026 02:00",dep:"20-05-2026 23:55"},{ship:"EXCELLENCE QUEEN",berth:"Ruijterkade West 3",arr:"20-05-2026 03:00",dep:"20-05-2026 23:59"},{ship:"AMADEUS STAR",berth:"Westerdoksdijk",arr:"19-05-2026 13:00",dep:"21-05-2026 08:30"},{ship:"JOHANN STRAUSS",berth:"Prins Hendrikkade 1",arr:"20-05-2026 07:00",dep:"21-05-2026 09:00"},{ship:"INSPIRE",berth:"Ruijterkade West 6",arr:"19-05-2026 12:00",dep:"21-05-2026 09:30"},{ship:"VITA NOVA",berth:"Tolhuis LP 2",arr:"18-05-2026 09:00",dep:"21-05-2026 11:00"},{ship:"SCENIC JEWEL",berth:"Westerdoksdijk",arr:"19-05-2026 08:30",dep:"21-05-2026 12:30"},{ship:"AMACERTO",berth:"Ruijterkade West 6",arr:"19-05-2026 15:00",dep:"21-05-2026 13:00"},{ship:"AMAPRIMA",berth:"Ruijterkade Oost 3",arr:"20-05-2026 01:00",dep:"21-05-2026 13:00"},{ship:"EXCELLENCE CROWN",berth:"Bodecentrum Buiten (Zaantheater), Zaandam",arr:"21-05-2026 06:30",dep:"21-05-2026 15:00"}];
@@ -949,6 +974,10 @@ let autoRefreshTimer=null,countdownTimer=null;
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{if(localStorage.getItem('cruiseDark')===null){darkMode=e.matches;applyDark();}});
 
 function t(key,...args){const val=T[lang][key];return typeof val==='function'?val(...args):val;}
+const ICON_PATHS={
+  moon:'<path d="M20.7 15.8A9 9 0 1 1 8.2 3.3 7 7 0 0 0 20.7 15.8Z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',cloud:'<path d="M6 18h11a4 4 0 0 0 .7-7.9A6 6 0 0 0 6.3 12 3 3 0 0 0 6 18Z"/>',rain:'<path d="M6 15h11a4 4 0 0 0 .7-7.9A6 6 0 0 0 6.3 9 3 3 0 0 0 6 15Z"/><path d="m8 18-1 2m6-2-1 2m6-2-1 2"/>',fog:'<path d="M4 9h16M3 13h14M7 17h14"/>',snow:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/>',storm:'<path d="M6 14h11a4 4 0 0 0 .7-7.9A6 6 0 0 0 6.3 8 3 3 0 0 0 6 14Z"/><path d="m13 15-3 4h3l-2 3"/>',wind:'<path d="M3 8h11a2 2 0 1 0-2-2M3 12h16a2 2 0 1 1-2 2M3 16h8"/>',droplet:'<path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12Z"/>',table:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/>',timeline:'<path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="11" cy="17" r="1.5" fill="currentColor" stroke="none"/>',sort:'<path d="m8 9 4-4 4 4M16 15l-4 4-4-4"/>',sortUp:'<path d="m7 14 5-5 5 5"/>',sortDown:'<path d="m7 10 5 5 5-5"/>'
+};
+function iconSvg(name,cls='ui-icon'){return`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[name]||ICON_PATHS.cloud}</svg>`;}
 function parseDateTime(str){if(!str)return null;const[dp,tp]=str.trim().split(' ');const[d,m,y]=dp.split('-');const[h,min]=(tp||'00:00').split(':');return new Date(+y,+m-1,+d,+h,+min);}
 function fmt(dt,type){if(type==='date')return dt.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{day:'numeric',month:'short'});return dt.toLocaleTimeString(lang==='nl'?'nl-NL':'en-GB',{hour:'2-digit',minute:'2-digit'});}
 function duration(a,d){const h=Math.floor((d-a)/3600000),m=Math.floor(((d-a)%3600000)/60000);return h===0?`${m}m`:m===0?`${h}u`:`${h}u ${m}m`;}
@@ -964,9 +993,19 @@ function setLang(l){lang=l;localStorage.setItem('cruiseLang',l);document.querySe
 updateNowIdealBar();if(cruiseChart){cruiseChart.destroy();cruiseChart=null;}buildChart();updateNowIdealBar();
 if(mapVisible)updateMap();fetchWeather();}
 
-function applyTranslations(){const s=(id,val,prop='textContent')=>{const el=document.getElementById(id);if(el)el[prop]=val;};s('hdr-sub',t('sub'));s('badge-txt',t('badge'));s('last-refresh-label',t('lastUpdateLabel'));s('btn-refresh-txt',t('btnRefresh'));s('lbl-total',t('statTotal'),'innerHTML');s('lbl-docked',t('statDocked'),'innerHTML');s('lbl-today',t('statToday'),'innerHTML');s('lbl-berths',t('statBerths'),'innerHTML');s('map-title',t('mapTitle'));s('map-toggle-btn',mapVisible?t('mapHide'):t('mapShow'));s('lbl-search',t('searchLabel'));const si=document.getElementById('search-ship');if(si)si.placeholder=t('searchPlaceholder');s('lbl-berth-filter',t('berthLabel'));s('lbl-status-filter',t('statusLabel'));s('opt-all-berths',t('allBerths'));s('opt-all-status',t('allStatus'));s('opt-docked',t('docked'));s('opt-arriving',t('arriving'));s('opt-expected',t('expected'));s('opt-departed',t('departed'));s('btn-reset',t('reset'));s('tbl-title',t('tblTitle'));const ths=document.getElementById('th-ship');if(ths&&ths.childNodes[0])ths.childNodes[0].textContent=t('thShip')+' ';const thb=document.getElementById('th-berth');if(thb&&thb.childNodes[0])thb.childNodes[0].textContent=t('thBerth')+' ';const tha=document.getElementById('th-arr');if(tha&&tha.childNodes[0])tha.childNodes[0].textContent=t('thArr')+' ';const thd=document.getElementById('th-dep');if(thd&&thd.childNodes[0])thd.childNodes[0].textContent=t('thDep')+' ';const thu=document.getElementById('th-dur');if(thu&&thu.childNodes[0])thu.childNodes[0].textContent=t('thDur')+' ';s('th-status',t('thStatus'));s('lbl-status',t('legendStatus'));s('leg-docked',t('docked'));s('leg-arriving',t('arriving'));s('leg-expected',t('expected'));s('leg-departed',t('departed'));s('empty-txt',t('emptyTxt'));s('footer-txt',t('footer'),'innerHTML');s('share-btn-txt',lang==='nl'?'Delen':'Share');s('today-btn-txt',lang==='nl'?'Vandaag':'Today');s('lbl-date-filter',lang==='nl'?'Datum':'Date');s('tl-hdr-ship',lang==='nl'?'Schip':'Vessel');s('tl-hdr-berth',lang==='nl'?'Ligplaats':'Berth');s('btn-view-table',lang==='nl'?'⊞ Tabel':'⊞ Table');s('btn-view-timeline',lang==='nl'?'▶ Tijdlijn':'▶ Timeline');s('lbl-operator-filter',lang==='nl'?'Rederij':'Operator');}
+function applyTranslations(){
+  const s=(id,val,prop='textContent')=>{const el=document.getElementById(id);if(el)el[prop]=val;};
+  s('hdr-sub',t('sub'));s('badge-txt',t('badge'));s('last-refresh-label',t('lastUpdateLabel'));s('btn-refresh-txt',t('btnRefresh'));
+  s('lbl-total',t('statTotal'),'innerHTML');s('lbl-docked',t('statDocked'),'innerHTML');s('lbl-today',t('statToday'),'innerHTML');s('lbl-berths',t('statBerths'),'innerHTML');
+  s('map-title-text',lang==='nl'?'Ligplaatsen op kaart':'Berth locations on map');s('map-toggle-btn',mapVisible?t('mapHide'):t('mapShow'));
+  s('lbl-search',t('searchLabel'));const si=document.getElementById('search-ship');if(si)si.placeholder=t('searchPlaceholder');
+  s('lbl-berth-filter',t('berthLabel'));s('lbl-status-filter',t('statusLabel'));s('opt-all-berths',t('allBerths'));s('opt-all-status',t('allStatus'));s('opt-docked',t('docked'));s('opt-arriving',t('arriving'));s('opt-expected',t('expected'));s('opt-departed',t('departed'));s('btn-reset',t('reset'));s('tbl-title',t('tblTitle'));
+  const heads=[['th-ship','thShip'],['th-berth','thBerth'],['th-arr','thArr'],['th-dep','thDep'],['th-dur','thDur']];heads.forEach(([id,key])=>{const el=document.getElementById(id);if(el&&el.childNodes[0])el.childNodes[0].textContent=t(key)+' ';});
+  s('th-status',t('thStatus'));s('lbl-status',t('legendStatus'));s('leg-docked',t('docked'));s('leg-arriving',t('arriving'));s('leg-expected',t('expected'));s('leg-departed',t('departed'));s('empty-txt',t('emptyTxt'));s('footer-txt',t('footer'),'innerHTML');
+  s('share-btn-txt',lang==='nl'?'Delen':'Share');s('today-btn-txt',lang==='nl'?'Vandaag':'Today');s('lbl-date-filter',lang==='nl'?'Datum':'Date');s('tl-hdr-ship',lang==='nl'?'Schip':'Vessel');s('tl-hdr-berth',lang==='nl'?'Ligplaats':'Berth');s('btn-view-table-text',lang==='nl'?'Tabel':'Table');s('btn-view-timeline-text',lang==='nl'?'Tijdlijn':'Timeline');s('lbl-operator-filter',lang==='nl'?'Rederij':'Operator');
+}
 
-function applyDark(){document.body.classList.toggle('dark',darkMode);document.getElementById('dark-toggle-btn').textContent=darkMode?'☀️':'🌙';document.getElementById('dark-toggle-btn').title=darkMode?'Lichte modus':'Donkere modus';const mapEl=document.getElementById('cruise-map');if(mapEl)mapEl.style.filter=darkMode?'invert(1) hue-rotate(180deg) brightness(0.85)':'';}
+function applyDark(){const btn=document.getElementById('dark-toggle-btn');document.body.classList.toggle('dark',darkMode);btn.innerHTML=iconSvg(darkMode?'sun':'moon');btn.title=darkMode?'Lichte modus':'Donkere modus';btn.setAttribute('aria-label',btn.title);const mapEl=document.getElementById('cruise-map');if(mapEl)mapEl.style.filter=darkMode?'invert(1) hue-rotate(180deg) brightness(0.85)':'';}
 function toggleDark(){darkMode=!darkMode;localStorage.setItem('cruiseDark',darkMode);applyDark();}
 
 function populateBerths(data){const sel=document.getElementById('filter-berth');const cur=sel.value;sel.innerHTML=`<option value="" id="opt-all-berths">${t('allBerths')}</option>`;[...new Set(data.map(d=>d.berth))].sort().forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;if(b===cur)o.selected=true;sel.appendChild(o);});}
@@ -1035,7 +1074,7 @@ const totalPages=Math.ceil(f.length/ITEMS_PER_PAGE);if(currentPage>totalPages)cu
 const tbody=document.getElementById('table-body');tbody.innerHTML='';pageItems.forEach((r,i)=>{const barW=Math.min(80,Math.max(16,(r.depDt-r.arrDt)/3600000*2.5));const coords=getBerthCoords(r.berth);const berthClick=coords?`onclick="openMapAt(${coords[0]},${coords[1]},'${r.berth.replace(/'/g,"\\'")}');return false;"` :'';const tr=document.createElement('tr');tr.style.animationDelay=`${i*0.03}s`;tr.style.cursor='pointer';tr.onclick=()=>{document.querySelectorAll('#table-body tr.selected').forEach(el=>el.classList.remove('selected'));tr.classList.add('selected');};tr.innerHTML=`<td><div class="ship-cell">
         <div class="ship-name">${r.ship}</div>
         ${operatorBadge(r.ship)}
-        ${(()=>{const si=getShipInfo(r.ship);return`<div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">${si.flag} ${si.flagLabel} · ${si.length}m · ~${si.crew} crew</div>`;})()}
+        ${(()=>{const si=getShipInfo(r.ship);return`<div style="font-size:0.58rem;color:var(--muted);margin-top:2px;">${si.flagLabel} · ${si.length}m · ~${si.crew} crew</div>`;})()}
         ${(()=>{
           const bv=getBestVisitTime(r.arrDt,r.depDt);
           if(!bv)return'';
@@ -1043,9 +1082,9 @@ const tbody=document.getElementById('table-body');tbody.innerHTML='';pageItems.f
           const bg=bv.isNow?'rgba(200,132,26,0.13)':'rgba(42,92,122,0.09)';
           const border=bv.isNow?'1px solid rgba(200,132,26,0.4)':'1px solid rgba(42,92,122,0.25)';
           const prefix=bv.isNow?(lang==='nl'?'✓ Nu ideaal':'✓ Now ideal'):(lang==='nl'?'Advies':'Advice');
-          return`<div style="font-size:0.58rem;background:${bg};color:${color};padding:2px 7px;border-radius:2px;margin-top:3px;display:inline-block;border:${border};font-weight:600;">💡 ${prefix}: ${bv.label}</div>`;
+          return`<div style="font-size:0.58rem;background:${bg};color:${color};padding:2px 7px;border-radius:4px;margin-top:3px;display:inline-flex;align-items:center;gap:4px;border:${border};font-weight:600;">${iconSvg('sun')} ${prefix}: ${bv.label}</div>`;
         })()}
-      </div></td><td><span class="berth-tag" title="${r.berth}" ${berthClick}>${r.berth}</span></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.arrDt,'date')}</span><span class="time-hour arr">&#11014; ${fmt(r.arrDt,'time')}</span></div></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.depDt,'date')}</span><span class="time-hour dep">&#11015; ${fmt(r.depDt,'time')}</span></div></td><td><div class="duration-bar-wrap"><div class="duration-bar" style="width:${barW}px"></div><span class="duration-text">${duration(r.arrDt,r.depDt)}</span></div></td><td>${pill(r.status)}</td>`;tbody.appendChild(tr);});document.getElementById('result-count').textContent=t('results',f.length);document.getElementById('empty-state').style.display=f.length===0?'block':'none';
+      </div></td><td><span class="berth-tag" title="${r.berth}" ${berthClick}>${r.berth}</span></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.arrDt,'date')}</span><span class="time-hour arr">${iconSvg('sortUp')} ${fmt(r.arrDt,'time')}</span></div></td><td class="time-cell"><div class="time-block"><span class="time-date">${fmt(r.depDt,'date')}</span><span class="time-hour dep">${iconSvg('sortDown')} ${fmt(r.depDt,'time')}</span></div></td><td><div class="duration-bar-wrap"><div class="duration-bar" style="width:${barW}px"></div><span class="duration-text">${duration(r.arrDt,r.depDt)}</span></div></td><td>${pill(r.status)}</td>`;tbody.appendChild(tr);});document.getElementById('result-count').textContent=t('results',f.length);document.getElementById('empty-state').style.display=f.length===0?'block':'none';
 // Paginering
 const pgEl=document.getElementById('pagination');
 if(totalPages<=1){pgEl.style.display='none';}else{pgEl.style.display='flex';let html='';html+=`<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹ ${lang==='nl'?'Vorige':'Previous'}</button>`;const range=[];for(let p=1;p<=totalPages;p++){if(p===1||p===totalPages||Math.abs(p-currentPage)<=1)range.push(p);else if(range[range.length-1]!=='…')range.push('…');}range.forEach(p=>{if(p==='…'){html+=`<span class="page-info">…</span>`;}else{html+=`<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;}});html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>${lang==='nl'?'Volgende':'Next'} ›</button>`;html+=`<span class="page-info">${pageStart+1}–${Math.min(pageStart+ITEMS_PER_PAGE,f.length)} ${lang==='nl'?'van':'of'} ${f.length}</span>`;pgEl.innerHTML=html;}animateCounter(document.getElementById('stat-total'), currentData.length);animateCounter(document.getElementById('stat-docked'), currentData.filter(d=>d.status==='docked').length);animateCounter(document.getElementById('stat-berths'), new Set(currentData.map(d=>d.berth)).size);const tod=new Date().toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');document.getElementById('stat-today').textContent=currentData.filter(d=>d.arr.startsWith(tod)||d.dep.startsWith(tod)).length;}
@@ -1070,7 +1109,7 @@ function updateNowIdealBar(){
 
 function goPage(p){currentPage=p;renderTable();window.scrollTo({top:document.getElementById('table-body').getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});}
 function filterTable(){currentPage=1;if(currentView==='timeline')renderTimeline();else renderTable();if(mapVisible)updateMap();}
-function sortTable(col){currentPage=1;if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}document.querySelectorAll('th').forEach((th,i)=>{th.classList.toggle('sorted',i===col);const ic=th.querySelector('.sort-icon');if(ic)ic.textContent=i===col?(sortDir===1?' ↑':' ↓'):' ⇅';});renderTable();}
+function sortTable(col){currentPage=1;if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}document.querySelectorAll('th').forEach((th,i)=>{th.classList.toggle('sorted',i===col);const ic=th.querySelector('.sort-icon');if(ic)ic.innerHTML=iconSvg(i===col?(sortDir===1?'sortUp':'sortDown'):'sort');});renderTable();}
 function resetFilters(){document.getElementById('search-ship').value='';document.getElementById('filter-berth').value='';document.getElementById('filter-operator').value='';document.getElementById('filter-status').value='';document.getElementById('filter-date').value='';document.getElementById('today-btn').classList.remove('active');renderTable();buildChart();}
 function filterToday(){const today=new Date().toISOString().split('T')[0];document.getElementById('filter-date').value=today;document.getElementById('today-btn').classList.add('active');renderTable();buildChart();}
 function onDateChange(){const today=new Date().toISOString().split('T')[0];const val=document.getElementById('filter-date').value;document.getElementById('today-btn').classList.toggle('active',val===today);renderTable();buildChart();}
@@ -1142,7 +1181,7 @@ function updateDatalist(){}
 
 async function fetchLiveData(silent=false){if(!proxyUrl){if(!silent)showStatus(t('errNoUrl'),'error');return;}const btn=document.getElementById('refresh-btn');const bar=document.getElementById('loading-bar');let slowTimer=null;if(!silent){btn.disabled=true;btn.classList.add('spinning');bar.classList.add('active');showStatus(t('loadingMsg'),'info');slowTimer=setTimeout(()=>{showStatus(lang==='nl'?'⏳ Server wordt gestart… even geduld a.u.b':'⏳ Server is starting… please wait','info');},5000);}const fetchWithTimeout=async(url,ms=40000)=>{const ctrl=new AbortController();const id=setTimeout(()=>ctrl.abort(),ms);try{const res=await fetch(url,{signal:ctrl.signal});clearTimeout(id);return res;}catch(e){clearTimeout(id);throw e;}};const fetchWithRetry=async(url,retries=2)=>{for(let i=0;i<=retries;i++){try{if(i>0){if(!silent)showStatus(lang==='nl'?`⟳ Opnieuw proberen (poging ${i+1})…`:`⟳ Retrying (attempt ${i+1})…`,'info');await new Promise(r=>setTimeout(r,3000));}return await fetchWithTimeout(url);}catch(e){if(i===retries)throw e;}}};try{const response=await fetchWithRetry(`${proxyUrl}/api/ships`);if(!response.ok)throw new Error(t('errServer',response.status));const json=await response.json();if(!json.ok||!Array.isArray(json.ships)||json.ships.length===0)throw new Error(json.error||t('errNoShips'));currentData=process(json.ships);populateBerths(currentData);populateOperators(currentData);updateDatalist();renderTable();buildChart();if(mapVisible)updateMap();const now=new Date();const ti=now.toLocaleTimeString(lang==='nl'?'nl-NL':'en-GB',{hour:'2-digit',minute:'2-digit'});const da=now.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{day:'numeric',month:'long',year:'numeric'});document.getElementById('last-updated').textContent=t('liveNote',da,ti,json.ships.length);document.getElementById('last-refresh-time').textContent=ti;document.getElementById('last-refresh').style.display='block';const msg=json.from_cache?t('cacheMsg',json.ships.length,json.cache_age_minutes):t('freshMsg',json.ships.length);if(!silent)showStatus(msg,'success');autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;}catch(err){console.error(err);if(!silent)showStatus(t('errFetch',err.message),'error');}finally{clearTimeout(slowTimer);if(!silent){btn.disabled=false;btn.classList.remove('spinning');bar.classList.remove('active');}}}
 
-async function fetchWeather(){try{const url='https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.890&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Europe%2FAmsterdam&forecast_days=4&models=best_match';const res=await fetch(url);if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json();if(!data.current)throw new Error('Geen current data');const c=data.current;const code=c.weather_code??c.weathercode??0;const[icon,descNl]=WMO_CODES[code]||['🌡','Onbekend'];const descEn=WMO_EN[code]||'Unknown';const temp=c.temperature_2m??'—';const wind=c.wind_speed_10m??c.windspeed_10m??'—';const hum=c.relative_humidity_2m??c.relativehumidity_2m??'—';document.getElementById('weather-temp').textContent=typeof temp==='number'?Math.round(temp):temp;document.getElementById('weather-icon').textContent=icon;document.getElementById('weather-desc').textContent=lang==='nl'?descNl:descEn;document.getElementById('weather-extra').textContent=lang==='nl'?`💨 ${typeof wind==='number'?Math.round(wind):wind} km/u · 💧 ${hum}%`:`💨 ${typeof wind==='number'?Math.round(wind):wind} km/h · 💧 ${hum}%`;if(data.daily&&data.daily.time){const fc=document.getElementById('weather-forecast');fc.innerHTML='';for(let i=1;i<=3;i++){if(!data.daily.time[i])continue;const dt=new Date(data.daily.time[i]);const dayName=dt.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{weekday:'short'});const wcode=data.daily.weather_code[i]??0;const[fcIcon]=WMO_CODES[wcode]||['🌡'];const tmax=Math.round(data.daily.temperature_2m_max[i]);const tmin=Math.round(data.daily.temperature_2m_min[i]);fc.innerHTML+=`<div class="forecast-day"><span class="forecast-date">${dayName}</span><span class="forecast-icon">${fcIcon}</span><span class="forecast-temp">${tmax}°</span><span class="forecast-temp-min">${tmin}°</span></div>`;}}}catch(e){console.error('Weer ophalen mislukt:',e.message);document.getElementById('weather-extra').textContent=lang==='nl'?'Weer niet beschikbaar':'Weather unavailable';}}
+async function fetchWeather(){try{const url='https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.890&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Europe%2FAmsterdam&forecast_days=4&models=best_match';const res=await fetch(url);if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json();if(!data.current)throw new Error('Geen current data');const c=data.current;const code=c.weather_code??c.weathercode??0;const[icon,descNl]=WMO_CODES[code]||['cloud','Onbekend'];const descEn=WMO_EN[code]||'Unknown';const temp=c.temperature_2m??'—';const wind=c.wind_speed_10m??c.windspeed_10m??'—';const hum=c.relative_humidity_2m??c.relativehumidity_2m??'—';document.getElementById('weather-temp').textContent=typeof temp==='number'?Math.round(temp):temp;document.getElementById('weather-icon').innerHTML=iconSvg(icon);document.getElementById('weather-desc').textContent=lang==='nl'?descNl:descEn;document.getElementById('weather-extra').innerHTML=`<span class="weather-metric">${iconSvg('wind')} ${typeof wind==='number'?Math.round(wind):wind} ${lang==='nl'?'km/u':'km/h'}</span><span class="weather-metric">${iconSvg('droplet')} ${hum}%</span>`;if(data.daily&&data.daily.time){const fc=document.getElementById('weather-forecast');fc.innerHTML='';for(let i=1;i<=3;i++){if(!data.daily.time[i])continue;const dt=new Date(data.daily.time[i]);const dayName=dt.toLocaleDateString(lang==='nl'?'nl-NL':'en-GB',{weekday:'short'});const wcode=data.daily.weather_code[i]??0;const[fcIcon]=WMO_CODES[wcode]||['cloud'];const tmax=Math.round(data.daily.temperature_2m_max[i]);const tmin=Math.round(data.daily.temperature_2m_min[i]);fc.innerHTML+=`<div class="forecast-day"><span class="forecast-date">${dayName}</span><span class="forecast-icon">${iconSvg(fcIcon)}</span><span class="forecast-temp">${tmax}°</span><span class="forecast-temp-min">${tmin}°</span></div>`;}}}catch(e){console.error('Weer ophalen mislukt:',e.message);document.getElementById('weather-extra').textContent=lang==='nl'?'Weer niet beschikbaar':'Weather unavailable';}}
 
 function startAutoRefresh(){if(autoRefreshTimer)clearInterval(autoRefreshTimer);if(countdownTimer)clearInterval(countdownTimer);autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;updateCountdown();countdownTimer=setInterval(()=>{autoRefreshSecondsLeft--;if(autoRefreshSecondsLeft<=0)autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;updateCountdown();},1000);autoRefreshTimer=setInterval(async()=>{if(!proxyUrl)return;const dot=document.getElementById('live-dot');if(dot)dot.classList.add('syncing');await fetchLiveData(true);if(dot)dot.classList.remove('syncing');autoRefreshSecondsLeft=AUTO_REFRESH_INTERVAL;},AUTO_REFRESH_INTERVAL*1000);}
 
@@ -1371,6 +1410,7 @@ function initScrollObserver() {
 currentData=process(FALLBACK);
 populateBerths(currentData);populateOperators(currentData);
 applyTranslations();
+document.querySelectorAll('th .sort-icon').forEach((el,i)=>{el.innerHTML=iconSvg(i===sortCol?(sortDir===1?'sortUp':'sortDown'):'sort');});
 renderTable();
 renderBerthCards();
 buildChart();
